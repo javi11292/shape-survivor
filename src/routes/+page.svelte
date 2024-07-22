@@ -6,7 +6,7 @@
 
 	let canvas = $state<HTMLCanvasElement>();
 
-	const SPAWN_DISTANCE = 25;
+	const SPAWN_DISTANCE = 50;
 	const SPAWN_SPEED = 1000;
 
 	const createScene = (engine: Engine) => {
