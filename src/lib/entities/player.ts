@@ -18,6 +18,7 @@ enum KEYS {
 const keys = new Set<string>(Object.values(KEYS));
 
 const SPEED = 10;
+const DOUBLE_SPEED = Math.sqrt(Math.pow(SPEED, 2) / 2);
 const shape = [new Vector3(0, 0, 1), new Vector3(-1, 0, -1), new Vector3(1, 0, -1)];
 
 const getAngle = (pointA: Vector3, pointB: Vector3) =>
@@ -31,7 +32,7 @@ export class Player extends Unit {
 		super(scene, CreatePolygon("player", { shape }, scene, earcut));
 
 		this.camera = new UniversalCamera("camera", new Vector3(0, 100, 0));
-		this.camera.target = new Vector3(0, 0, 0);
+		this.camera.target = new Vector3();
 		this.camera.rotation.y = 0;
 
 		scene.onPointerObservable.add(({ pickInfo }) => {
@@ -51,7 +52,6 @@ export class Player extends Unit {
 
 					if (keys.has(key)) {
 						this.input.add(key as KEYS);
-						this.updateRotation();
 					}
 
 					break;
@@ -62,7 +62,6 @@ export class Player extends Unit {
 
 					if (keys.has(key)) {
 						this.input.delete(key as KEYS);
-						this.updateRotation();
 					}
 
 					break;
@@ -73,37 +72,30 @@ export class Player extends Unit {
 
 	protected render(delta: number) {
 		if (this.input.size > 0) {
-			this.mesh.movePOV(0, 0, SPEED * delta);
+			const position = new Vector3();
+
+			this.input.forEach((key) => {
+				switch (key) {
+					case KEYS.right:
+						position.x = 1;
+						break;
+					case KEYS.left:
+						position.x = -1;
+						break;
+					case KEYS.up:
+						position.z = 1;
+						break;
+					case KEYS.down:
+						position.z = -1;
+						break;
+				}
+			});
+
+			const speed = (position.x && position.z ? DOUBLE_SPEED : SPEED) * delta;
+
+			this.mesh.position = this.mesh.position.add(position.scale(speed));
 			this.camera.position.x = this.mesh.position.x;
 			this.camera.position.z = this.mesh.position.z;
 		}
-	}
-
-	private updateRotation() {
-		if (this.input.size === 0) {
-			return;
-		}
-
-		const axis: [number, number] = [0, 0];
-
-		this.input.forEach((key) => {
-			if (key === KEYS.right) {
-				axis[0] = Math.PI / 2;
-			} else if (key === KEYS.left) {
-				axis[0] = (Math.PI * 3) / 2;
-			}
-
-			if (key === KEYS.up) {
-				axis[1] = Math.PI * 2;
-			} else if (key === KEYS.down) {
-				axis[1] = Math.PI;
-			}
-		});
-
-		if (axis[0] && axis[1]) {
-			axis[1] = axis[1] / 4;
-		}
-
-		//this.mesh.rotation.z = axis[0] + axis[1];
 	}
 }
