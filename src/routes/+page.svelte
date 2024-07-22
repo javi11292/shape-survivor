@@ -26,7 +26,10 @@
 			const y =
 				Math.sqrt(Math.pow(SPAWN_DISTANCE, 2) - Math.pow(x, 2)) * (Math.random() < 0.5 ? -1 : 1);
 
-			new Enemy(scene, { position: player.position.add(new Vector3(x, 0, y)) });
+			new Enemy(scene, {
+				position: player.position.add(new Vector3(x, 0, y)),
+				target: player.position,
+			});
 		}, SPAWN_SPEED);
 
 		return scene;
