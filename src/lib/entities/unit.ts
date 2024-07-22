@@ -1,15 +1,12 @@
-import { CreatePolygon, Mesh, Render, Vector3, type Scene } from "$lib/engine";
-import earcut from "earcut";
-
-const shape = [new Vector3(0, 0, 1), new Vector3(-1, 0, -1), new Vector3(1, 0, -1)];
+import { Mesh, Render, type Scene } from "$lib/engine";
 
 export abstract class Unit extends Render {
 	protected mesh: Mesh;
 
-	constructor(scene: Scene, { name }: { name: string }) {
+	constructor(scene: Scene, mesh: Mesh) {
 		super(scene);
 
-		this.mesh = CreatePolygon(name, { shape, sideOrientation: Mesh.DOUBLESIDE }, scene, earcut);
+		this.mesh = mesh;
 		this.mesh.definedFacingForward = false;
 	}
 }

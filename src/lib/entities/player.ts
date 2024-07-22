@@ -1,4 +1,11 @@
-import { KeyboardEventTypes, UniversalCamera, Vector3, type Scene } from "$lib/engine";
+import {
+	CreatePolygon,
+	KeyboardEventTypes,
+	UniversalCamera,
+	Vector3,
+	type Scene,
+} from "$lib/engine";
+import earcut from "earcut";
 import { Unit } from "./unit";
 
 enum KEYS {
@@ -11,6 +18,7 @@ enum KEYS {
 const keys = new Set<string>(Object.values(KEYS));
 
 const SPEED = 10;
+const shape = [new Vector3(0, 0, 1), new Vector3(-1, 0, -1), new Vector3(1, 0, -1)];
 
 const getAngle = (pointA: Vector3, pointB: Vector3) =>
 	Math.atan2(pointB.x - pointA.x, pointB.z - pointA.z);
@@ -20,7 +28,7 @@ export class Player extends Unit {
 	private camera: UniversalCamera;
 
 	constructor(scene: Scene) {
-		super(scene, { name: "player" });
+		super(scene, CreatePolygon("player", { shape }, scene, earcut));
 
 		this.camera = new UniversalCamera("camera", new Vector3(0, 100, 0));
 		this.camera.target = new Vector3(0, 0, 0);
