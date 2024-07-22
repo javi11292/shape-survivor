@@ -6,10 +6,12 @@
 
 	let canvas = $state<HTMLCanvasElement>();
 
+	const SPAWN_DISTANCE = 25;
+	const SPAWN_SPEED = 1000;
+
 	const createScene = (engine: Engine) => {
 		const scene = new Scene(engine);
-		new Player(scene);
-		new Enemy(scene);
+		const player = new Player(scene);
 		const light = new HemisphericLight("light", new Vector3(0, 0, 1));
 
 		light.intensity = Math.PI;
@@ -18,6 +20,14 @@
 		engine.runRenderLoop(() => {
 			scene.render();
 		});
+
+		setInterval(() => {
+			const x = Math.random() * SPAWN_DISTANCE * 2 - SPAWN_DISTANCE;
+			const y =
+				Math.sqrt(Math.pow(SPAWN_DISTANCE, 2) - Math.pow(x, 2)) * (Math.random() < 0.5 ? -1 : 1);
+
+			new Enemy(scene, { position: player.position.add(new Vector3(x, 0, y)) });
+		}, SPAWN_SPEED);
 
 		return scene;
 	};

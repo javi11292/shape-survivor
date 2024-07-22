@@ -24,8 +24,11 @@ export abstract class Unit extends Render {
 			earcut,
 		);
 		this.mesh.definedFacingForward = false;
-		this.mesh.checkCollisions = true;
 		this.mesh.metadata = this;
+	}
+
+	protected setup() {
+		this.mesh.checkCollisions = true;
 	}
 
 	dispose() {

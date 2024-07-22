@@ -1,10 +1,16 @@
 import { ENEMY_MASK } from "$lib/constants";
-import { CreateLines, Mesh, Render, Vector3, type Scene } from "$lib/engine";
+import { CreatePolygon, Mesh, Render, Vector3, type Scene } from "$lib/engine";
+import earcut from "earcut";
 
 const SPEED = 50;
 const LIFE_TIME = 750;
 
-const points = [new Vector3(), new Vector3(0, 0, 0.5)];
+const shape = [
+	new Vector3(0.05, 0, 0),
+	new Vector3(0.05, 0, 0.5),
+	new Vector3(-0.05, 0, 0.5),
+	new Vector3(-0.05, 0, 0),
+];
 
 type Props = {
 	position: Vector3;
@@ -18,12 +24,11 @@ export class Projectile extends Render {
 	constructor(scene: Scene, { position, rotation, pivot }: Props) {
 		super(scene);
 
-		this.mesh = CreateLines("projectile", { points });
+		this.mesh = CreatePolygon("projectile", { shape }, scene, earcut);
 		this.mesh.definedFacingForward = false;
 		this.mesh.setPivotPoint(pivot);
 		this.mesh.position = position;
 		this.mesh.rotation = rotation;
-		this.mesh.checkCollisions = true;
 		this.mesh.collisionMask = ENEMY_MASK;
 
 		this.mesh.onCollideObservable.add((mesh) => {
@@ -36,8 +41,12 @@ export class Projectile extends Render {
 		}, LIFE_TIME);
 	}
 
-	render(delta: number) {
+	protected render(delta: number) {
 		this.mesh.moveWithCollisions(this.mesh.calcMovePOV(0, 0, delta * SPEED));
+	}
+
+	setup() {
+		this.mesh.checkCollisions = true;
 	}
 
 	dispose() {

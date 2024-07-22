@@ -27,7 +27,18 @@ export abstract class Render {
 		this.engine = scene.getEngine();
 
 		scene.registerBeforeRender(this.handleRender);
+
+		if (this.setup) {
+			const setup = () => {
+				this.setup?.();
+				this.scene.unregisterBeforeRender(setup);
+			};
+
+			this.scene.registerBeforeRender(setup);
+		}
 	}
+
+	protected setup?(): void;
 
 	protected render(delta: number): void;
 	protected render() {}

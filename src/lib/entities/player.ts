@@ -104,4 +104,8 @@ export class Player extends Unit {
 			this.camera.position.z = this.mesh.position.z;
 		}
 	}
+
+	get position() {
+		return this.mesh.position;
+	}
 }

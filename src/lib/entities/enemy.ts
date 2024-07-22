@@ -2,7 +2,7 @@ import { ENEMY_MASK } from "$lib/constants";
 import { Vector3, type Scene } from "$lib/engine";
 import { Unit } from "./unit";
 
-const DISTANCE = 0.05;
+const DISTANCE = 0.1;
 const SQRT = Math.sqrt(Math.pow(DISTANCE, 2) / 2);
 
 const holes: [Vector3[]] = [
@@ -13,13 +13,18 @@ const holes: [Vector3[]] = [
 	],
 ];
 
+type Props = {
+	position: Vector3;
+};
+
 export class Enemy extends Unit {
-	constructor(scene: Scene) {
+	constructor(scene: Scene, { position }: Props) {
 		super(scene, {
 			name: "enemy",
 			holes,
 		});
 
 		this.mesh.collisionGroup = ENEMY_MASK;
+		this.mesh.position = position;
 	}
 }
