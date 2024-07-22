@@ -1,11 +1,6 @@
-import {
-	CreatePolygon,
-	KeyboardEventTypes,
-	UniversalCamera,
-	Vector3,
-	type Scene,
-} from "$lib/engine";
-import earcut from "earcut";
+import { PLAYER_MASK } from "$lib/constants";
+import { KeyboardEventTypes, UniversalCamera, Vector3, type Scene } from "$lib/engine";
+import { Projectile } from "./projectile";
 import { Unit } from "./unit";
 
 enum KEYS {
@@ -18,8 +13,7 @@ enum KEYS {
 const keys = new Set<string>(Object.values(KEYS));
 
 const SPEED = 10;
-const DOUBLE_SPEED = Math.sqrt(Math.pow(SPEED, 2) / 2);
-const shape = [new Vector3(0, 0, 1), new Vector3(-1, 0, -1), new Vector3(1, 0, -1)];
+const SQRT_SPEED = Math.sqrt(Math.pow(SPEED, 2) / 2);
 
 const getAngle = (pointA: Vector3, pointB: Vector3) =>
 	Math.atan2(pointB.x - pointA.x, pointB.z - pointA.z);
@@ -29,9 +23,10 @@ export class Player extends Unit {
 	private camera: UniversalCamera;
 
 	constructor(scene: Scene) {
-		super(scene, CreatePolygon("player", { shape }, scene, earcut));
+		super(scene, { name: "player" });
 
-		this.camera = new UniversalCamera("camera", new Vector3(0, 100, 0));
+		this.mesh.collisionGroup = PLAYER_MASK;
+		this.camera = new UniversalCamera("camera", new Vector3(0, 50, 0));
 		this.camera.target = new Vector3();
 		this.camera.rotation.y = 0;
 
@@ -68,6 +63,17 @@ export class Player extends Unit {
 				}
 			}
 		});
+
+		const projectilePosition = new Vector3(0, 0, 1);
+		const projectilePivot = new Vector3(0, 0, -1);
+
+		setInterval(() => {
+			new Projectile(this.scene, {
+				position: this.mesh.position.add(projectilePosition),
+				rotation: this.mesh.rotation.clone(),
+				pivot: projectilePivot,
+			});
+		}, 1000);
 	}
 
 	protected render(delta: number) {
@@ -91,9 +97,9 @@ export class Player extends Unit {
 				}
 			});
 
-			const speed = (position.x && position.z ? DOUBLE_SPEED : SPEED) * delta;
+			const speed = (position.x && position.z ? SQRT_SPEED : SPEED) * delta;
 
-			this.mesh.position = this.mesh.position.add(position.scale(speed));
+			this.mesh.position.addInPlace(position.scale(speed));
 			this.camera.position.x = this.mesh.position.x;
 			this.camera.position.z = this.mesh.position.z;
 		}
