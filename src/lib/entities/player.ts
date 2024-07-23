@@ -1,5 +1,12 @@
 import { PLAYER_MASK } from "$lib/constants";
-import { KeyboardEventTypes, UniversalCamera, Vector3, type Scene } from "$lib/engine";
+import {
+	CreatePolygon,
+	KeyboardEventTypes,
+	UniversalCamera,
+	Vector3,
+	type Scene,
+} from "$lib/engine";
+import earcut from "earcut";
 import { Projectile } from "./projectile";
 import { Unit } from "./unit";
 
@@ -17,6 +24,7 @@ const SQRT_SPEED = Math.sqrt(Math.pow(SPEED, 2) / 2);
 const PROJECTILE_POSITION = new Vector3(0, 0, 1);
 const PROJECTILE_PIVOT = new Vector3(0, 0, -1);
 const SHOT_SPEED = 1;
+const SHAPE = [new Vector3(0, 0, 1), new Vector3(-1, 0, -1), new Vector3(1, 0, -1)];
 
 const getAngle = (pointA: Vector3, pointB: Vector3) =>
 	Math.atan2(pointB.x - pointA.x, pointB.z - pointA.z);
@@ -27,7 +35,17 @@ export class Player extends Unit {
 	private lastProjectile = 0;
 
 	constructor(scene: Scene) {
-		super(scene, { name: "player" });
+		super(
+			scene,
+			CreatePolygon(
+				"player",
+				{
+					shape: SHAPE,
+				},
+				undefined,
+				earcut,
+			),
+		);
 
 		this.mesh.collisionGroup = PLAYER_MASK;
 		this.camera = new UniversalCamera("camera", new Vector3(0, 50, 0));

@@ -1,5 +1,5 @@
 import "@babylonjs/core/Culling/ray";
-import "@babylonjs/core/Materials/standardMaterial";
+import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
 
 import { Scene } from "@babylonjs/core/scene";
 
@@ -9,11 +9,12 @@ export { KeyboardEventTypes } from "@babylonjs/core/Events/keyboardEvents";
 export { HemisphericLight } from "@babylonjs/core/Lights/hemisphericLight";
 export { Color3, Color4 } from "@babylonjs/core/Maths/math.color";
 export { Vector3 } from "@babylonjs/core/Maths/math.vector";
+export { CreateDisc } from "@babylonjs/core/Meshes/Builders/discBuilder";
 export { CreateLines } from "@babylonjs/core/Meshes/Builders/linesBuilder";
 export { CreatePolygon } from "@babylonjs/core/Meshes/Builders/polygonBuilder";
 export { Mesh } from "@babylonjs/core/Meshes/mesh";
 export { TransformNode } from "@babylonjs/core/Meshes/transformNode";
-export { Scene };
+export { Scene, StandardMaterial };
 
 export abstract class Render {
 	protected scene;

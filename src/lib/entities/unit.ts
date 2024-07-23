@@ -1,34 +1,20 @@
 import { Damage } from "$lib/components/damage";
 import { State } from "$lib/core/utils";
-import { CreatePolygon, Render, Vector3, type Scene } from "$lib/engine";
-import earcut from "earcut";
+import { Render, Vector3 } from "$lib/engine";
+import type { InstancedMesh, Mesh, Scene } from "@babylonjs/core";
 import { mount, unmount } from "svelte";
+import { Experience } from "./experience";
 
-const SHAPE = [new Vector3(0, 0, 1), new Vector3(-1, 0, -1), new Vector3(1, 0, -1)];
 const DAMAGE_VECTOR = new Vector3();
-
-type Props = {
-	name: string;
-	holes?: [Vector3[]];
-};
 
 export abstract class Unit extends Render {
 	protected mesh;
 	private state?: State<{ x: number; y: number }>;
 
-	constructor(scene: Scene, { name, holes }: Props) {
+	constructor(scene: Scene, mesh: InstancedMesh | Mesh) {
 		super(scene);
 
-		this.mesh = CreatePolygon(
-			name,
-			{
-				shape: SHAPE,
-				holes,
-			},
-			scene,
-			earcut,
-		);
-
+		this.mesh = mesh;
 		this.mesh.definedFacingForward = false;
 		this.mesh.metadata = this;
 	}
@@ -42,10 +28,11 @@ export abstract class Unit extends Render {
 		this.mesh.dispose();
 	}
 
-	hit(damage: number) {
+	hit(damage: number, projectile: Mesh) {
 		this.dispose();
 
-		let vectorProjection = this.getVectorProjection();
+		new Experience(this.scene, { position: this.mesh.position });
+		let vectorProjection = this.getVectorProjection(projectile);
 
 		if (!vectorProjection) {
 			return;
@@ -59,7 +46,7 @@ export abstract class Unit extends Render {
 		});
 
 		const updatePosition = () => {
-			vectorProjection = this.getVectorProjection();
+			vectorProjection = this.getVectorProjection(projectile);
 
 			if (!vectorProjection || !this.state) {
 				return;
@@ -77,14 +64,14 @@ export abstract class Unit extends Render {
 		}, 750);
 	}
 
-	private getVectorProjection() {
+	private getVectorProjection(projectile: Mesh) {
 		if (!this.scene.activeCamera) {
 			return;
 		}
 
 		return Vector3.Project(
 			DAMAGE_VECTOR,
-			this.mesh.getWorldMatrix(),
+			projectile.getWorldMatrix(),
 			this.scene.getTransformMatrix(),
 			this.scene.activeCamera.viewport.toGlobal(window.innerWidth, window.innerHeight),
 		);

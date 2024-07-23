@@ -1,5 +1,7 @@
-import { ENEMY_MASK } from "$lib/constants";
-import { CreatePolygon, Render, Vector3, type Scene } from "$lib/engine";
+import { ENEMY_MASK, PROJECTILE_MASK } from "$lib/constants";
+import { CreatePolygon, Render, Vector3 } from "$lib/engine";
+import { prepareMesh } from "$lib/utils";
+import { type Scene } from "@babylonjs/core";
 import earcut from "earcut";
 
 const SPEED = 50;
@@ -18,6 +20,10 @@ type Props = {
 	pivot: Vector3;
 };
 
+const getMesh = prepareMesh(() =>
+	CreatePolygon("projectile mesh", { shape: SHAPE }, undefined, earcut),
+);
+
 export class Projectile extends Render {
 	protected mesh;
 	private damage = 1;
@@ -25,16 +31,18 @@ export class Projectile extends Render {
 	constructor(scene: Scene, { position, rotation, pivot }: Props) {
 		super(scene);
 
-		this.mesh = CreatePolygon("projectile", { shape: SHAPE }, scene, earcut);
+		const mesh = getMesh();
+		this.mesh = mesh.createInstance("projectile");
 		this.mesh.definedFacingForward = false;
 		this.mesh.setPivotPoint(pivot);
 		this.mesh.position = position;
 		this.mesh.rotation = rotation;
 		this.mesh.collisionMask = ENEMY_MASK;
+		this.mesh.collisionGroup = PROJECTILE_MASK;
 
 		this.mesh.onCollideObservable.add((mesh) => {
 			this.dispose();
-			mesh.metadata.hit(this.damage);
+			mesh.metadata.hit(this.damage, this.mesh);
 		});
 
 		setTimeout(() => {
