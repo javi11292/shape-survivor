@@ -14,6 +14,9 @@ const keys = new Set<string>(Object.values(KEYS));
 
 const SPEED = 10;
 const SQRT_SPEED = Math.sqrt(Math.pow(SPEED, 2) / 2);
+const PROJECTILE_POSITION = new Vector3(0, 0, 1);
+const PROJECTILE_PIVOT = new Vector3(0, 0, -1);
+const SHOT_SPEED = 1;
 
 const getAngle = (pointA: Vector3, pointB: Vector3) =>
 	Math.atan2(pointB.x - pointA.x, pointB.z - pointA.z);
@@ -21,6 +24,7 @@ const getAngle = (pointA: Vector3, pointB: Vector3) =>
 export class Player extends Unit {
 	private input = new Set<KEYS>();
 	private camera;
+	private lastProjectile = 0;
 
 	constructor(scene: Scene) {
 		super(scene, { name: "player" });
@@ -63,20 +67,21 @@ export class Player extends Unit {
 				}
 			}
 		});
-
-		const projectilePosition = new Vector3(0, 0, 1);
-		const projectilePivot = new Vector3(0, 0, -1);
-
-		setInterval(() => {
-			new Projectile(this.scene, {
-				position: this.mesh.position.add(projectilePosition),
-				rotation: this.mesh.rotation.clone(),
-				pivot: projectilePivot,
-			});
-		}, 1000);
 	}
 
 	protected render(delta: number) {
+		this.lastProjectile += delta;
+
+		if (this.lastProjectile >= SHOT_SPEED) {
+			new Projectile(this.scene, {
+				position: this.mesh.position.add(PROJECTILE_POSITION),
+				rotation: this.mesh.rotation.clone(),
+				pivot: PROJECTILE_PIVOT,
+			});
+
+			this.lastProjectile -= SHOT_SPEED;
+		}
+
 		if (this.input.size > 0) {
 			const position = new Vector3();
 
