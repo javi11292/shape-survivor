@@ -5,7 +5,7 @@ import earcut from "earcut";
 import { mount, unmount } from "svelte";
 
 const SHAPE = [new Vector3(0, 0, 1), new Vector3(-1, 0, -1), new Vector3(1, 0, -1)];
-const DAMAGE_VECTOR = new Vector3(0, 0, 1);
+const DAMAGE_VECTOR = new Vector3();
 
 type Props = {
 	name: string;
@@ -45,32 +45,23 @@ export abstract class Unit extends Render {
 	hit() {
 		this.dispose();
 
-		if (!this.scene.activeCamera) {
+		let vectorProjection = this.getVectorProjection();
+
+		if (!vectorProjection) {
 			return;
 		}
 
-		const { x, y } = Vector3.Project(
-			DAMAGE_VECTOR,
-			this.mesh.getWorldMatrix(),
-			this.scene.getTransformMatrix(),
-			this.scene.activeCamera.viewport.toGlobal(window.innerWidth, window.innerHeight),
-		);
-
-		this.state = new State({ x, y });
-
+		this.state = new State({ x: vectorProjection.x, y: vectorProjection.y });
 		const damage = mount(Damage, { target: document.body, props: { position: this.state.value } });
 
 		const updatePosition = () => {
-			if (!this.scene.activeCamera || !this.state) {
+			vectorProjection = this.getVectorProjection();
+
+			if (!vectorProjection || !this.state) {
 				return;
 			}
 
-			const { x, y } = Vector3.Project(
-				DAMAGE_VECTOR,
-				this.mesh.getWorldMatrix(),
-				this.scene.getTransformMatrix(),
-				this.scene.activeCamera.viewport.toGlobal(window.innerWidth, window.innerHeight),
-			);
+			const { x, y } = vectorProjection;
 
 			this.state.value.x = x;
 			this.state.value.y = y;
@@ -82,5 +73,18 @@ export abstract class Unit extends Render {
 			this.scene.unregisterBeforeRender(updatePosition);
 			unmount(damage);
 		}, 1000);
+	}
+
+	private getVectorProjection() {
+		if (!this.scene.activeCamera) {
+			return;
+		}
+
+		return Vector3.Project(
+			DAMAGE_VECTOR,
+			this.mesh.getWorldMatrix(),
+			this.scene.getTransformMatrix(),
+			this.scene.activeCamera.viewport.toGlobal(window.innerWidth, window.innerHeight),
+		);
 	}
 }

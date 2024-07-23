@@ -1,7 +1,11 @@
 .damage {
+	translate: -50% -50%;
+}
+
+.container {
 	position: fixed;
 	translate: var(--x) var(--y);
-	color: white;
 	top: 0;
 	left: 0;
+	color: white;
 }
