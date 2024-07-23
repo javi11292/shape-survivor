@@ -1,6 +1,6 @@
 import { Damage } from "$lib/components/damage";
 import { State } from "$lib/core/utils";
-import { CreatePolygon, Mesh, Render, Vector3, type Scene } from "$lib/engine";
+import { CreatePolygon, Render, Vector3, type Scene } from "$lib/engine";
 import earcut from "earcut";
 import { mount, unmount } from "svelte";
 
@@ -13,8 +13,8 @@ type Props = {
 };
 
 export abstract class Unit extends Render {
-	protected mesh: Mesh;
-	protected state?: State<{ x: number; y: number }>;
+	protected mesh;
+	private state?: State<{ x: number; y: number }>;
 
 	constructor(scene: Scene, { name, holes }: Props) {
 		super(scene);

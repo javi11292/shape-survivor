@@ -1,5 +1,5 @@
 import { ENEMY_MASK } from "$lib/constants";
-import { CreatePolygon, Mesh, Render, Vector3, type Scene } from "$lib/engine";
+import { CreatePolygon, Render, Vector3, type Scene } from "$lib/engine";
 import earcut from "earcut";
 
 const SPEED = 50;
@@ -19,7 +19,7 @@ type Props = {
 };
 
 export class Projectile extends Render {
-	protected mesh: Mesh;
+	protected mesh;
 
 	constructor(scene: Scene, { position, rotation, pivot }: Props) {
 		super(scene);

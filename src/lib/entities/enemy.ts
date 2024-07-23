@@ -20,7 +20,8 @@ type Props = {
 };
 
 export class Enemy extends Unit {
-	private target: Vector3;
+	private target;
+
 	constructor(scene: Scene, { position, target }: Props) {
 		super(scene, {
 			name: "enemy",

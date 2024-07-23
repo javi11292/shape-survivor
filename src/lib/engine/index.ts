@@ -1,6 +1,6 @@
+import "@babylonjs/core/Culling/ray";
 import "@babylonjs/core/Materials/standardMaterial";
 
-import type { AbstractEngine } from "@babylonjs/core/Engines/abstractEngine";
 import { Scene } from "@babylonjs/core/scene";
 
 export { UniversalCamera } from "@babylonjs/core/Cameras/universalCamera";
@@ -12,16 +12,13 @@ export { Vector3 } from "@babylonjs/core/Maths/math.vector";
 export { CreateLines } from "@babylonjs/core/Meshes/Builders/linesBuilder";
 export { CreatePolygon } from "@babylonjs/core/Meshes/Builders/polygonBuilder";
 export { Mesh } from "@babylonjs/core/Meshes/mesh";
+export { TransformNode } from "@babylonjs/core/Meshes/transformNode";
 export { Scene };
 
 export abstract class Render {
-	protected scene: Scene;
-	protected engine: AbstractEngine;
-	private unregister?: () => void;
-
-	private handleRender = () => {
-		this.render?.(this.engine.getDeltaTime() / 1000);
-	};
+	protected scene;
+	protected engine;
+	private unregister;
 
 	constructor(scene: Scene) {
 		this.scene = scene;

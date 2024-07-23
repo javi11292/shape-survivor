@@ -20,7 +20,7 @@ const getAngle = (pointA: Vector3, pointB: Vector3) =>
 
 export class Player extends Unit {
 	private input = new Set<KEYS>();
-	private camera: UniversalCamera;
+	private camera;
 
 	constructor(scene: Scene) {
 		super(scene, { name: "player" });
