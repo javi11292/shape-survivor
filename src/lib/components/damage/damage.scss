@@ -1,11 +1,42 @@
-.damage {
-	translate: -50% -50%;
-}
-
 .container {
 	position: fixed;
 	translate: var(--x) var(--y);
 	top: 0;
 	left: 0;
-	color: white;
+}
+
+.content {
+	position: relative;
+	translate: -50% -50%;
+}
+
+.damage {
+	color: orange;
+	font-weight: 700;
+	font-size: 3rem;
+	text-shadow:
+		1px 1px 0 #000,
+		-1px 1px 0 #000,
+		-1px -1px 0 #000,
+		1px -1px 0 #000;
+	animation: fade 750ms;
+}
+
+@keyframes fade {
+	0% {
+		opacity: 0;
+		scale: 0.75;
+	}
+
+	25% {
+		opacity: 1;
+	}
+
+	75% {
+		opacity: 1;
+	}
+
+	100% {
+		opacity: 0;
+	}
 }

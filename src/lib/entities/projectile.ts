@@ -20,6 +20,7 @@ type Props = {
 
 export class Projectile extends Render {
 	protected mesh;
+	private damage = 1;
 
 	constructor(scene: Scene, { position, rotation, pivot }: Props) {
 		super(scene);
@@ -33,7 +34,7 @@ export class Projectile extends Render {
 
 		this.mesh.onCollideObservable.add((mesh) => {
 			this.dispose();
-			mesh.metadata.hit();
+			mesh.metadata.hit(this.damage);
 		});
 
 		setTimeout(() => {

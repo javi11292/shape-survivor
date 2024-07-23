@@ -42,7 +42,7 @@ export abstract class Unit extends Render {
 		this.mesh.dispose();
 	}
 
-	hit() {
+	hit(damage: number) {
 		this.dispose();
 
 		let vectorProjection = this.getVectorProjection();
@@ -52,7 +52,11 @@ export abstract class Unit extends Render {
 		}
 
 		this.state = new State({ x: vectorProjection.x, y: vectorProjection.y });
-		const damage = mount(Damage, { target: document.body, props: { position: this.state.value } });
+
+		const component = mount(Damage, {
+			target: document.body,
+			props: { position: this.state.value, damage },
+		});
 
 		const updatePosition = () => {
 			vectorProjection = this.getVectorProjection();
@@ -69,8 +73,8 @@ export abstract class Unit extends Render {
 
 		setTimeout(() => {
 			this.scene.unregisterBeforeRender(updatePosition);
-			unmount(damage);
-		}, 1000);
+			unmount(component);
+		}, 750);
 	}
 
 	private getVectorProjection() {
