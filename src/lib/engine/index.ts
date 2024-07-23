@@ -17,16 +17,15 @@ export { Scene };
 export abstract class Render {
 	protected scene: Scene;
 	protected engine: AbstractEngine;
+	private unregister?: () => void;
 
 	private handleRender = () => {
-		this.render(this.engine.getDeltaTime() / 1000);
+		this.render?.(this.engine.getDeltaTime() / 1000);
 	};
 
 	constructor(scene: Scene) {
 		this.scene = scene;
 		this.engine = scene.getEngine();
-
-		scene.registerBeforeRender(this.handleRender);
 
 		if (this.setup) {
 			const setup = () => {
@@ -36,14 +35,22 @@ export abstract class Render {
 
 			this.scene.registerBeforeRender(setup);
 		}
+
+		if (this.render) {
+			const render = () => {
+				this.render?.(this.engine.getDeltaTime() / 1000);
+			};
+
+			scene.registerBeforeRender(render);
+			this.unregister = () => this.scene.unregisterBeforeRender(render);
+		}
 	}
 
 	protected setup?(): void;
 
-	protected render(delta: number): void;
-	protected render() {}
+	protected render?(delta?: number): void;
 
 	dispose() {
-		this.scene.unregisterBeforeRender(this.handleRender);
+		this.unregister?.();
 	}
 }

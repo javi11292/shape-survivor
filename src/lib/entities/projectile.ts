@@ -5,7 +5,7 @@ import earcut from "earcut";
 const SPEED = 50;
 const LIFE_TIME = 750;
 
-const shape = [
+const SHAPE = [
 	new Vector3(0.05, 0, 0),
 	new Vector3(0.05, 0, 0.5),
 	new Vector3(-0.05, 0, 0.5),
@@ -24,7 +24,7 @@ export class Projectile extends Render {
 	constructor(scene: Scene, { position, rotation, pivot }: Props) {
 		super(scene);
 
-		this.mesh = CreatePolygon("projectile", { shape }, scene, earcut);
+		this.mesh = CreatePolygon("projectile", { shape: SHAPE }, scene, earcut);
 		this.mesh.definedFacingForward = false;
 		this.mesh.setPivotPoint(pivot);
 		this.mesh.position = position;
@@ -33,7 +33,7 @@ export class Projectile extends Render {
 
 		this.mesh.onCollideObservable.add((mesh) => {
 			this.dispose();
-			mesh.metadata.dispose();
+			mesh.metadata.hit();
 		});
 
 		setTimeout(() => {

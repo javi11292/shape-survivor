@@ -6,7 +6,7 @@ const DISTANCE = 0.1;
 const SPEED = 5;
 const SQRT = Math.sqrt(Math.pow(DISTANCE, 2) / 2);
 
-const holes: [Vector3[]] = [
+const HOLES: [Vector3[]] = [
 	[
 		new Vector3(0, 0, 1 - DISTANCE),
 		new Vector3(DISTANCE - 1, 0, SQRT - 1),
@@ -24,7 +24,7 @@ export class Enemy extends Unit {
 	constructor(scene: Scene, { position, target }: Props) {
 		super(scene, {
 			name: "enemy",
-			holes,
+			holes: HOLES,
 		});
 
 		this.target = target;
