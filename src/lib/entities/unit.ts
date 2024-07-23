@@ -61,10 +61,8 @@ export abstract class Unit extends Render {
 				return;
 			}
 
-			const { x, y } = vectorProjection;
-
-			this.state.value.x = x;
-			this.state.value.y = y;
+			this.state.value.x = vectorProjection.x;
+			this.state.value.y = vectorProjection.y;
 		};
 
 		this.scene.registerBeforeRender(updatePosition);
