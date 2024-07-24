@@ -19,7 +19,7 @@
 		-1px 1px 0 #000,
 		-1px -1px 0 #000,
 		1px -1px 0 #000;
-	animation: fade 750ms;
+	animation: fade 750ms forwards;
 }
 
 @keyframes fade {

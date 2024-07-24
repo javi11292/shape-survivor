@@ -2,13 +2,16 @@ import { PLAYER_MASK } from "$lib/constants";
 import {
 	CreatePolygon,
 	KeyboardEventTypes,
+	PhysicsBody,
+	PhysicsMotionType,
+	PhysicsShapeConvexHull,
 	UniversalCamera,
 	Vector3,
-	type Scene,
 } from "$lib/engine";
+import type { Scene } from "@babylonjs/core";
 import earcut from "earcut";
 import { Projectile } from "./projectile";
-import { Unit } from "./unit";
+import { SHAPE, Unit } from "./unit";
 
 enum KEYS {
 	"up" = "W",
@@ -19,12 +22,10 @@ enum KEYS {
 
 const keys = new Set<string>(Object.values(KEYS));
 
-const SPEED = 10;
+const SPEED = 0.01;
 const SQRT_SPEED = Math.sqrt(Math.pow(SPEED, 2) / 2);
 const PROJECTILE_POSITION = new Vector3(0, 0, 1);
-const PROJECTILE_PIVOT = new Vector3(0, 0, -1);
-const SHOT_SPEED = 1;
-const SHAPE = [new Vector3(0, 0, 1), new Vector3(-1, 0, -1), new Vector3(1, 0, -1)];
+const SHOT_SPEED = 1000;
 
 const getAngle = (pointA: Vector3, pointB: Vector3) =>
 	Math.atan2(pointB.x - pointA.x, pointB.z - pointA.z);
@@ -35,9 +36,8 @@ export class Player extends Unit {
 	private lastProjectile = 0;
 
 	constructor(scene: Scene) {
-		super(
-			scene,
-			CreatePolygon(
+		super(scene, {
+			mesh: CreatePolygon(
 				"player",
 				{
 					shape: SHAPE,
@@ -45,12 +45,15 @@ export class Player extends Unit {
 				undefined,
 				earcut,
 			),
-		);
+			body: (mesh) => new PhysicsBody(mesh, PhysicsMotionType.ANIMATED, false, scene),
+		});
 
-		this.mesh.collisionGroup = PLAYER_MASK;
 		this.camera = new UniversalCamera("camera", new Vector3(0, 50, 0));
 		this.camera.target = new Vector3();
 		this.camera.rotation.y = 0;
+
+		this.body.shape = new PhysicsShapeConvexHull(this.mesh.sourceMesh, scene);
+		this.body.shape.filterMembershipMask = PLAYER_MASK;
 
 		scene.onPointerObservable.add(({ pickInfo }) => {
 			const origin = pickInfo?.ray?.origin;
@@ -59,6 +62,7 @@ export class Player extends Unit {
 				return;
 			}
 
+			this.mesh.rotation = this.mesh.rotation.clone();
 			this.mesh.rotation.y = getAngle(this.mesh.position, origin);
 		});
 
@@ -92,9 +96,8 @@ export class Player extends Unit {
 
 		if (this.lastProjectile >= SHOT_SPEED) {
 			new Projectile(this.scene, {
-				position: this.mesh.position.add(PROJECTILE_POSITION),
+				position: this.mesh.position.add(this.mesh.getDirection(PROJECTILE_POSITION)),
 				rotation: this.mesh.rotation.clone(),
-				pivot: PROJECTILE_PIVOT,
 			});
 
 			this.lastProjectile -= SHOT_SPEED;

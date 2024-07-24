@@ -1,26 +1,41 @@
 import { Damage } from "$lib/components/damage";
 import { State } from "$lib/core/utils";
-import { Render, Vector3 } from "$lib/engine";
-import type { InstancedMesh, Mesh, Scene } from "@babylonjs/core";
+import { ExtrudePolygon, Matrix, PhysicsBody, Render, Vector3 } from "$lib/engine";
+import { prepareMesh } from "$lib/utils";
+import { type AbstractMesh, type Scene } from "@babylonjs/core";
+import earcut from "earcut";
 import { mount, unmount } from "svelte";
 import { Experience } from "./experience";
 
-const DAMAGE_VECTOR = new Vector3();
+export const SHAPE = [new Vector3(0, 0, 1), new Vector3(-1, 0, -1), new Vector3(1, 0, -1)];
 
-export abstract class Unit extends Render {
+const getMesh = prepareMesh(() =>
+	ExtrudePolygon("unit body source", { shape: SHAPE, depth: 1 }, undefined, earcut),
+);
+
+export class Unit extends Render {
 	protected mesh;
+	protected body;
 	private state?: State<{ x: number; y: number }>;
 
-	constructor(scene: Scene, mesh: InstancedMesh | Mesh) {
+	constructor(
+		scene: Scene,
+		{ mesh, body }: { mesh: AbstractMesh; body: (mesh: AbstractMesh) => PhysicsBody },
+	) {
 		super(scene);
 
-		this.mesh = mesh;
-		this.mesh.definedFacingForward = false;
+		this.mesh = getMesh().createInstance("unit body");
+		this.mesh.addChild(mesh);
 		this.mesh.metadata = this;
-	}
+		this.mesh.isVisible = false;
 
-	protected setup() {
-		this.mesh.checkCollisions = true;
+		this.body = body(this.mesh);
+		this.body.disablePreStep = false;
+		this.body.setMassProperties({ inertia: Vector3.Zero() });
+
+		this.scene.onAfterPhysicsObservable.add(() => {
+			this.mesh.position.y = 0;
+		});
 	}
 
 	dispose() {
@@ -28,11 +43,11 @@ export abstract class Unit extends Render {
 		this.mesh.dispose();
 	}
 
-	hit(damage: number, projectile: Mesh) {
+	hit(damage: number, point: Vector3) {
 		this.dispose();
 
 		new Experience(this.scene, { position: this.mesh.position });
-		let vectorProjection = this.getVectorProjection(projectile);
+		let vectorProjection = this.getVectorProjection(point);
 
 		if (!vectorProjection) {
 			return;
@@ -45,8 +60,8 @@ export abstract class Unit extends Render {
 			props: { position: this.state.value, damage },
 		});
 
-		const updatePosition = () => {
-			vectorProjection = this.getVectorProjection(projectile);
+		const observer = this.scene.onBeforeRenderObservable.add(() => {
+			vectorProjection = this.getVectorProjection(point);
 
 			if (!vectorProjection || !this.state) {
 				return;
@@ -54,24 +69,22 @@ export abstract class Unit extends Render {
 
 			this.state.value.x = vectorProjection.x;
 			this.state.value.y = vectorProjection.y;
-		};
-
-		this.scene.registerBeforeRender(updatePosition);
+		});
 
 		setTimeout(() => {
-			this.scene.unregisterBeforeRender(updatePosition);
+			this.scene.onBeforeRenderObservable.remove(observer);
 			unmount(component);
 		}, 750);
 	}
 
-	private getVectorProjection(projectile: Mesh) {
+	private getVectorProjection(point: Vector3) {
 		if (!this.scene.activeCamera) {
 			return;
 		}
 
 		return Vector3.Project(
-			DAMAGE_VECTOR,
-			projectile.getWorldMatrix(),
+			point,
+			Matrix.Identity(),
 			this.scene.getTransformMatrix(),
 			this.scene.activeCamera.viewport.toGlobal(window.innerWidth, window.innerHeight),
 		);

@@ -1,14 +1,20 @@
-import { ENEMY_MASK } from "$lib/constants";
-import { CreatePolygon, Vector3 } from "$lib/engine";
+import { ENEMY_MASK, PLAYER_MASK, PROJECTILE_MASK } from "$lib/constants";
+import { memo } from "$lib/core/utils";
+import {
+	CreatePolygon,
+	PhysicsBody,
+	PhysicsMotionType,
+	PhysicsShapeConvexHull,
+	Vector3,
+} from "$lib/engine";
 import { prepareMesh } from "$lib/utils";
-import type { Scene } from "@babylonjs/core";
+import { type Mesh, type Scene } from "@babylonjs/core";
 import earcut from "earcut";
-import { Unit } from "./unit";
+import { SHAPE, Unit } from "./unit";
 
 const DISTANCE = 0.1;
 const SPEED = 5;
 const SQRT = Math.sqrt(Math.pow(DISTANCE, 2) / 2);
-const SHAPE = [new Vector3(0, 0, 1), new Vector3(-1, 0, -1), new Vector3(1, 0, -1)];
 
 const HOLES: [Vector3[]] = [
 	[
@@ -20,7 +26,7 @@ const HOLES: [Vector3[]] = [
 
 const getMesh = prepareMesh(() =>
 	CreatePolygon(
-		"enemy mesh",
+		"enemy source",
 		{
 			shape: SHAPE,
 			holes: HOLES,
@@ -29,6 +35,8 @@ const getMesh = prepareMesh(() =>
 		earcut,
 	),
 );
+
+const getShape = memo((mesh: Mesh, scene: Scene) => new PhysicsShapeConvexHull(mesh, scene));
 
 type Props = {
 	position: Vector3;
@@ -39,16 +47,22 @@ export class Enemy extends Unit {
 	private target;
 
 	constructor(scene: Scene, { position, target }: Props) {
-		super(scene, getMesh().createInstance("enemy"));
+		super(scene, {
+			mesh: getMesh().createInstance("enemy"),
+			body: (mesh) => new PhysicsBody(mesh, PhysicsMotionType.DYNAMIC, false, scene),
+		});
 
 		this.target = target;
-		this.mesh.collisionGroup = ENEMY_MASK;
 		this.mesh.position = position;
 		this.mesh.lookAt(this.target);
+
+		this.body.shape = getShape(this.mesh.sourceMesh, scene);
+		this.body.shape.filterMembershipMask = ENEMY_MASK;
+		this.body.shape.filterCollideMask = PROJECTILE_MASK | PLAYER_MASK | ENEMY_MASK;
 	}
 
-	protected render(delta: number) {
+	protected render() {
 		this.mesh.lookAt(this.target);
-		this.mesh.moveWithCollisions(this.mesh.calcMovePOV(0, 0, delta * SPEED));
+		this.body.setLinearVelocity(this.mesh.getDirection(new Vector3(0, 0, SPEED)));
 	}
 }

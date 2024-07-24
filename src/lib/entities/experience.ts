@@ -7,7 +7,7 @@ type Props = {
 };
 
 const getMesh = prepareMesh(() => {
-	const mesh = CreateDisc("experience mesh", { radius: 0.25 });
+	const mesh = CreateDisc("experience source", { radius: 0.25 });
 	const material = new StandardMaterial("experience material");
 
 	material.diffuseColor = new Color3(0.4, 0.4, 1);
