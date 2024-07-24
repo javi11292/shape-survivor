@@ -3,7 +3,6 @@ import { memo } from "$lib/core/utils";
 import {
 	CreatePolygon,
 	ExtrudePolygon,
-	Mesh,
 	PhysicsBody,
 	PhysicsMotionType,
 	PhysicsShapeConvexHull,
@@ -11,7 +10,7 @@ import {
 	Vector3,
 } from "$lib/engine";
 import { prepareMesh } from "$lib/utils";
-import { type Scene } from "@babylonjs/core";
+import type { Mesh, Scene } from "@babylonjs/core";
 import earcut from "earcut";
 
 const SPEED = 50;

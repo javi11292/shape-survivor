@@ -2,7 +2,7 @@ import { Damage } from "$lib/components/damage";
 import { State } from "$lib/core/utils";
 import { ExtrudePolygon, Matrix, PhysicsBody, Render, Vector3 } from "$lib/engine";
 import { prepareMesh } from "$lib/utils";
-import { type AbstractMesh, type Scene } from "@babylonjs/core";
+import type { AbstractMesh, Scene } from "@babylonjs/core";
 import earcut from "earcut";
 import { mount, unmount } from "svelte";
 import { Experience } from "./experience";
