@@ -1,4 +1,4 @@
-import { ITEM_MASK, PLAYER_AURA_MASK, PLAYER_MASK } from "$lib/constants";
+import { ITEM_MASK, PLAYER_AURA_MASK } from "$lib/constants";
 import { memo } from "$lib/core/utils";
 import {
 	Color3,
@@ -18,7 +18,7 @@ type Props = {
 	position: Vector3;
 };
 
-const SPEED = 20;
+const SPEED = 0.02;
 
 const getMesh = prepareMesh(() => {
 	const mesh = CreateDisc("experience source", { radius: 0.25 });
@@ -54,14 +54,14 @@ export class Experience extends Render {
 		this.mesh.isVisible = false;
 		this.mesh.metadata = this;
 
-		this.body = new PhysicsBody(this.mesh, PhysicsMotionType.ANIMATED, false, scene);
+		this.body = new PhysicsBody(this.mesh, PhysicsMotionType.STATIC, false, scene);
 		this.body.disablePreStep = false;
 		this.body.shape = getShape(this.mesh.sourceMesh, scene);
 		this.body.shape.filterMembershipMask = ITEM_MASK;
-		this.body.shape.filterCollideMask = PLAYER_AURA_MASK | PLAYER_MASK;
+		this.body.shape.filterCollideMask = PLAYER_AURA_MASK;
 	}
 
-	protected render() {
+	protected render(delta: number) {
 		if (!this.target) {
 			return;
 		}
@@ -72,7 +72,7 @@ export class Experience extends Render {
 		}
 
 		this.mesh.lookAt(this.target);
-		this.body.setLinearVelocity(this.mesh.getDirection(new Vector3(0, 0, SPEED)));
+		this.mesh.position.addInPlace(this.mesh.getDirection(new Vector3(0, 0, SPEED * delta)));
 	}
 
 	dispose() {

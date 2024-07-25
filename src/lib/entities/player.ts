@@ -28,7 +28,7 @@ const SPEED = 0.01;
 const SQRT_SPEED = Math.sqrt(Math.pow(SPEED, 2) / 2);
 const PROJECTILE_POSITION = new Vector3(0, 0, 1);
 const SHOT_SPEED = 1000;
-const AURA_RADIUS = 10;
+const AURA_RADIUS = 5;
 
 const getAngle = (pointA: Vector3, pointB: Vector3) =>
 	Math.atan2(pointB.x - pointA.x, pointB.z - pointA.z);
@@ -61,7 +61,7 @@ export class Player extends Unit {
 		const auraMesh = CreateCylinder("aura", { height: 1, diameter: AURA_RADIUS * 2 });
 		auraMesh.isVisible = false;
 
-		const auraBody = new PhysicsBody(auraMesh, PhysicsMotionType.STATIC, false, scene);
+		const auraBody = new PhysicsBody(auraMesh, PhysicsMotionType.ANIMATED, false, scene);
 
 		auraBody.disablePreStep = false;
 		auraBody.shape = new PhysicsShapeConvexHull(auraMesh, scene);
