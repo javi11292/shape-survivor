@@ -61,9 +61,7 @@ export class Projectile extends Render {
 		this.body.shape.filterMembershipMask = PROJECTILE_MASK;
 		this.body.shape.filterCollideMask = ENEMY_MASK;
 
-		const observable = this.body.getCollisionObservable();
-
-		observable.add(({ collidedAgainst, point }) => {
+		this.body.getCollisionObservable().add(({ collidedAgainst, point }) => {
 			this.dispose();
 			collidedAgainst.transformNode.metadata.hit(this.damage, point);
 		});
