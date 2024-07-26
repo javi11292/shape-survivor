@@ -1,6 +1,7 @@
 import { dev } from "$app/environment";
 import { createEnemy } from "$lib/entities/enemy";
 import { createPlayer } from "$lib/entities/player";
+import { player as playerState } from "$lib/state/player";
 import HavokPhysics from "@babylonjs/havok";
 import { Color4, Engine, HavokPlugin, HemisphericLight, Scene, Vector3 } from ".";
 import { createTimer } from "./timer";
@@ -53,6 +54,7 @@ export const createGame = async (
 	canvas: HTMLCanvasElement,
 	game: { mounted: boolean; dispose?: () => void },
 ) => {
+	playerState.reset();
 	const engine = new Engine(canvas, undefined, undefined, true);
 	const scene = await createScene(engine);
 

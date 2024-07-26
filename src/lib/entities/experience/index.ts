@@ -2,6 +2,7 @@ import { ITEM_MASK, PLAYER_AURA_MASK } from "$lib/constants";
 import { PhysicsMotionType, Vector3 } from "$lib/engine";
 import { createBody } from "$lib/engine/body";
 import { createRenderable } from "$lib/engine/renderable";
+import { player } from "$lib/state/player";
 import type { Scene } from "@babylonjs/core";
 import { getBodyMesh, getMesh, getShape } from "./utils";
 
@@ -36,6 +37,7 @@ export const createExperience = ({ scene, position }: Params) => {
 
 			if (Vector3.DistanceSquared(mesh.position, target) <= 1) {
 				experience.dispose();
+				player.value.experience++;
 				return;
 			}
 

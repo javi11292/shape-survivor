@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { createGame } from "$lib/engine/game";
+	import { player } from "$lib/state/player";
 
 	let canvas = $state<HTMLCanvasElement>();
 
@@ -23,6 +24,9 @@
 
 <main>
 	<canvas bind:this={canvas}></canvas>
+	<div class="ui">
+		<div class="experience" style="--width:{player.value.experience / 100}"></div>
+	</div>
 </main>
 
 <style>
