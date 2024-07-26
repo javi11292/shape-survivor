@@ -1,4 +1,3 @@
-import type { Scene } from "@babylonjs/core";
 import "@babylonjs/core/Culling/ray";
 import "@babylonjs/core/Materials/standardMaterial";
 import "@babylonjs/core/Physics/physicsEngineComponent";
@@ -25,34 +24,3 @@ export { PhysicsAggregate } from "@babylonjs/core/Physics/v2/physicsAggregate";
 export { PhysicsBody } from "@babylonjs/core/Physics/v2/physicsBody";
 export { PhysicsShapeConvexHull } from "@babylonjs/core/Physics/v2/physicsShape";
 export { Scene } from "@babylonjs/core/scene";
-
-export abstract class Render {
-	protected scene;
-	protected engine;
-	private unregister;
-
-	constructor(scene: Scene) {
-		this.scene = scene;
-		this.engine = scene.getEngine();
-
-		if (this.setup) {
-			this.scene.onBeforeRenderObservable.addOnce(() => this.setup?.());
-		}
-
-		if (this.render) {
-			const observer = scene.onBeforeRenderObservable.add(() =>
-				this.render?.(this.engine.getDeltaTime()),
-			);
-
-			this.unregister = () => this.scene.onBeforeRenderObservable.remove(observer);
-		}
-	}
-
-	protected setup?(): void;
-
-	protected render?(delta?: number): void;
-
-	dispose() {
-		this.unregister?.();
-	}
-}

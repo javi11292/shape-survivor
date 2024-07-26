@@ -1,92 +1,92 @@
 import { Damage } from "$lib/components/damage";
 import { State } from "$lib/core/utils";
-import { ExtrudePolygon, Matrix, PhysicsBody, Render, Vector3 } from "$lib/engine";
-import { prepareMesh } from "$lib/utils";
+import { ExtrudePolygon, Matrix, PhysicsBody, Vector3 } from "$lib/engine";
+import { createMeshSource } from "$lib/engine/mesh";
 import type { AbstractMesh, Scene } from "@babylonjs/core";
 import earcut from "earcut";
 import { mount, unmount } from "svelte";
-import { Experience } from "./experience";
+import { createExperience } from "./experience";
 
 export const SHAPE = [new Vector3(0, 0, 1), new Vector3(-1, 0, -1), new Vector3(1, 0, -1)];
 
-const getMesh = prepareMesh(() =>
+const getMesh = createMeshSource(() =>
 	ExtrudePolygon("unit body source", { shape: SHAPE, depth: 1 }, undefined, earcut),
 );
 
-export class Unit extends Render {
-	protected mesh;
-	protected body;
-	private state?: State<{ x: number; y: number }>;
+type Params = {
+	scene: Scene;
+	context?: { dispose?: () => void };
+	mesh: AbstractMesh;
+	getBody: (mesh: AbstractMesh) => PhysicsBody;
+};
 
-	constructor(
-		scene: Scene,
-		{ mesh, body }: { mesh: AbstractMesh; body: (mesh: AbstractMesh) => PhysicsBody },
-	) {
-		super(scene);
+export const createUnit = ({ scene, mesh: childMesh, getBody }: Params) => {
+	const mesh = getMesh().createInstance("unit body");
+	const body = getBody(mesh);
 
-		this.mesh = getMesh().createInstance("unit body");
-		this.mesh.addChild(mesh);
-		this.mesh.metadata = this;
-		this.mesh.isVisible = false;
+	const unit = {
+		mesh,
+		body,
 
-		this.body = body(this.mesh);
-		this.body.disablePreStep = false;
-		this.body.setMassProperties({ inertia: Vector3.Zero() });
+		dispose: () => {
+			scene.onAfterPhysicsObservable.remove(observer);
+			mesh.dispose();
+		},
 
-		this.scene.onAfterPhysicsObservable.add(() => {
-			this.mesh.position.y = 0;
-		});
-	}
+		hit: (damage: number, point: Vector3) => {
+			unit.dispose();
+			createExperience({ scene, position: mesh.position });
 
-	dispose() {
-		super.dispose();
-		this.mesh.dispose();
-	}
+			let vectorProjection = getVectorProjection(point);
 
-	hit(damage: number, point: Vector3) {
-		this.dispose();
-
-		new Experience(this.scene, { position: this.mesh.position });
-		let vectorProjection = this.getVectorProjection(point);
-
-		if (!vectorProjection) {
-			return;
-		}
-
-		this.state = new State({ x: vectorProjection.x, y: vectorProjection.y });
-
-		const component = mount(Damage, {
-			target: document.body,
-			props: { position: this.state.value, damage },
-		});
-
-		const observer = this.scene.onBeforeRenderObservable.add(() => {
-			vectorProjection = this.getVectorProjection(point);
-
-			if (!vectorProjection || !this.state) {
+			if (!vectorProjection) {
 				return;
 			}
 
-			this.state.value.x = vectorProjection.x;
-			this.state.value.y = vectorProjection.y;
-		});
+			const state = new State({ x: vectorProjection.x, y: vectorProjection.y });
 
-		setTimeout(() => {
-			this.scene.onBeforeRenderObservable.remove(observer);
-			unmount(component);
-		}, 750);
-	}
+			const component = mount(Damage, {
+				target: document.body,
+				props: { position: state.value, damage },
+			});
 
-	private getVectorProjection(point: Vector3) {
-		if (!this.scene.activeCamera) {
+			const observer = scene.onBeforeRenderObservable.add(() => {
+				vectorProjection = getVectorProjection(point);
+
+				if (!vectorProjection || !state) {
+					return;
+				}
+
+				state.value.x = vectorProjection.x;
+				state.value.y = vectorProjection.y;
+			});
+
+			setTimeout(() => {
+				scene.onBeforeRenderObservable.remove(observer);
+				unmount(component);
+			}, 750);
+		},
+	};
+
+	const getVectorProjection = (point: Vector3) => {
+		if (!scene.activeCamera) {
 			return;
 		}
 
 		return Vector3.Project(
 			point,
 			Matrix.Identity(),
-			this.scene.getTransformMatrix(),
-			this.scene.activeCamera.viewport.toGlobal(window.innerWidth, window.innerHeight),
+			scene.getTransformMatrix(),
+			scene.activeCamera.viewport.toGlobal(window.innerWidth, window.innerHeight),
 		);
-	}
-}
+	};
+
+	mesh.addChild(childMesh);
+	mesh.metadata = unit;
+
+	const observer = scene.onAfterPhysicsObservable.add(() => {
+		mesh.position.y = 0;
+	});
+
+	return unit;
+};

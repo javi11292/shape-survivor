@@ -3,18 +3,19 @@ import { memo } from "$lib/core/utils";
 import {
 	CreatePolygon,
 	ExtrudePolygon,
-	PhysicsBody,
 	PhysicsMotionType,
 	PhysicsShapeConvexHull,
-	Render,
 	Vector3,
 } from "$lib/engine";
-import { prepareMesh } from "$lib/utils";
+import { createBody } from "$lib/engine/body";
+import { createMeshSource } from "$lib/engine/mesh";
 import type { Mesh, Scene } from "@babylonjs/core";
 import earcut from "earcut";
+import type { createEnemy } from "./enemy";
 
 const SPEED = 50;
 const LIFE_TIME = 750;
+const DAMAGE = 1;
 
 const SHAPE = [
 	new Vector3(0.05, 0, 0),
@@ -23,56 +24,48 @@ const SHAPE = [
 	new Vector3(-0.05, 0, 0),
 ];
 
-type Props = {
-	position: Vector3;
-	rotation: Vector3;
-};
-
-const getMesh = prepareMesh(() =>
+const getMesh = createMeshSource(() =>
 	CreatePolygon("projectile source", { shape: SHAPE }, undefined, earcut),
 );
 
-const getBodyMesh = prepareMesh(() =>
+const getBodyMesh = createMeshSource(() =>
 	ExtrudePolygon("projectile body source", { shape: SHAPE, depth: 1 }, undefined, earcut),
 );
 
 const getShape = memo((mesh: Mesh, scene: Scene) => new PhysicsShapeConvexHull(mesh, scene));
 
-export class Projectile extends Render {
-	private mesh;
-	private body;
-	private damage = 1;
+type Params = {
+	scene: Scene;
+	position: Vector3;
+	rotation: Vector3;
+};
 
-	constructor(scene: Scene, { position, rotation }: Props) {
-		super(scene);
+export const createProjectile = ({ scene, position, rotation }: Params) => {
+	const mesh = getBodyMesh().createInstance("projectile body");
+	mesh.addChild(getMesh().createInstance("projectile"));
+	mesh.rotation = rotation;
+	mesh.position = position;
 
-		this.mesh = getBodyMesh().createInstance("projectile body");
-		this.mesh.addChild(getMesh().createInstance("projectile"));
-		this.mesh.rotation = rotation;
-		this.mesh.position = position;
-		this.mesh.isVisible = false;
+	const body = createBody({
+		scene,
+		mesh,
+		type: PhysicsMotionType.ANIMATED,
+		onCollision: ({ collidedAgainst, point }) => {
+			const enemy: ReturnType<typeof createEnemy> = collidedAgainst.transformNode.metadata;
 
-		this.body = new PhysicsBody(this.mesh, PhysicsMotionType.ANIMATED, false, scene);
-		this.body.disablePreStep = false;
-		this.body.setMassProperties({ inertia: Vector3.Zero() });
-		this.body.setCollisionCallbackEnabled(true);
-		this.body.setLinearVelocity(this.mesh.getDirection(new Vector3(0, 0, SPEED)));
-		this.body.shape = getShape(this.mesh.sourceMesh, scene);
-		this.body.shape.filterMembershipMask = PROJECTILE_MASK;
-		this.body.shape.filterCollideMask = ENEMY_MASK;
+			dispose();
+			enemy.hit(DAMAGE, point as Vector3);
+		},
+	});
 
-		this.body.getCollisionObservable().add(({ collidedAgainst, point }) => {
-			this.dispose();
-			collidedAgainst.transformNode.metadata.hit(this.damage, point);
-		});
+	const dispose = () => {
+		mesh.dispose();
+	};
 
-		setTimeout(() => {
-			this.dispose();
-		}, LIFE_TIME);
-	}
+	body.setLinearVelocity(mesh.getDirection(new Vector3(0, 0, SPEED)));
+	body.shape = getShape(mesh.sourceMesh, scene);
+	body.shape.filterMembershipMask = PROJECTILE_MASK;
+	body.shape.filterCollideMask = ENEMY_MASK;
 
-	dispose() {
-		super.dispose();
-		this.mesh.dispose();
-	}
-}
+	setTimeout(dispose, LIFE_TIME);
+};

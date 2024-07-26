@@ -1,16 +1,12 @@
 import { ENEMY_MASK, PLAYER_MASK, PROJECTILE_MASK } from "$lib/constants";
 import { memo } from "$lib/core/utils";
-import {
-	CreatePolygon,
-	PhysicsBody,
-	PhysicsMotionType,
-	PhysicsShapeConvexHull,
-	Vector3,
-} from "$lib/engine";
-import { prepareMesh } from "$lib/utils";
+import { CreatePolygon, PhysicsMotionType, PhysicsShapeConvexHull, Vector3 } from "$lib/engine";
+import { createBody } from "$lib/engine/body";
+import { createMeshSource } from "$lib/engine/mesh";
+import { createRenderable } from "$lib/engine/renderable";
 import type { Mesh, Scene } from "@babylonjs/core";
 import earcut from "earcut";
-import { SHAPE, Unit } from "./unit";
+import { SHAPE, createUnit } from "./unit";
 
 const DISTANCE = 0.1;
 const SPEED = 5;
@@ -24,7 +20,7 @@ const HOLES: [Vector3[]] = [
 	],
 ];
 
-const getMesh = prepareMesh(() =>
+const getMesh = createMeshSource(() =>
 	CreatePolygon(
 		"enemy source",
 		{
@@ -38,31 +34,42 @@ const getMesh = prepareMesh(() =>
 
 const getShape = memo((mesh: Mesh, scene: Scene) => new PhysicsShapeConvexHull(mesh, scene));
 
-type Props = {
+type Params = {
+	scene: Scene;
 	position: Vector3;
 	target: Vector3;
 };
 
-export class Enemy extends Unit {
-	private target;
+export const createEnemy = ({ scene, position, target }: Params) => {
+	const entity = createRenderable({
+		scene,
+		render: () => {
+			unit.mesh.lookAt(target);
+			unit.body.setLinearVelocity(unit.mesh.getDirection(new Vector3(0, 0, SPEED)));
+		},
+	});
 
-	constructor(scene: Scene, { position, target }: Props) {
-		super(scene, {
-			mesh: getMesh().createInstance("enemy"),
-			body: (mesh) => new PhysicsBody(mesh, PhysicsMotionType.DYNAMIC, false, scene),
-		});
+	const unit = createUnit({
+		scene,
+		mesh: getMesh().createInstance("enemy"),
+		getBody: (mesh) => createBody({ scene, mesh, type: PhysicsMotionType.DYNAMIC }),
+	});
 
-		this.target = target;
-		this.mesh.position = position;
-		this.mesh.lookAt(this.target);
+	unit.mesh.position = position;
+	unit.mesh.lookAt(target);
+	unit.body.shape = getShape(unit.mesh.sourceMesh, scene);
+	unit.body.shape.filterMembershipMask = ENEMY_MASK;
+	unit.body.shape.filterCollideMask = PROJECTILE_MASK | PLAYER_MASK | ENEMY_MASK;
 
-		this.body.shape = getShape(this.mesh.sourceMesh, scene);
-		this.body.shape.filterMembershipMask = ENEMY_MASK;
-		this.body.shape.filterCollideMask = PROJECTILE_MASK | PLAYER_MASK | ENEMY_MASK;
-	}
+	const unitDispose = unit.dispose;
 
-	protected render() {
-		this.mesh.lookAt(this.target);
-		this.body.setLinearVelocity(this.mesh.getDirection(new Vector3(0, 0, SPEED)));
-	}
-}
+	unit.dispose = () => {
+		unitDispose();
+		entity.dispose();
+	};
+
+	return {
+		hit: unit.hit,
+		dispose: unit.dispose,
+	};
+};

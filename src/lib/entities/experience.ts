@@ -4,23 +4,19 @@ import {
 	Color3,
 	CreateCylinder,
 	CreateDisc,
-	PhysicsBody,
 	PhysicsMotionType,
 	PhysicsShapeConvexHull,
-	Render,
 	StandardMaterial,
 	Vector3,
 } from "$lib/engine";
-import { prepareMesh } from "$lib/utils";
+import { createBody } from "$lib/engine/body";
+import { createMeshSource } from "$lib/engine/mesh";
+import { createRenderable } from "$lib/engine/renderable";
 import type { Mesh, Scene } from "@babylonjs/core";
-
-type Props = {
-	position: Vector3;
-};
 
 const SPEED = 0.02;
 
-const getMesh = prepareMesh(() => {
+const getMesh = createMeshSource(() => {
 	const mesh = CreateDisc("experience source", { radius: 0.25 });
 	const material = new StandardMaterial("experience material");
 
@@ -31,56 +27,61 @@ const getMesh = prepareMesh(() => {
 	return mesh;
 });
 
-const getBodyMesh = prepareMesh(() =>
+const getBodyMesh = createMeshSource(() =>
 	CreateCylinder("experience body source", { height: 1, diameter: 0.5 }),
 );
 
 const getShape = memo((mesh: Mesh, scene: Scene) => new PhysicsShapeConvexHull(mesh, scene));
 
-export class Experience extends Render {
-	private mesh;
-	private body;
-	private target?: Vector3;
+type Params = {
+	scene: Scene;
+	position: Vector3;
+};
 
-	constructor(scene: Scene, { position }: Props) {
-		super(scene);
+export const createExperience = ({ scene, position }: Params) => {
+	const mesh = getBodyMesh().createInstance("experience body");
+	const body = createBody({ mesh, type: PhysicsMotionType.STATIC, scene });
 
-		const mesh = getMesh().createInstance("experience");
-		mesh.rotation.x = Math.PI / 2;
+	const entity = createRenderable({
+		scene,
+		render: (delta) => {
+			if (!target) {
+				return;
+			}
 
-		this.mesh = getBodyMesh().createInstance("experience body");
-		this.mesh.addChild(mesh);
-		this.mesh.position = position;
-		this.mesh.isVisible = false;
-		this.mesh.metadata = this;
+			if (Vector3.DistanceSquared(mesh.position, target) <= 1) {
+				experience.dispose();
+				return;
+			}
 
-		this.body = new PhysicsBody(this.mesh, PhysicsMotionType.STATIC, false, scene);
-		this.body.disablePreStep = false;
-		this.body.shape = getShape(this.mesh.sourceMesh, scene);
-		this.body.shape.filterMembershipMask = ITEM_MASK;
-		this.body.shape.filterCollideMask = PLAYER_AURA_MASK;
-	}
+			mesh.lookAt(target);
+			mesh.position.addInPlace(mesh.getDirection(new Vector3(0, 0, SPEED * delta)));
+		},
+	});
 
-	protected render(delta: number) {
-		if (!this.target) {
-			return;
-		}
+	const experience = {
+		absorb: (nextTarget: Vector3) => {
+			target = nextTarget;
+		},
 
-		if (Vector3.DistanceSquared(this.mesh.position, this.target) <= 1) {
-			this.dispose();
-			return;
-		}
+		dispose: () => {
+			entity.dispose();
+			mesh.dispose();
+		},
+	};
 
-		this.mesh.lookAt(this.target);
-		this.mesh.position.addInPlace(this.mesh.getDirection(new Vector3(0, 0, SPEED * delta)));
-	}
+	let target: Vector3 | undefined;
 
-	dispose() {
-		super.dispose();
-		this.mesh.dispose();
-	}
+	const childMesh = getMesh().createInstance("experience");
+	childMesh.rotation.x = Math.PI / 2;
 
-	absorb(target: Vector3) {
-		this.target = target;
-	}
-}
+	mesh.addChild(childMesh);
+	mesh.position = position;
+	mesh.metadata = experience;
+
+	body.shape = getShape(mesh.sourceMesh, scene);
+	body.shape.filterMembershipMask = ITEM_MASK;
+	body.shape.filterCollideMask = PLAYER_AURA_MASK;
+
+	return experience;
+};
