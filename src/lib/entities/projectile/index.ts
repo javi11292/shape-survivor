@@ -4,7 +4,7 @@ import { createBody } from "$lib/engine/body";
 import { createTimer } from "$lib/engine/timer";
 import type { Scene } from "@babylonjs/core";
 import type { createEnemy } from "../enemy";
-import { getBodyMesh, getMesh, getShape } from "./utils";
+import { getBodyMesh, getMesh, getShape, getSound } from "./utils";
 
 const SPEED = 50;
 const LIFE_TIME = 750;
@@ -17,6 +17,9 @@ type Params = {
 };
 
 export const createProjectile = ({ scene, position, rotation }: Params) => {
+	const sound = getSound(scene);
+	sound.play();
+
 	const mesh = getBodyMesh().createInstance("projectile body");
 	mesh.addChild(getMesh().createInstance("projectile"));
 	mesh.rotation = rotation;

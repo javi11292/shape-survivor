@@ -4,10 +4,14 @@ import {
 	CreateCylinder,
 	CreateDisc,
 	PhysicsShapeConvexHull,
+	Sound,
 	StandardMaterial,
 } from "$lib/engine";
 import { createMeshSource } from "$lib/engine/mesh";
 import type { Mesh, Scene } from "@babylonjs/core";
+import sound from "./suck.mp3";
+
+export const getSound = memo((scene: Scene) => new Sound("experience sound", sound, scene));
 
 export const getMesh = createMeshSource(() => {
 	const mesh = CreateDisc("experience source", { radius: 0.25 });

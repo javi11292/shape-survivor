@@ -2,6 +2,7 @@ import "@babylonjs/core/Culling/ray";
 import "@babylonjs/core/Materials/standardMaterial";
 import "@babylonjs/core/Physics/physicsEngineComponent";
 
+export { Sound } from "@babylonjs/core/Audio/sound";
 export { UniversalCamera } from "@babylonjs/core/Cameras/universalCamera";
 export { Engine } from "@babylonjs/core/Engines/engine";
 export { KeyboardEventTypes } from "@babylonjs/core/Events/keyboardEvents";

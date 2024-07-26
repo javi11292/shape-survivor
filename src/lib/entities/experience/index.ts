@@ -4,7 +4,7 @@ import { createBody } from "$lib/engine/body";
 import { createRenderable } from "$lib/engine/renderable";
 import { player } from "$lib/state/player";
 import type { Scene } from "@babylonjs/core";
-import { getBodyMesh, getMesh, getShape } from "./utils";
+import { getBodyMesh, getMesh, getShape, getSound } from "./utils";
 
 const SPEED = 0.02;
 
@@ -15,6 +15,8 @@ type Params = {
 };
 
 export const createExperience = ({ scene, position, amount }: Params) => {
+	const sound = getSound(scene);
+
 	const experience = {
 		absorb: (nextTarget: Vector3) => {
 			target = nextTarget;
@@ -37,6 +39,7 @@ export const createExperience = ({ scene, position, amount }: Params) => {
 			}
 
 			if (Vector3.DistanceSquared(mesh.position, target) <= 1) {
+				sound.play();
 				experience.dispose();
 				player.value.experience += amount;
 

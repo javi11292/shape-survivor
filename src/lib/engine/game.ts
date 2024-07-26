@@ -83,6 +83,20 @@ export const createGame = async (
 		removeKeyDownListener = () => window.removeEventListener("keydown", handleKeyDown);
 	}
 
+	if (Engine.audioEngine) {
+		Engine.audioEngine.useCustomUnlockedButton = true;
+
+		window.addEventListener(
+			"click",
+			() => {
+				if (Engine.audioEngine && !Engine.audioEngine.unlocked) {
+					Engine.audioEngine.unlock();
+				}
+			},
+			{ once: true },
+		);
+	}
+
 	window.addEventListener("resize", resize);
 
 	const dispose = () => {
