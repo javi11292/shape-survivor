@@ -1,23 +1,22 @@
 <script lang="ts">
 	import { createGame } from "$lib/engine/game";
+	import { game } from "$lib/state/game";
 	import { player } from "$lib/state/player";
 
-	let canvas = $state<HTMLCanvasElement>();
-
-	const game: { mounted: boolean; dispose?: () => void } = {
-		mounted: true,
-	};
+	let canvas: HTMLCanvasElement | undefined;
 
 	$effect(() => {
 		if (!canvas) {
 			return;
 		}
 
-		createGame(canvas, game);
+		game.reset();
+
+		createGame(canvas);
 
 		return () => {
-			game.mounted = false;
-			game.dispose?.();
+			game.value.mounted = false;
+			game.value.dispose?.();
 		};
 	});
 </script>

@@ -1,6 +1,7 @@
 import { dev } from "$app/environment";
 import { createEnemy } from "$lib/entities/enemy";
 import { createPlayer } from "$lib/entities/player";
+import { game } from "$lib/state/game";
 import { player as playerState } from "$lib/state/player";
 import HavokPhysics from "@babylonjs/havok";
 import { Color4, Engine, HavokPlugin, HemisphericLight, Scene, Vector3 } from ".";
@@ -8,8 +9,6 @@ import { createTimer } from "./timer";
 
 const SPAWN_DISTANCE = 40;
 const SPAWN_SPEED = 1000;
-
-let paused = false;
 
 const createScene = async (engine: Engine) => {
 	const havokInstance = await HavokPhysics();
@@ -40,7 +39,7 @@ const createScene = async (engine: Engine) => {
 	const player = createPlayer({ scene });
 
 	engine.runRenderLoop(() => {
-		if (paused) {
+		if (!game.value.running) {
 			return;
 		}
 
@@ -50,10 +49,7 @@ const createScene = async (engine: Engine) => {
 	return scene;
 };
 
-export const createGame = async (
-	canvas: HTMLCanvasElement,
-	game: { mounted: boolean; dispose?: () => void },
-) => {
+export const createGame = async (canvas: HTMLCanvasElement) => {
 	playerState.reset();
 	const engine = new Engine(canvas, undefined, undefined, true);
 	const scene = await createScene(engine);
@@ -74,7 +70,7 @@ export const createGame = async (
 			}
 
 			if (event.key.toUpperCase() === "P") {
-				paused = !paused;
+				game.value.running = !game.value.running;
 			}
 		};
 
@@ -108,9 +104,9 @@ export const createGame = async (
 		}
 	};
 
-	if (!game.mounted) {
+	if (!game.value.mounted) {
 		dispose();
 	} else {
-		game.dispose = dispose;
+		game.value.dispose = dispose;
 	}
 };

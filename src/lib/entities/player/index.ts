@@ -87,7 +87,7 @@ export const createPlayer = ({ scene }: Params) => {
 	const auraMesh = CreateCylinder("aura", { height: 1, diameter: AURA_RADIUS * 2 });
 	const auraBody = createBody({ mesh: auraMesh, type: PhysicsMotionType.ANIMATED, scene });
 
-	let input = new Set<KEYS>();
+	const input = new Set<KEYS>();
 
 	camera.target = new Vector3();
 	camera.rotation.y = 0;
