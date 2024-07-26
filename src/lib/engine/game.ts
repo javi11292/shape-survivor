@@ -3,9 +3,10 @@ import { createEnemy } from "$lib/entities/enemy";
 import { createPlayer } from "$lib/entities/player";
 import HavokPhysics from "@babylonjs/havok";
 import { Color4, Engine, HavokPlugin, HemisphericLight, Scene, Vector3 } from ".";
+import { createTimer } from "./timer";
 
 const SPAWN_DISTANCE = 40;
-const SPAWN_SPEED = 1;
+const SPAWN_SPEED = 1000;
 
 let paused = false;
 
@@ -15,20 +16,10 @@ const createScene = async (engine: Engine) => {
 	const scene = new Scene(engine);
 	const light = new HemisphericLight("light", new Vector3(0, 0, 1));
 
-	let lastSpawn = 0;
-
-	light.intensity = Math.PI;
-	scene.clearColor = new Color4(0, 0, 0);
-	scene.enablePhysics(Vector3.Zero(), havok);
-
-	const player = createPlayer({ scene });
-
-	scene.registerBeforeRender(() => {
-		const delta = engine.getDeltaTime() / 1000;
-
-		lastSpawn += delta;
-
-		if (lastSpawn >= SPAWN_SPEED) {
+	createTimer({
+		scene,
+		timeout: SPAWN_SPEED,
+		callback: () => {
 			const x = Math.random() * SPAWN_DISTANCE * 2 - SPAWN_DISTANCE;
 			const y =
 				Math.sqrt(Math.pow(SPAWN_DISTANCE, 2) - Math.pow(x, 2)) * (Math.random() < 0.5 ? -1 : 1);
@@ -38,10 +29,14 @@ const createScene = async (engine: Engine) => {
 				position: player.position.add(new Vector3(x, 0, y)),
 				target: player.position,
 			});
-
-			lastSpawn -= SPAWN_SPEED;
-		}
+		},
 	});
+
+	light.intensity = Math.PI;
+	scene.clearColor = new Color4(0, 0, 0);
+	scene.enablePhysics(Vector3.Zero(), havok);
+
+	const player = createPlayer({ scene });
 
 	engine.runRenderLoop(() => {
 		if (paused) {

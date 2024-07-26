@@ -12,6 +12,7 @@ import {
 } from "$lib/engine";
 import { createBody } from "$lib/engine/body";
 import { createRenderable } from "$lib/engine/renderable";
+import { createTimer } from "$lib/engine/timer";
 import type { HavokPlugin, Scene } from "@babylonjs/core";
 import earcut from "earcut";
 import { createProjectile } from "./projectile";
@@ -43,18 +44,6 @@ export const createPlayer = ({ scene }: Params) => {
 	createRenderable({
 		scene,
 		render: (delta) => {
-			lastProjectile += delta;
-
-			if (lastProjectile >= SHOT_SPEED) {
-				createProjectile({
-					scene,
-					position: unit.mesh.position.add(unit.mesh.getDirection(PROJECTILE_POSITION)),
-					rotation: unit.mesh.rotation.clone(),
-				});
-
-				lastProjectile -= SHOT_SPEED;
-			}
-
 			if (input.size > 0) {
 				const position = new Vector3();
 
@@ -95,6 +84,17 @@ export const createPlayer = ({ scene }: Params) => {
 			earcut,
 		),
 		getBody: (mesh) => createBody({ scene, mesh, type: PhysicsMotionType.ANIMATED }),
+	});
+
+	createTimer({
+		scene,
+		timeout: SHOT_SPEED,
+		callback: () =>
+			createProjectile({
+				scene,
+				position: unit.mesh.position.add(unit.mesh.getDirection(PROJECTILE_POSITION)),
+				rotation: unit.mesh.rotation.clone(),
+			}),
 	});
 
 	const camera = new UniversalCamera("camera", new Vector3(0, 50, 0));
@@ -153,7 +153,6 @@ export const createPlayer = ({ scene }: Params) => {
 		});
 	};
 
-	let lastProjectile = 0;
 	let input = new Set<KEYS>();
 
 	camera.target = new Vector3();

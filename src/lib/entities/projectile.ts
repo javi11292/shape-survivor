@@ -9,6 +9,7 @@ import {
 } from "$lib/engine";
 import { createBody } from "$lib/engine/body";
 import { createMeshSource } from "$lib/engine/mesh";
+import { createTimer } from "$lib/engine/timer";
 import type { Mesh, Scene } from "@babylonjs/core";
 import earcut from "earcut";
 import type { createEnemy } from "./enemy";
@@ -60,6 +61,7 @@ export const createProjectile = ({ scene, position, rotation }: Params) => {
 
 	const dispose = () => {
 		mesh.dispose();
+		timer.dispose();
 	};
 
 	body.setLinearVelocity(mesh.getDirection(new Vector3(0, 0, SPEED)));
@@ -67,5 +69,5 @@ export const createProjectile = ({ scene, position, rotation }: Params) => {
 	body.shape.filterMembershipMask = PROJECTILE_MASK;
 	body.shape.filterCollideMask = ENEMY_MASK;
 
-	setTimeout(dispose, LIFE_TIME);
+	const timer = createTimer({ scene, timeout: LIFE_TIME, callback: dispose });
 };
