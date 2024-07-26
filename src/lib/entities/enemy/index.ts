@@ -14,6 +14,8 @@ type Params = {
 	target: Vector3;
 };
 
+export const enemyType = Symbol();
+
 export const createEnemy = ({ scene, position, target }: Params) => {
 	const entity = createRenderable({
 		scene,
@@ -45,5 +47,6 @@ export const createEnemy = ({ scene, position, target }: Params) => {
 	return {
 		hit: unit.hit,
 		dispose: unit.dispose,
+		type: enemyType,
 	};
 };

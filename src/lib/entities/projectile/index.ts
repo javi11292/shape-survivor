@@ -3,7 +3,7 @@ import { PhysicsMotionType, Vector3 } from "$lib/engine";
 import { createBody } from "$lib/engine/body";
 import { createTimer } from "$lib/engine/timer";
 import type { Scene } from "@babylonjs/core";
-import type { createEnemy } from "../enemy";
+import { enemyType, type createEnemy } from "../enemy";
 import { getBodyMesh, getMesh, getShape, getSound } from "./utils";
 
 const SPEED = 50;
@@ -30,7 +30,14 @@ export const createProjectile = ({ scene, position, rotation }: Params) => {
 		mesh,
 		type: PhysicsMotionType.ANIMATED,
 		onCollision: ({ collidedAgainst, point }) => {
-			const enemy: ReturnType<typeof createEnemy> = collidedAgainst.transformNode.metadata;
+			const enemy: ReturnType<typeof createEnemy> | { type: unknown } =
+				collidedAgainst.transformNode.metadata;
+
+			console.log(enemy.type);
+
+			if (enemy.type !== enemyType) {
+				return;
+			}
 
 			dispose();
 			enemy.hit(DAMAGE, point as Vector3);
