@@ -1,17 +1,10 @@
 import { Damage } from "$lib/components/damage";
 import { State } from "$lib/core/utils";
-import { ExtrudePolygon, Matrix, PhysicsBody, Vector3 } from "$lib/engine";
-import { createMeshSource } from "$lib/engine/mesh";
+import { PhysicsBody, Vector3 } from "$lib/engine";
 import type { AbstractMesh, Scene } from "@babylonjs/core";
-import earcut from "earcut";
 import { mount, unmount } from "svelte";
-import { createExperience } from "./experience";
-
-export const SHAPE = [new Vector3(0, 0, 1), new Vector3(-1, 0, -1), new Vector3(1, 0, -1)];
-
-const getMesh = createMeshSource(() =>
-	ExtrudePolygon("unit body source", { shape: SHAPE, depth: 1 }, undefined, earcut),
-);
+import { createExperience } from "../experience";
+import { SHAPE, getMesh, getVectorProjection } from "./utils";
 
 type Params = {
 	scene: Scene;
@@ -20,13 +13,16 @@ type Params = {
 	getBody: (mesh: AbstractMesh) => PhysicsBody;
 };
 
-export const createUnit = ({ scene, mesh: childMesh, getBody }: Params) => {
-	const mesh = getMesh().createInstance("unit body");
-	const body = getBody(mesh);
+export { SHAPE };
 
+export const createUnit = ({ scene, mesh: childMesh, getBody }: Params) => {
 	const unit = {
-		mesh,
-		body,
+		get mesh() {
+			return mesh;
+		},
+		get body() {
+			return body;
+		},
 
 		dispose: () => {
 			scene.onAfterPhysicsObservable.remove(observer);
@@ -37,7 +33,7 @@ export const createUnit = ({ scene, mesh: childMesh, getBody }: Params) => {
 			unit.dispose();
 			createExperience({ scene, position: mesh.position });
 
-			let vectorProjection = getVectorProjection(point);
+			let vectorProjection = getVectorProjection({ scene, point });
 
 			if (!vectorProjection) {
 				return;
@@ -51,7 +47,7 @@ export const createUnit = ({ scene, mesh: childMesh, getBody }: Params) => {
 			});
 
 			const observer = scene.onBeforeRenderObservable.add(() => {
-				vectorProjection = getVectorProjection(point);
+				vectorProjection = getVectorProjection({ scene, point });
 
 				if (!vectorProjection || !state) {
 					return;
@@ -68,18 +64,8 @@ export const createUnit = ({ scene, mesh: childMesh, getBody }: Params) => {
 		},
 	};
 
-	const getVectorProjection = (point: Vector3) => {
-		if (!scene.activeCamera) {
-			return;
-		}
-
-		return Vector3.Project(
-			point,
-			Matrix.Identity(),
-			scene.getTransformMatrix(),
-			scene.activeCamera.viewport.toGlobal(window.innerWidth, window.innerHeight),
-		);
-	};
+	const mesh = getMesh().createInstance("unit body");
+	const body = getBody(mesh);
 
 	mesh.addChild(childMesh);
 	mesh.metadata = unit;

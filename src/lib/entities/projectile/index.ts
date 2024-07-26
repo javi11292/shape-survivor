@@ -1,39 +1,14 @@
 import { ENEMY_MASK, PROJECTILE_MASK } from "$lib/constants";
-import { memo } from "$lib/core/utils";
-import {
-	CreatePolygon,
-	ExtrudePolygon,
-	PhysicsMotionType,
-	PhysicsShapeConvexHull,
-	Vector3,
-} from "$lib/engine";
+import { PhysicsMotionType, Vector3 } from "$lib/engine";
 import { createBody } from "$lib/engine/body";
-import { createMeshSource } from "$lib/engine/mesh";
 import { createTimer } from "$lib/engine/timer";
-import type { Mesh, Scene } from "@babylonjs/core";
-import earcut from "earcut";
-import type { createEnemy } from "./enemy";
+import type { Scene } from "@babylonjs/core";
+import type { createEnemy } from "../enemy";
+import { getBodyMesh, getMesh, getShape } from "./utils";
 
 const SPEED = 50;
 const LIFE_TIME = 750;
 const DAMAGE = 1;
-
-const SHAPE = [
-	new Vector3(0.05, 0, 0),
-	new Vector3(0.05, 0, 0.5),
-	new Vector3(-0.05, 0, 0.5),
-	new Vector3(-0.05, 0, 0),
-];
-
-const getMesh = createMeshSource(() =>
-	CreatePolygon("projectile source", { shape: SHAPE }, undefined, earcut),
-);
-
-const getBodyMesh = createMeshSource(() =>
-	ExtrudePolygon("projectile body source", { shape: SHAPE, depth: 1 }, undefined, earcut),
-);
-
-const getShape = memo((mesh: Mesh, scene: Scene) => new PhysicsShapeConvexHull(mesh, scene));
 
 type Params = {
 	scene: Scene;

@@ -1,37 +1,11 @@
 import { ITEM_MASK, PLAYER_AURA_MASK } from "$lib/constants";
-import { memo } from "$lib/core/utils";
-import {
-	Color3,
-	CreateCylinder,
-	CreateDisc,
-	PhysicsMotionType,
-	PhysicsShapeConvexHull,
-	StandardMaterial,
-	Vector3,
-} from "$lib/engine";
+import { PhysicsMotionType, Vector3 } from "$lib/engine";
 import { createBody } from "$lib/engine/body";
-import { createMeshSource } from "$lib/engine/mesh";
 import { createRenderable } from "$lib/engine/renderable";
-import type { Mesh, Scene } from "@babylonjs/core";
+import type { Scene } from "@babylonjs/core";
+import { getBodyMesh, getMesh, getShape } from "./utils";
 
 const SPEED = 0.02;
-
-const getMesh = createMeshSource(() => {
-	const mesh = CreateDisc("experience source", { radius: 0.25 });
-	const material = new StandardMaterial("experience material");
-
-	material.diffuseColor = new Color3(0.4, 0.4, 1);
-	mesh.material = material;
-	mesh.renderingGroupId = 1;
-
-	return mesh;
-});
-
-const getBodyMesh = createMeshSource(() =>
-	CreateCylinder("experience body source", { height: 1, diameter: 0.5 }),
-);
-
-const getShape = memo((mesh: Mesh, scene: Scene) => new PhysicsShapeConvexHull(mesh, scene));
 
 type Params = {
 	scene: Scene;
@@ -39,6 +13,17 @@ type Params = {
 };
 
 export const createExperience = ({ scene, position }: Params) => {
+	const experience = {
+		absorb: (nextTarget: Vector3) => {
+			target = nextTarget;
+		},
+
+		dispose: () => {
+			entity.dispose();
+			mesh.dispose();
+		},
+	};
+
 	const mesh = getBodyMesh().createInstance("experience body");
 	const body = createBody({ mesh, type: PhysicsMotionType.STATIC, scene });
 
@@ -58,17 +43,6 @@ export const createExperience = ({ scene, position }: Params) => {
 			mesh.position.addInPlace(mesh.getDirection(new Vector3(0, 0, SPEED * delta)));
 		},
 	});
-
-	const experience = {
-		absorb: (nextTarget: Vector3) => {
-			target = nextTarget;
-		},
-
-		dispose: () => {
-			entity.dispose();
-			mesh.dispose();
-		},
-	};
 
 	let target: Vector3 | undefined;
 

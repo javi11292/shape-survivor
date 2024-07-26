@@ -2,9 +2,6 @@ import { ITEM_MASK, PLAYER_AURA_MASK, PLAYER_MASK } from "$lib/constants";
 import {
 	CreateCylinder,
 	CreatePolygon,
-	KeyboardEventTypes,
-	PhysicsBody,
-	PhysicsEventType,
 	PhysicsMotionType,
 	PhysicsShapeConvexHull,
 	UniversalCamera,
@@ -13,28 +10,17 @@ import {
 import { createBody } from "$lib/engine/body";
 import { createRenderable } from "$lib/engine/renderable";
 import { createTimer } from "$lib/engine/timer";
-import type { HavokPlugin, Scene } from "@babylonjs/core";
+import type { Scene } from "@babylonjs/core";
 import earcut from "earcut";
-import { createProjectile } from "./projectile";
-import { SHAPE, createUnit } from "./unit";
-
-enum KEYS {
-	"up" = "W",
-	"down" = "S",
-	"left" = "A",
-	"right" = "D",
-}
-
-const keys = new Set<string>(Object.values(KEYS));
+import { createProjectile } from "../projectile";
+import { SHAPE, createUnit } from "../unit";
+import { KEYS, addEvents } from "./utils";
 
 const SPEED = 0.01;
 const SQRT_SPEED = Math.sqrt(Math.pow(SPEED, 2) / 2);
 const PROJECTILE_POSITION = new Vector3(0, 0, 1);
 const SHOT_SPEED = 1000;
 const AURA_RADIUS = 5;
-
-const getAngle = (pointA: Vector3, pointB: Vector3) =>
-	Math.atan2(pointB.x - pointA.x, pointB.z - pointA.z);
 
 type Params = {
 	scene: Scene;
@@ -99,59 +85,7 @@ export const createPlayer = ({ scene }: Params) => {
 
 	const camera = new UniversalCamera("camera", new Vector3(0, 50, 0));
 	const auraMesh = CreateCylinder("aura", { height: 1, diameter: AURA_RADIUS * 2 });
-	const auraBody = new PhysicsBody(auraMesh, PhysicsMotionType.ANIMATED, false, scene);
-
-	const addEvents = () => {
-		const plugin = scene.getPhysicsEngine()?.getPhysicsPlugin() as HavokPlugin;
-
-		plugin.onTriggerCollisionObservable.add(({ type, collider, collidedAgainst }) => {
-			const trigger = collider === auraBody ? collidedAgainst : collider;
-
-			if (
-				type !== PhysicsEventType.TRIGGER_ENTERED ||
-				(collider !== auraBody && collidedAgainst !== auraBody)
-			) {
-				return;
-			}
-
-			trigger.transformNode.metadata.absorb(unit.mesh.position);
-		});
-
-		scene.onPointerObservable.add(({ pickInfo }) => {
-			const origin = pickInfo?.ray?.origin;
-
-			if (!origin) {
-				return;
-			}
-
-			unit.mesh.rotation = unit.mesh.rotation.clone();
-			unit.mesh.rotation.y = getAngle(unit.mesh.position, origin);
-		});
-
-		scene.onKeyboardObservable.add(({ type, event }) => {
-			switch (type) {
-				case KeyboardEventTypes.KEYDOWN: {
-					const key = event.key.toUpperCase();
-
-					if (keys.has(key)) {
-						input.add(key as KEYS);
-					}
-
-					break;
-				}
-
-				case KeyboardEventTypes.KEYUP: {
-					const key = event.key.toUpperCase();
-
-					if (keys.has(key)) {
-						input.delete(key as KEYS);
-					}
-
-					break;
-				}
-			}
-		});
-	};
+	const auraBody = createBody({ mesh: auraMesh, type: PhysicsMotionType.ANIMATED, scene });
 
 	let input = new Set<KEYS>();
 
@@ -169,7 +103,7 @@ export const createPlayer = ({ scene }: Params) => {
 	auraBody.shape.isTrigger = true;
 
 	unit.mesh.addChild(auraMesh);
-	addEvents();
+	addEvents({ scene, unit, auraBody, input });
 
 	return {
 		get position() {
