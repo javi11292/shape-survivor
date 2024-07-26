@@ -53,7 +53,7 @@ export const createGame = async (
 	canvas: HTMLCanvasElement,
 	game: { mounted: boolean; dispose?: () => void },
 ) => {
-	const engine = new Engine(canvas);
+	const engine = new Engine(canvas, undefined, undefined, true);
 	const scene = await createScene(engine);
 
 	let removeKeyDownListener: (() => void) | undefined;
