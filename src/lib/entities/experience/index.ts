@@ -11,9 +11,10 @@ const SPEED = 0.02;
 type Params = {
 	scene: Scene;
 	position: Vector3;
+	amount: number;
 };
 
-export const createExperience = ({ scene, position }: Params) => {
+export const createExperience = ({ scene, position, amount }: Params) => {
 	const experience = {
 		absorb: (nextTarget: Vector3) => {
 			target = nextTarget;
@@ -37,7 +38,14 @@ export const createExperience = ({ scene, position }: Params) => {
 
 			if (Vector3.DistanceSquared(mesh.position, target) <= 1) {
 				experience.dispose();
-				player.value.experience++;
+				player.value.experience += amount;
+
+				if (player.value.experience >= player.value.toNextLevel) {
+					player.value.level++;
+					player.value.experience -= player.value.toNextLevel;
+					player.value.toNextLevel = player.value.level * 10;
+				}
+
 				return;
 			}
 

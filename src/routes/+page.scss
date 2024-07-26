@@ -16,13 +16,17 @@ canvas {
 
 .experience {
 	position: absolute;
-	outline: 1px solid black;
 	bottom: 0;
 	left: 50%;
 	translate: -50%;
-	height: 2rem;
 	width: 50rem;
+}
+
+.experienceBar {
 	background: white;
+	background-clip: padding-box;
+	outline: 1px solid black;
+	height: 2rem;
 
 	&::before {
 		content: "";
@@ -33,4 +37,20 @@ canvas {
 		background: #6666ff;
 		transition: scale 200ms;
 	}
+}
+
+.level {
+	position: absolute;
+	bottom: 0;
+	translate: -50%;
+	border: 0.3rem solid #aaaa00;
+	border-radius: 50%;
+	aspect-ratio: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 3.5rem;
+	color: white;
+	background: black;
+	outline: 1px solid black;
 }

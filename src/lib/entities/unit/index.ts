@@ -6,6 +6,8 @@ import { mount, unmount } from "svelte";
 import { createExperience } from "../experience";
 import { SHAPE, getMesh, getVectorProjection } from "./utils";
 
+const EXPERIENCE = 1;
+
 type Params = {
 	scene: Scene;
 	context?: { dispose?: () => void };
@@ -31,7 +33,7 @@ export const createUnit = ({ scene, mesh: childMesh, getBody }: Params) => {
 
 		hit: (damage: number, point: Vector3) => {
 			unit.dispose();
-			createExperience({ scene, position: mesh.position });
+			createExperience({ scene, position: mesh.position, amount: EXPERIENCE });
 
 			let vectorProjection = getVectorProjection({ scene, point });
 

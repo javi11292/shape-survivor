@@ -25,7 +25,10 @@
 <main>
 	<canvas bind:this={canvas}></canvas>
 	<div class="ui">
-		<div class="experience" style="--width:{player.value.experience / 100}"></div>
+		<div class="experience" style="--width:{player.value.experience / player.value.toNextLevel}">
+			<div class="experienceBar"></div>
+			<div class="level">{player.value.level}</div>
+		</div>
 	</div>
 </main>
 
