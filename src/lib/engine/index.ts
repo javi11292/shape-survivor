@@ -1,3 +1,4 @@
+import "@babylonjs/core/Audio/audioSceneComponent";
 import "@babylonjs/core/Culling/ray";
 import "@babylonjs/core/Materials/standardMaterial";
 import "@babylonjs/core/Physics/physicsEngineComponent";
