@@ -1,3 +1,10 @@
+:root {
+	--primary-color: white;
+	--primary-color-disabled: lightgrey;
+	--text-color-inverse: black;
+	--text-color-disabled: grey;
+}
+
 main {
 	height: 100vh;
 }
@@ -6,6 +13,7 @@ canvas {
 	outline: none;
 	width: 100%;
 	height: 100%;
+	background: black;
 }
 
 .ui {
@@ -53,4 +61,12 @@ canvas {
 	color: white;
 	background: black;
 	outline: 1px solid black;
+}
+
+.start {
+	pointer-events: all;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	translate: -50% -50%;
 }

@@ -41,12 +41,12 @@ export const createExperience = ({ scene, position, amount }: Params) => {
 			if (Vector3.DistanceSquared(mesh.position, target) <= 1) {
 				sound.play();
 				experience.dispose();
-				player.value.experience += amount;
+				player.state.experience += amount;
 
-				if (player.value.experience >= player.value.toNextLevel) {
-					player.value.level++;
-					player.value.experience -= player.value.toNextLevel;
-					player.value.toNextLevel = player.value.level * 10;
+				if (player.state.experience >= player.state.toNextLevel) {
+					player.state.level++;
+					player.state.experience -= player.state.toNextLevel;
+					player.state.toNextLevel = player.state.level * 10;
 				}
 
 				return;

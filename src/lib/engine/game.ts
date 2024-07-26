@@ -39,7 +39,7 @@ const createScene = async (engine: Engine) => {
 	const player = createPlayer({ scene });
 
 	engine.runRenderLoop(() => {
-		if (!game.value.running) {
+		if (!game.state.running) {
 			return;
 		}
 
@@ -70,7 +70,7 @@ export const createGame = async (canvas: HTMLCanvasElement) => {
 			}
 
 			if (event.key.toUpperCase() === "P") {
-				game.value.running = !game.value.running;
+				game.state.running = !game.state.running;
 			}
 		};
 
@@ -104,9 +104,9 @@ export const createGame = async (canvas: HTMLCanvasElement) => {
 		}
 	};
 
-	if (!game.value.mounted) {
+	if (!game.state.mounted) {
 		dispose();
 	} else {
-		game.value.dispose = dispose;
+		game.state.dispose = dispose;
 	}
 };

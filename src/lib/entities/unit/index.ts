@@ -45,7 +45,7 @@ export const createUnit = ({ scene, mesh: childMesh, getBody }: Params) => {
 
 			const component = mount(Damage, {
 				target: document.body,
-				props: { position: state.value, damage },
+				props: { position: state.state, damage },
 			});
 
 			const observer = scene.onBeforeRenderObservable.add(() => {
@@ -55,8 +55,8 @@ export const createUnit = ({ scene, mesh: childMesh, getBody }: Params) => {
 					return;
 				}
 
-				state.value.x = vectorProjection.x;
-				state.value.y = vectorProjection.y;
+				state.state.x = vectorProjection.x;
+				state.state.y = vectorProjection.y;
 			});
 
 			setTimeout(() => {

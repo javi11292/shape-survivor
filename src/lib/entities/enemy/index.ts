@@ -31,6 +31,7 @@ export const createEnemy = ({ scene, position, target }: Params) => {
 		getBody: (mesh) => createBody({ scene, mesh, type: PhysicsMotionType.DYNAMIC }),
 	});
 
+	unit.mesh.metadata.type = enemyType;
 	unit.mesh.position = position;
 	unit.mesh.lookAt(target);
 	unit.body.shape = getShape(unit.mesh.sourceMesh, scene);
@@ -47,6 +48,5 @@ export const createEnemy = ({ scene, position, target }: Params) => {
 	return {
 		hit: unit.hit,
 		dispose: unit.dispose,
-		type: enemyType,
 	};
 };
