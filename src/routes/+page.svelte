@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { GameOver } from "$lib/components/game-over";
+	import { LevelUp } from "$lib/components/level-up";
 	import { Button } from "$lib/core/components/button";
 	import { createGame } from "$lib/engine/game";
 	import { game } from "$lib/state/game";
@@ -54,6 +55,10 @@
 			<div class="start">
 				<Button onclick={() => (started = true)}>Empezar</Button>
 			</div>
+		{/if}
+
+		{#if game.state.levelup}
+			<LevelUp />
 		{/if}
 
 		{#if game.state.wasted}

@@ -4,6 +4,7 @@ const initialState = {
 	mounted: true,
 	running: true,
 	wasted: false,
+	levelup: false,
 };
 
 export const game = new State<typeof initialState & { dispose?: () => void }>(
