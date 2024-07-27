@@ -11,7 +11,7 @@
 }
 
 .damage {
-	color: orange;
+	color: yellow;
 	font-weight: 700;
 	font-size: 3rem;
 	text-shadow:
@@ -42,5 +42,6 @@
 
 	100% {
 		opacity: 0;
+		translate: 0 -100%;
 	}
 }

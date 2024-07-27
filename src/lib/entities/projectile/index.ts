@@ -30,7 +30,7 @@ export const createProjectile = ({ scene, position, rotation }: Params) => {
 		scene,
 		mesh,
 		type: PhysicsMotionType.ANIMATED,
-		onCollision: ({ collidedAgainst, point }) => {
+		onCollision: ({ collidedAgainst }) => {
 			const entity = collidedAgainst.transformNode.metadata;
 
 			if (!isEnemy(entity)) {
@@ -38,7 +38,7 @@ export const createProjectile = ({ scene, position, rotation }: Params) => {
 			}
 
 			dispose();
-			entity.hit(DAMAGE, point as Vector3);
+			entity.hit(DAMAGE);
 		},
 	});
 

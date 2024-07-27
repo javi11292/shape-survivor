@@ -28,12 +28,12 @@ type Params = {
 	scene: Scene;
 };
 
-const playerType = Symbol();
+const playerType = Symbol("player");
 
 export const isPlayer = isEntity<ReturnType<typeof createUnit>>(playerType);
 
 export const createPlayer = ({ scene }: Params) => {
-	createRenderable({
+	const renderable = createRenderable({
 		scene,
 		render: (delta) => {
 			if (input.size > 0) {
@@ -118,6 +118,7 @@ export const createPlayer = ({ scene }: Params) => {
 	unit.dispose = () => {
 		unitDispose();
 		timer.dispose();
+		renderable.dispose();
 	};
 
 	return {

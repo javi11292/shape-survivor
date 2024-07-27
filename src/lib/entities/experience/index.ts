@@ -24,7 +24,7 @@ export const createExperience = ({ scene, position, amount }: Params) => {
 		},
 
 		dispose: () => {
-			entity.dispose();
+			renderable.dispose();
 			mesh.dispose();
 		},
 	};
@@ -32,7 +32,7 @@ export const createExperience = ({ scene, position, amount }: Params) => {
 	const mesh = getBodyMesh().createInstance("experience body");
 	const body = createBody({ mesh, type: PhysicsMotionType.STATIC, scene });
 
-	const entity = createRenderable({
+	const renderable = createRenderable({
 		scene,
 		render: (delta) => {
 			if (!target) {

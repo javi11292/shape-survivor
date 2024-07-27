@@ -2,6 +2,7 @@ import { ENEMY_MASK, PLAYER_MASK, PROJECTILE_MASK } from "$lib/constants";
 import { PhysicsMotionType, Vector3 } from "$lib/engine";
 import { createBody } from "$lib/engine/body";
 import { createRenderable } from "$lib/engine/renderable";
+import { createTimer } from "$lib/engine/timer";
 import { isEntity } from "$lib/utils";
 import type { Scene } from "@babylonjs/core";
 import { isPlayer } from "../player";
@@ -11,6 +12,7 @@ import { getMesh, getShape } from "./utils";
 const SPEED = 5;
 const HP = 1;
 const DAMAGE = 1;
+const ATTACK_SPEED = 1000;
 
 type Params = {
 	scene: Scene;
@@ -18,16 +20,27 @@ type Params = {
 	target: Vector3;
 };
 
-const enemyType = Symbol();
+const enemyType = Symbol("enemy");
 
 export const isEnemy = isEntity<ReturnType<typeof createUnit>>(enemyType);
 
 export const createEnemy = ({ scene, position, target }: Params) => {
-	const entity = createRenderable({
+	let attackEnabled = true;
+
+	const renderable = createRenderable({
 		scene,
 		render: () => {
 			unit.mesh.lookAt(target);
 			unit.body.setLinearVelocity(unit.mesh.getDirection(new Vector3(0, 0, SPEED)));
+		},
+	});
+
+	const timer = createTimer({
+		repeat: false,
+		scene,
+		timeout: ATTACK_SPEED,
+		callback: () => {
+			attackEnabled = true;
 		},
 	});
 
@@ -40,14 +53,20 @@ export const createEnemy = ({ scene, position, target }: Params) => {
 				scene,
 				mesh,
 				type: PhysicsMotionType.DYNAMIC,
-				onCollision: ({ collidedAgainst, point }) => {
+				onCollision: ({ collidedAgainst }) => {
 					const entity = collidedAgainst.transformNode.metadata;
 
 					if (!isPlayer(entity)) {
 						return;
 					}
 
-					entity.hit(DAMAGE, point as Vector3, true);
+					if (!attackEnabled) {
+						return;
+					}
+
+					attackEnabled = false;
+					timer.start();
+					entity.hit(DAMAGE, true);
 				},
 			}),
 	});
@@ -63,7 +82,8 @@ export const createEnemy = ({ scene, position, target }: Params) => {
 
 	unit.dispose = () => {
 		unitDispose();
-		entity.dispose();
+		renderable.dispose();
+		timer.dispose();
 	};
 
 	return {

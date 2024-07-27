@@ -28,22 +28,22 @@ export const showDamage = ({
 		return;
 	}
 
-	const state = new State({ x: vectorProjection.x, y: vectorProjection.y });
+	const position = new State({ x: vectorProjection.x, y: vectorProjection.y });
 
 	const component = mount(Damage, {
 		target: document.body,
-		props: { position: state.state, damage, fromEnemy },
+		props: { position: position.state, damage, fromEnemy },
 	});
 
 	const observer = scene.onBeforeRenderObservable.add(() => {
 		vectorProjection = getVectorProjection({ scene, point });
 
-		if (!vectorProjection || !state) {
+		if (!vectorProjection || !position) {
 			return;
 		}
 
-		state.state.x = vectorProjection.x;
-		state.state.y = vectorProjection.y;
+		position.state.x = vectorProjection.x;
+		position.state.y = vectorProjection.y;
 	});
 
 	setTimeout(() => {

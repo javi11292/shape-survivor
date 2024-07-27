@@ -1,4 +1,4 @@
-import { PhysicsBody, Vector3 } from "$lib/engine";
+import { PhysicsBody } from "$lib/engine";
 import type { AbstractMesh, Scene } from "@babylonjs/core";
 import { createExperience } from "../experience";
 import { SHAPE, getMesh, showDamage } from "./utils";
@@ -29,7 +29,7 @@ export const createUnit = ({ scene, mesh: childMesh, getBody, hp }: Params) => {
 			mesh.dispose();
 		},
 
-		hit: (damage: number, point: Vector3, fromEnemy?: boolean) => {
+		hit: (damage: number, fromEnemy?: boolean) => {
 			remainingHp -= damage;
 
 			if (remainingHp <= 0) {
@@ -40,7 +40,7 @@ export const createUnit = ({ scene, mesh: childMesh, getBody, hp }: Params) => {
 				}
 			}
 
-			showDamage({ point, damage, scene, fromEnemy });
+			showDamage({ point: mesh.position, damage, scene, fromEnemy });
 		},
 	};
 
