@@ -13,6 +13,7 @@
 		}
 
 		game.reset();
+		player.reset();
 
 		createGame(canvas);
 		canvas.focus();

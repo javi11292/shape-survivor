@@ -1,10 +1,11 @@
 import { ITEM_MASK, PLAYER_AURA_MASK } from "$lib/constants";
 import { PhysicsMotionType, Vector3 } from "$lib/engine";
+import { assets } from "$lib/engine/assets";
 import { createBody } from "$lib/engine/body";
 import { createRenderable } from "$lib/engine/renderable";
 import { player } from "$lib/state/player";
 import type { Scene } from "@babylonjs/core";
-import { getBodyMesh, getMesh, getShape, getSound } from "./utils";
+import { getBodyMesh, getMesh, getShape } from "./utils";
 
 const SPEED = 0.02;
 
@@ -15,7 +16,7 @@ type Params = {
 };
 
 export const createExperience = ({ scene, position, amount }: Params) => {
-	const sound = getSound(scene);
+	const sound = assets.suck;
 
 	const experience = {
 		absorb: (nextTarget: Vector3) => {

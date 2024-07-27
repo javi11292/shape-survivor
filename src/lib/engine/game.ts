@@ -2,9 +2,9 @@ import { dev } from "$app/environment";
 import { createEnemy } from "$lib/entities/enemy";
 import { createPlayer } from "$lib/entities/player";
 import { game } from "$lib/state/game";
-import { player as playerState } from "$lib/state/player";
 import HavokPhysics from "@babylonjs/havok";
 import { Color4, Engine, HavokPlugin, HemisphericLight, Scene, Vector3 } from ".";
+import { getManager } from "./assets";
 import { createTimer } from "./timer";
 
 const SPAWN_DISTANCE = 40;
@@ -50,9 +50,9 @@ const createScene = async (engine: Engine) => {
 };
 
 export const createGame = async (canvas: HTMLCanvasElement) => {
-	playerState.reset();
 	const engine = new Engine(canvas, undefined, undefined, true);
 	const scene = await createScene(engine);
+	await getManager(scene);
 
 	let removeKeyDownListener: (() => void) | undefined;
 	const resize = () => engine.resize();

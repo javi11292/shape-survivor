@@ -14,7 +14,10 @@ type Params = {
 	target: Vector3;
 };
 
-export const enemyType = Symbol();
+const enemyType = Symbol();
+
+export const isEnemy = (entity: object): entity is ReturnType<typeof createEnemy> =>
+	"type" in entity && entity.type === enemyType;
 
 export const createEnemy = ({ scene, position, target }: Params) => {
 	const entity = createRenderable({

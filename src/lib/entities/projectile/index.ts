@@ -1,10 +1,11 @@
 import { ENEMY_MASK, PROJECTILE_MASK } from "$lib/constants";
 import { PhysicsMotionType, Vector3 } from "$lib/engine";
+import { assets } from "$lib/engine/assets";
 import { createBody } from "$lib/engine/body";
 import { createTimer } from "$lib/engine/timer";
 import type { Scene } from "@babylonjs/core";
-import { enemyType } from "../enemy";
-import { getBodyMesh, getMesh, getShape, getSound } from "./utils";
+import { isEnemy } from "../enemy";
+import { getBodyMesh, getMesh, getShape } from "./utils";
 
 const SPEED = 50;
 const LIFE_TIME = 750;
@@ -17,7 +18,7 @@ type Params = {
 };
 
 export const createProjectile = ({ scene, position, rotation }: Params) => {
-	const sound = getSound(scene);
+	const sound = assets.shot;
 	sound.play();
 
 	const mesh = getBodyMesh().createInstance("projectile body");
@@ -32,7 +33,7 @@ export const createProjectile = ({ scene, position, rotation }: Params) => {
 		onCollision: ({ collidedAgainst, point }) => {
 			const enemy = collidedAgainst.transformNode.metadata;
 
-			if (enemy.type !== enemyType) {
+			if (!isEnemy(enemy)) {
 				return;
 			}
 

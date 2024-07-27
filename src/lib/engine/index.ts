@@ -16,6 +16,7 @@ export { CreateDisc } from "@babylonjs/core/Meshes/Builders/discBuilder";
 export { CreateLines } from "@babylonjs/core/Meshes/Builders/linesBuilder";
 export { CreatePolygon, ExtrudePolygon } from "@babylonjs/core/Meshes/Builders/polygonBuilder";
 export { TransformNode } from "@babylonjs/core/Meshes/transformNode";
+export { AssetsManager } from "@babylonjs/core/Misc/assetsManager";
 export {
 	PhysicsEventType,
 	PhysicsMotionType,
