@@ -1,9 +1,4 @@
-.gameOver {
-	:global(.dialog) {
-		background: transparent;
-		box-shadow: none;
-	}
-}
+@import "$lib/styles/modal";
 
 .content {
 	color: red;

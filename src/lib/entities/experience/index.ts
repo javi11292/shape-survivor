@@ -1,8 +1,9 @@
-import { ITEM_MASK, PLAYER_AURA_MASK } from "$lib/constants";
+import { AMOUNT_PER_LEVEL, ITEM_MASK, PLAYER_AURA_MASK } from "$lib/constants";
 import { PhysicsMotionType, Vector3 } from "$lib/engine";
 import { assets } from "$lib/engine/assets";
 import { createBody } from "$lib/engine/body";
 import { createRenderable } from "$lib/engine/renderable";
+import { game } from "$lib/state/game";
 import { player } from "$lib/state/player";
 import type { Scene } from "@babylonjs/core";
 import { getBodyMesh, getMesh, getShape } from "./utils";
@@ -47,7 +48,9 @@ export const createExperience = ({ scene, position, amount }: Params) => {
 				if (player.state.experience >= player.state.toNextLevel) {
 					player.state.level++;
 					player.state.experience -= player.state.toNextLevel;
-					player.state.toNextLevel = player.state.level * 10;
+					player.state.toNextLevel = player.state.level * AMOUNT_PER_LEVEL;
+					game.state.levelup = true;
+					game.state.running = false;
 				}
 
 				return;

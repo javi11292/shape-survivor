@@ -1,3 +1,40 @@
+@import "$lib/styles/modal";
+
 .levelUp {
 	color: white;
+	display: flex;
+	gap: 5rem;
+}
+
+.card {
+	@extend %background;
+	pointer-events: all;
+	background: #111;
+	padding: 3rem;
+	border-radius: 1rem;
+	display: flex;
+	gap: 3rem;
+	flex-direction: column;
+	text-align: center;
+	width: 40rem;
+	overflow: hidden;
+}
+
+.title {
+	font-size: 2.5rem;
+}
+
+.difference {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 1rem;
+
+	:global(.icon) {
+		font-size: 2rem;
+	}
+}
+
+.nextValue {
+	color: limegreen;
 }

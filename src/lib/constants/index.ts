@@ -3,3 +3,5 @@ export const ENEMY_MASK = 2;
 export const PROJECTILE_MASK = 4;
 export const ITEM_MASK = 8;
 export const PLAYER_AURA_MASK = 16;
+
+export const AMOUNT_PER_LEVEL = 1;

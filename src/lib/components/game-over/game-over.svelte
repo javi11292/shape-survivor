@@ -5,7 +5,7 @@
 	assets.death.play();
 </script>
 
-<div class="gameOver">
+<div class="modal">
 	<Modal open>
 		<div class="content">wasted</div>
 	</Modal>

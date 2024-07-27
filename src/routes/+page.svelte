@@ -24,12 +24,17 @@
 		}
 
 		createGame(canvas);
-		canvas.focus();
 
 		return () => {
 			game.state.mounted = false;
 			game.state.dispose?.();
 		};
+	});
+
+	$effect(() => {
+		if (game.state.running) {
+			canvas.focus();
+		}
 	});
 </script>
 
