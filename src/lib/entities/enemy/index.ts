@@ -2,11 +2,15 @@ import { ENEMY_MASK, PLAYER_MASK, PROJECTILE_MASK } from "$lib/constants";
 import { PhysicsMotionType, Vector3 } from "$lib/engine";
 import { createBody } from "$lib/engine/body";
 import { createRenderable } from "$lib/engine/renderable";
+import { isEntity } from "$lib/utils";
 import type { Scene } from "@babylonjs/core";
+import { isPlayer } from "../player";
 import { createUnit } from "../unit";
 import { getMesh, getShape } from "./utils";
 
 const SPEED = 5;
+const HP = 1;
+const DAMAGE = 1;
 
 type Params = {
 	scene: Scene;
@@ -16,8 +20,7 @@ type Params = {
 
 const enemyType = Symbol();
 
-export const isEnemy = (entity: object): entity is ReturnType<typeof createEnemy> =>
-	"type" in entity && entity.type === enemyType;
+export const isEnemy = isEntity<ReturnType<typeof createUnit>>(enemyType);
 
 export const createEnemy = ({ scene, position, target }: Params) => {
 	const entity = createRenderable({
@@ -30,8 +33,23 @@ export const createEnemy = ({ scene, position, target }: Params) => {
 
 	const unit = createUnit({
 		scene,
+		hp: HP,
 		mesh: getMesh().createInstance("enemy"),
-		getBody: (mesh) => createBody({ scene, mesh, type: PhysicsMotionType.DYNAMIC }),
+		getBody: (mesh) =>
+			createBody({
+				scene,
+				mesh,
+				type: PhysicsMotionType.DYNAMIC,
+				onCollision: ({ collidedAgainst, point }) => {
+					const entity = collidedAgainst.transformNode.metadata;
+
+					if (!isPlayer(entity)) {
+						return;
+					}
+
+					entity.hit(DAMAGE, point as Vector3, true);
+				},
+			}),
 	});
 
 	unit.mesh.metadata.type = enemyType;

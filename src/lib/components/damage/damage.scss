@@ -22,6 +22,10 @@
 	animation: fade 750ms forwards;
 }
 
+.fromEnemy {
+	color: red;
+}
+
 @keyframes fade {
 	0% {
 		opacity: 0;

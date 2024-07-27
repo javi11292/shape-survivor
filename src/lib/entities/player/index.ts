@@ -10,6 +10,7 @@ import {
 import { createBody } from "$lib/engine/body";
 import { createRenderable } from "$lib/engine/renderable";
 import { createTimer } from "$lib/engine/timer";
+import { isEntity } from "$lib/utils";
 import type { Scene } from "@babylonjs/core";
 import earcut from "earcut";
 import { createProjectile } from "../projectile";
@@ -21,10 +22,15 @@ const SQRT_SPEED = Math.sqrt(Math.pow(SPEED, 2) / 2);
 const PROJECTILE_POSITION = new Vector3(0, 0, 1);
 const SHOT_SPEED = 1000;
 const AURA_RADIUS = 5;
+const HP = 10;
 
 type Params = {
 	scene: Scene;
 };
+
+const playerType = Symbol();
+
+export const isPlayer = isEntity<ReturnType<typeof createUnit>>(playerType);
 
 export const createPlayer = ({ scene }: Params) => {
 	createRenderable({
@@ -69,10 +75,11 @@ export const createPlayer = ({ scene }: Params) => {
 			undefined,
 			earcut,
 		),
+		hp: HP,
 		getBody: (mesh) => createBody({ scene, mesh, type: PhysicsMotionType.ANIMATED }),
 	});
 
-	createTimer({
+	const timer = createTimer({
 		scene,
 		timeout: SHOT_SPEED,
 		callback: () =>
@@ -92,6 +99,7 @@ export const createPlayer = ({ scene }: Params) => {
 	camera.target = new Vector3();
 	camera.rotation.y = 0;
 
+	unit.mesh.metadata.type = playerType;
 	unit.body.shape = new PhysicsShapeConvexHull(unit.mesh.sourceMesh, scene);
 	unit.body.shape.filterMembershipMask = PLAYER_MASK;
 
@@ -104,6 +112,13 @@ export const createPlayer = ({ scene }: Params) => {
 
 	unit.mesh.addChild(auraMesh);
 	addEvents({ scene, unit, auraBody, input });
+
+	const unitDispose = unit.dispose;
+
+	unit.dispose = () => {
+		unitDispose();
+		timer.dispose();
+	};
 
 	return {
 		get position() {

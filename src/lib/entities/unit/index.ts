@@ -1,15 +1,13 @@
-import { Damage } from "$lib/components/damage";
-import { State } from "$lib/core/utils";
 import { PhysicsBody, Vector3 } from "$lib/engine";
 import type { AbstractMesh, Scene } from "@babylonjs/core";
-import { mount, unmount } from "svelte";
 import { createExperience } from "../experience";
-import { SHAPE, getMesh, getVectorProjection } from "./utils";
+import { SHAPE, getMesh, showDamage } from "./utils";
 
 const EXPERIENCE = 1;
 
 type Params = {
 	scene: Scene;
+	hp: number;
 	context?: { dispose?: () => void };
 	mesh: AbstractMesh;
 	getBody: (mesh: AbstractMesh) => PhysicsBody;
@@ -17,7 +15,7 @@ type Params = {
 
 export { SHAPE };
 
-export const createUnit = ({ scene, mesh: childMesh, getBody }: Params) => {
+export const createUnit = ({ scene, mesh: childMesh, getBody, hp }: Params) => {
 	const unit = {
 		get mesh() {
 			return mesh;
@@ -31,38 +29,18 @@ export const createUnit = ({ scene, mesh: childMesh, getBody }: Params) => {
 			mesh.dispose();
 		},
 
-		hit: (damage: number, point: Vector3) => {
-			unit.dispose();
-			createExperience({ scene, position: mesh.position, amount: EXPERIENCE });
+		hit: (damage: number, point: Vector3, fromEnemy?: boolean) => {
+			remainingHp -= damage;
 
-			let vectorProjection = getVectorProjection({ scene, point });
+			if (remainingHp <= 0) {
+				unit.dispose();
 
-			if (!vectorProjection) {
-				return;
+				if (!fromEnemy) {
+					createExperience({ scene, position: mesh.position, amount: EXPERIENCE });
+				}
 			}
 
-			const state = new State({ x: vectorProjection.x, y: vectorProjection.y });
-
-			const component = mount(Damage, {
-				target: document.body,
-				props: { position: state.state, damage },
-			});
-
-			const observer = scene.onBeforeRenderObservable.add(() => {
-				vectorProjection = getVectorProjection({ scene, point });
-
-				if (!vectorProjection || !state) {
-					return;
-				}
-
-				state.state.x = vectorProjection.x;
-				state.state.y = vectorProjection.y;
-			});
-
-			setTimeout(() => {
-				scene.onBeforeRenderObservable.remove(observer);
-				unmount(component);
-			}, 750);
+			showDamage({ point, damage, scene, fromEnemy });
 		},
 	};
 
@@ -75,6 +53,8 @@ export const createUnit = ({ scene, mesh: childMesh, getBody }: Params) => {
 	const observer = scene.onAfterPhysicsObservable.add(() => {
 		mesh.position.y = 0;
 	});
+
+	let remainingHp = hp;
 
 	return unit;
 };

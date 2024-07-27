@@ -31,14 +31,14 @@ export const createProjectile = ({ scene, position, rotation }: Params) => {
 		mesh,
 		type: PhysicsMotionType.ANIMATED,
 		onCollision: ({ collidedAgainst, point }) => {
-			const enemy = collidedAgainst.transformNode.metadata;
+			const entity = collidedAgainst.transformNode.metadata;
 
-			if (!isEnemy(enemy)) {
+			if (!isEnemy(entity)) {
 				return;
 			}
 
 			dispose();
-			enemy.hit(DAMAGE, point as Vector3);
+			entity.hit(DAMAGE, point as Vector3);
 		},
 	});
 

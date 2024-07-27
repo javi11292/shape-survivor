@@ -2,14 +2,15 @@
 	type Props = {
 		position: { x: number; y: number };
 		damage: number;
+		fromEnemy?: boolean;
 	};
 
-	let { position, damage }: Props = $props();
+	let { position, damage, fromEnemy }: Props = $props();
 </script>
 
 <div class="container" style="--x:{position.x}px; --y:{position.y}px">
 	<div class="content">
-		<div class="damage">{damage}</div>
+		<div class="damage" class:fromEnemy>{damage}</div>
 	</div>
 </div>
 
