@@ -22,7 +22,7 @@ canvas {
 	inset: 0;
 }
 
-.experience {
+.bars {
 	position: absolute;
 	bottom: 0;
 	left: 50%;
@@ -30,21 +30,39 @@ canvas {
 	width: 50rem;
 }
 
-.experienceBar {
-	background: white;
+.bar {
+	position: relative;
+	background: black;
 	background-clip: padding-box;
-	outline: 1px solid black;
+	outline: 1px solid white;
+	color: white;
 	height: 2rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1rem;
 
 	&::before {
 		content: "";
-		display: block;
-		height: 100%;
+		position: absolute;
+		inset: 0;
 		transform-origin: left;
 		scale: var(--width) 1;
-		background: #6666ff;
+		background: var(--color);
 		transition: scale 200ms;
 	}
+
+	div {
+		z-index: 1;
+	}
+}
+
+.hp {
+	--color: #007700;
+}
+
+.experience {
+	--color: #6666ff;
 }
 
 .level {

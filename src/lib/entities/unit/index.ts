@@ -7,7 +7,7 @@ const EXPERIENCE = 1;
 
 type Params = {
 	scene: Scene;
-	hp: number;
+	state: { hp: number };
 	context?: { dispose?: () => void };
 	mesh: AbstractMesh;
 	getBody: (mesh: AbstractMesh) => PhysicsBody;
@@ -15,7 +15,7 @@ type Params = {
 
 export { SHAPE };
 
-export const createUnit = ({ scene, mesh: childMesh, getBody, hp }: Params) => {
+export const createUnit = ({ scene, mesh: childMesh, getBody, state }: Params) => {
 	const unit = {
 		get mesh() {
 			return mesh;
@@ -30,9 +30,9 @@ export const createUnit = ({ scene, mesh: childMesh, getBody, hp }: Params) => {
 		},
 
 		hit: (damage: number, fromEnemy?: boolean) => {
-			remainingHp -= damage;
+			state.hp -= damage;
 
-			if (remainingHp <= 0) {
+			if (state.hp <= 0) {
 				unit.dispose();
 
 				if (!fromEnemy) {
@@ -53,8 +53,6 @@ export const createUnit = ({ scene, mesh: childMesh, getBody, hp }: Params) => {
 	const observer = scene.onAfterPhysicsObservable.add(() => {
 		mesh.position.y = 0;
 	});
-
-	let remainingHp = hp;
 
 	return unit;
 };

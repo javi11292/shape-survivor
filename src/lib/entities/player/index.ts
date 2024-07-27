@@ -10,6 +10,7 @@ import {
 import { createBody } from "$lib/engine/body";
 import { createRenderable } from "$lib/engine/renderable";
 import { createTimer } from "$lib/engine/timer";
+import { player } from "$lib/state/player";
 import { isEntity } from "$lib/utils";
 import type { Scene } from "@babylonjs/core";
 import earcut from "earcut";
@@ -22,7 +23,6 @@ const SQRT_SPEED = Math.sqrt(Math.pow(SPEED, 2) / 2);
 const PROJECTILE_POSITION = new Vector3(0, 0, 1);
 const SHOT_SPEED = 1000;
 const AURA_RADIUS = 5;
-const HP = 10;
 
 type Params = {
 	scene: Scene;
@@ -75,7 +75,7 @@ export const createPlayer = ({ scene }: Params) => {
 			undefined,
 			earcut,
 		),
-		hp: HP,
+		state: player.state,
 		getBody: (mesh) => createBody({ scene, mesh, type: PhysicsMotionType.ANIMATED }),
 	});
 

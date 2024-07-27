@@ -46,7 +46,7 @@ export const createEnemy = ({ scene, position, target }: Params) => {
 
 	const unit = createUnit({
 		scene,
-		hp: HP,
+		state: { hp: HP },
 		mesh: getMesh().createInstance("enemy"),
 		getBody: (mesh) =>
 			createBody({

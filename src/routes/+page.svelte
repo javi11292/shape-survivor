@@ -30,8 +30,17 @@
 
 	<div class="ui">
 		{#if started}
-			<div class="experience" style="--width:{player.state.experience / player.state.toNextLevel}">
-				<div class="experienceBar"></div>
+			<div class="bars">
+				<div class="bar hp" style="--width:{player.state.hp / player.state.maxHp}">
+					<div>{player.state.hp} / {player.state.maxHp}</div>
+				</div>
+
+				<div
+					class="bar experience"
+					style="--width:{player.state.experience / player.state.toNextLevel}"
+				>
+					<div>{player.state.experience} / {player.state.toNextLevel}</div>
+				</div>
 				<div class="level">{player.state.level}</div>
 			</div>
 		{:else}
