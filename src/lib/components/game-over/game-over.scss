@@ -1,0 +1,13 @@
+.gameOver {
+	:global(.dialog) {
+		background: transparent;
+		box-shadow: none;
+	}
+}
+
+.content {
+	color: red;
+	font-size: 4rem;
+	font-weight: 700;
+	height: 50vh;
+}

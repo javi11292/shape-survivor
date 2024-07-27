@@ -10,6 +10,7 @@ import {
 import { createBody } from "$lib/engine/body";
 import { createRenderable } from "$lib/engine/renderable";
 import { createTimer } from "$lib/engine/timer";
+import { game } from "$lib/state/game";
 import { player } from "$lib/state/player";
 import { isEntity } from "$lib/utils";
 import type { Scene } from "@babylonjs/core";
@@ -119,6 +120,7 @@ export const createPlayer = ({ scene }: Params) => {
 		unitDispose();
 		timer.dispose();
 		renderable.dispose();
+		game.state.wasted = true;
 	};
 
 	return {

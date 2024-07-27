@@ -1,19 +1,26 @@
 <script lang="ts">
+	import { GameOver } from "$lib/components/game-over";
 	import { Button } from "$lib/core/components/button";
 	import { createGame } from "$lib/engine/game";
 	import { game } from "$lib/state/game";
 	import { player } from "$lib/state/player";
 
-	let canvas: HTMLCanvasElement | undefined;
+	let canvas: HTMLCanvasElement;
 	let started = $state(false);
 
 	$effect(() => {
-		if (!canvas || !started) {
+		if (game.state.wasted) {
+			setTimeout(() => {
+				game.state.dispose?.();
+				createGame(canvas);
+			}, 3000);
+		}
+	});
+
+	$effect(() => {
+		if (!started) {
 			return;
 		}
-
-		game.reset();
-		player.reset();
 
 		createGame(canvas);
 		canvas.focus();
@@ -47,6 +54,10 @@
 			<div class="start">
 				<Button onclick={() => (started = true)}>Empezar</Button>
 			</div>
+		{/if}
+
+		{#if game.state.wasted}
+			<GameOver />
 		{/if}
 	</div>
 </main>
