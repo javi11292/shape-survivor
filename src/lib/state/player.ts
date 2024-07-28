@@ -21,4 +21,4 @@ const getInitialState = () => ({
 	upgrades: { ...initialUpgrades },
 });
 
-export const player = State.create(getInitialState(), getInitialState);
+export const player = new State(getInitialState(), getInitialState);

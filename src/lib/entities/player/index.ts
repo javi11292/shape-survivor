@@ -59,7 +59,10 @@ export const createPlayer = ({ scene }: Params) => {
 					}
 				});
 
-				const speed = (position.x && position.z ? SQRT_SPEED : SPEED) * delta;
+				const speed =
+					(position.x && position.z ? SQRT_SPEED : SPEED) *
+					upgrades.movementSpeed.amount(player.state.upgrades.movementSpeed) *
+					delta;
 
 				unit.mesh.position.addInPlace(position.scale(speed));
 				camera.position.x = unit.mesh.position.x;

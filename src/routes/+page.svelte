@@ -1,11 +1,3 @@
-<script lang="ts" context="module">
-	import { game } from "$lib/state/game";
-	import { player } from "$lib/state/player";
-
-	game.create();
-	player.create();
-</script>
-
 <script lang="ts">
 	import { GameOver } from "$lib/components/game-over";
 	import { LevelUp } from "$lib/components/level-up";
@@ -13,6 +5,8 @@
 	import { upgrades } from "$lib/constants/upgrades";
 	import { Button } from "$lib/core/components/button";
 	import { createGame } from "$lib/engine/game";
+	import { game } from "$lib/state/game";
+	import { player } from "$lib/state/player";
 	import { untrack } from "svelte";
 
 	let canvas: HTMLCanvasElement;
