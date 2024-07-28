@@ -1,4 +1,5 @@
 import { PhysicsBody } from "$lib/engine";
+import { assets } from "$lib/engine/assets";
 import type { AbstractMesh, Scene } from "@babylonjs/core";
 import { createExperience } from "../experience";
 import { SHAPE, getMesh, showDamage } from "./utils";
@@ -30,6 +31,7 @@ export const createUnit = ({ scene, mesh: childMesh, getBody, state }: Params) =
 		},
 
 		hit: (damage: number, fromEnemy?: boolean) => {
+			assets.hit.play();
 			state.hp -= damage;
 
 			if (state.hp <= 0) {
