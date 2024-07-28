@@ -2,12 +2,12 @@ import { ITEM_MASK, PLAYER_AURA_MASK, PLAYER_MASK } from "$lib/constants";
 import { upgrades } from "$lib/constants/upgrades";
 import { effect } from "$lib/core/utils";
 import {
-	CreateCylinder,
-	CreatePolygon,
-	PhysicsMotionType,
-	PhysicsShapeConvexHull,
-	UniversalCamera,
-	Vector3,
+  CreateCylinder,
+  CreatePolygon,
+  PhysicsMotionType,
+  PhysicsShapeConvexHull,
+  UniversalCamera,
+  Vector3,
 } from "$lib/engine";
 import { createBody } from "$lib/engine/body";
 import { createRenderable } from "$lib/engine/renderable";
