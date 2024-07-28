@@ -1,4 +1,6 @@
 import { ITEM_MASK, PLAYER_AURA_MASK, PLAYER_MASK } from "$lib/constants";
+import { upgrades } from "$lib/constants/upgrades";
+import { effect } from "$lib/core/utils";
 import {
 	CreateCylinder,
 	CreatePolygon,
@@ -91,6 +93,10 @@ export const createPlayer = ({ scene }: Params) => {
 			}),
 	});
 
+	const disposeEffect = effect(() => {
+		timer.timeout = SHOT_SPEED / upgrades.attackSpeed.amount(player.state.upgrades.attackSpeed);
+	});
+
 	const camera = new UniversalCamera("camera", new Vector3(0, 50, 0));
 	const auraMesh = CreateCylinder("aura", { height: 1, diameter: AURA_RADIUS * 2 });
 	const auraBody = createBody({ mesh: auraMesh, type: PhysicsMotionType.ANIMATED, scene });
@@ -120,6 +126,7 @@ export const createPlayer = ({ scene }: Params) => {
 		unitDispose();
 		timer.dispose();
 		renderable.dispose();
+		disposeEffect();
 		game.state.wasted = true;
 	};
 
