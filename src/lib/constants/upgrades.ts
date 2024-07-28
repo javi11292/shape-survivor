@@ -45,7 +45,7 @@ export const upgrades = {
 	},
 	regen: {
 		name: "Regeneración de vida",
-		amount: (value: number) => value,
+		amount: (value: number) => value * 0.2,
 		format: (value: number) => value.toString(),
 	},
 } as const satisfies Record<string, Upgrade>;

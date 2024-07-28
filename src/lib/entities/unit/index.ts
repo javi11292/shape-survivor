@@ -40,7 +40,7 @@ export const createUnit = ({ scene, mesh: childMesh, getBody, state }: Params) =
 				}
 			}
 
-			showDamage({ point: mesh.position, damage: Math.round(finalDamage), scene, fromEnemy });
+			showDamage({ point: mesh.position, damage: Math.ceil(finalDamage), scene, fromEnemy });
 		},
 	};
 
