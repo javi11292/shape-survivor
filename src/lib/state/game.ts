@@ -1,13 +1,11 @@
 import { State } from "$lib/core/utils";
 
-const initialState = {
+const getInitialState = () => ({
 	mounted: true,
 	running: true,
 	wasted: false,
 	levelup: false,
-};
+	dispose: undefined as undefined | (() => void),
+});
 
-export const game = new State<typeof initialState & { dispose?: () => void }>(
-	{ ...initialState },
-	() => ({ ...initialState }),
-);
+export const game = new State(getInitialState(), getInitialState);

@@ -28,17 +28,22 @@
 	<Modal open>
 		<div class="levelUp">
 			{#each randomUpgrades as upgrade}
-				{@const playerUpgrade = player.state.upgrades[upgrade.key]}
+				{@const playerUpgrade = player.state.upgrades[upgrade.key] || 0}
 				<div class="card" onclick={handleClick(upgrade)} role="none">
 					<div class="title">{upgrade.name}</div>
-					<div>{upgrade.description}</div>
-					{#if playerUpgrade}
+
+					{#if "description" in upgrade}
+						<div>{upgrade.description}</div>
+					{/if}
+
+					<div>
+						<div class="label">{"label" in upgrade ? upgrade.label : upgrade.name}</div>
 						<div class="difference">
 							<span>{upgrade.format(upgrade.amount(playerUpgrade))}</span>
 							<Icon icon="arrow-right" />
 							<span class="nextValue">{upgrade.format(upgrade.amount(playerUpgrade + 1))}</span>
 						</div>
-					{/if}
+					</div>
 				</div>
 			{/each}
 		</div>
