@@ -96,6 +96,17 @@ export const createPlayer = ({ scene }: Params) => {
 			}),
 	});
 
+	const regenTimer = createTimer({
+		scene,
+		timeout: 1000,
+		callback: () => {
+			player.state.hp = Math.min(
+				player.state.hp + upgrades.regen.amount(player.state.upgrades.regen),
+				player.state.maxHp,
+			);
+		},
+	});
+
 	const camera = new UniversalCamera("camera", new Vector3(0, 50, 0));
 	const auraMesh = CreateCylinder("aura", { height: 1, diameter: AURA_RADIUS * 2 });
 	const auraBody = createBody({ mesh: auraMesh, type: PhysicsMotionType.ANIMATED, scene });
@@ -137,6 +148,7 @@ export const createPlayer = ({ scene }: Params) => {
 	unit.mesh.onDisposeObservable.add(() => {
 		renderable.dispose();
 		timer.dispose();
+		regenTimer.dispose();
 		disposeTimeout();
 		disposeRange();
 		game.state.wasted = true;
