@@ -61,8 +61,8 @@
 	<div class="ui">
 		{#if started}
 			<div class="bars">
-				<div class="bar hp" style="--width:{player.state.hp / player.state.maxHp}">
-					<div>{player.state.hp} / {player.state.maxHp}</div>
+				<div class="bar hp" style="--width:{Math.max(player.state.hp / player.state.maxHp, 0)}">
+					<div>{Math.round(player.state.hp)} / {player.state.maxHp}</div>
 				</div>
 
 				<div

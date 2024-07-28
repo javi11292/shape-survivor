@@ -1,3 +1,4 @@
+import { upgrades } from "$lib/constants/upgrades";
 import { PhysicsBody } from "$lib/engine";
 import { assets } from "$lib/engine/assets";
 import type { AbstractMesh, Scene } from "@babylonjs/core";
@@ -8,7 +9,7 @@ const EXPERIENCE = 1;
 
 type Params = {
 	scene: Scene;
-	state: { hp: number };
+	state: { hp: number; upgrades?: { armor: number } };
 	context?: { dispose?: () => void };
 	mesh: AbstractMesh;
 	getBody: (mesh: AbstractMesh) => PhysicsBody;
@@ -27,7 +28,9 @@ export const createUnit = ({ scene, mesh: childMesh, getBody, state }: Params) =
 
 		hit: (damage: number, fromEnemy?: boolean) => {
 			assets.hit.play();
-			state.hp -= damage;
+			const finalDamage = damage * upgrades.armor.amount(state.upgrades?.armor || 0);
+
+			state.hp -= finalDamage;
 
 			if (state.hp <= 0) {
 				mesh.dispose();
@@ -37,7 +40,7 @@ export const createUnit = ({ scene, mesh: childMesh, getBody, state }: Params) =
 				}
 			}
 
-			showDamage({ point: mesh.position, damage, scene, fromEnemy });
+			showDamage({ point: mesh.position, damage: Math.round(finalDamage), scene, fromEnemy });
 		},
 	};
 
