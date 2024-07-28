@@ -4,6 +4,7 @@ import { createPlayer } from "$lib/entities/player";
 import { game } from "$lib/state/game";
 import { player } from "$lib/state/player";
 import HavokPhysics from "@babylonjs/havok";
+import { untrack } from "svelte";
 import { Color4, Engine, HavokPlugin, HemisphericLight, Scene, Vector3 } from ".";
 import { getManager } from "./assets";
 import { createTimer } from "./timer";
@@ -51,6 +52,7 @@ const createScene = async (engine: Engine) => {
 };
 
 export const createGame = async (canvas: HTMLCanvasElement) => {
+	untrack(() => game.state.dispose?.());
 	game.reset();
 	player.reset();
 

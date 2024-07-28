@@ -21,7 +21,6 @@
 	$effect(() => {
 		if (game.state.wasted) {
 			setTimeout(() => {
-				game.state.dispose?.();
 				createGame(canvas);
 			}, 3000);
 		}
@@ -82,7 +81,7 @@
 		{/if}
 
 		{#if game.state.levelup}
-			<LevelUp />
+			<LevelUp bind:levelup={game.state.levelup} bind:playerUpgrades={player.state.upgrades} />
 		{/if}
 
 		{#if game.state.wasted}

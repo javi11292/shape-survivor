@@ -2,8 +2,11 @@
 	import { upgrades } from "$lib/constants/upgrades";
 	import { Icon } from "$lib/core/components/icon";
 	import { Modal } from "$lib/core/components/modal";
-	import { game } from "$lib/state/game";
-	import { player } from "$lib/state/player";
+
+	let {
+		levelup = $bindable(),
+		playerUpgrades = $bindable(),
+	}: { levelup: boolean; playerUpgrades: Record<Key, number> } = $props();
 
 	type Key = keyof typeof upgrades;
 
@@ -18,8 +21,8 @@
 	const randomUpgrades = [selectRandom(), selectRandom(), selectRandom()];
 
 	const handleClick = (key: Key) => () => {
-		player.state.upgrades[key] = player.state.upgrades[key] + 1;
-		game.state.levelup = false;
+		playerUpgrades[key] = playerUpgrades[key] + 1;
+		levelup = false;
 	};
 </script>
 
@@ -28,7 +31,7 @@
 		<div class="levelUp">
 			{#each randomUpgrades as key}
 				{@const upgrade = upgrades[key]}
-				{@const playerUpgrade = player.state.upgrades[key]}
+				{@const playerUpgrade = playerUpgrades[key]}
 				<div class="card" onclick={handleClick(key)} role="none">
 					<div class="title">{upgrade.name}</div>
 
