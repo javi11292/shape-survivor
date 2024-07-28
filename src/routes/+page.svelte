@@ -1,10 +1,13 @@
 <script lang="ts">
 	import { GameOver } from "$lib/components/game-over";
 	import { LevelUp } from "$lib/components/level-up";
+	import { HP_PER_LEVEL } from "$lib/constants";
+	import { upgrades } from "$lib/constants/upgrades";
 	import { Button } from "$lib/core/components/button";
 	import { createGame } from "$lib/engine/game";
 	import { game } from "$lib/state/game";
 	import { player } from "$lib/state/player";
+	import { untrack } from "svelte";
 
 	let canvas: HTMLCanvasElement;
 	let started = $state(false);
@@ -39,6 +42,12 @@
 
 	$effect(() => {
 		game.state.running = !game.state.levelup;
+	});
+
+	$effect(() => {
+		const diff = untrack(() => player.state.maxHp - player.state.hp);
+		player.state.maxHp = HP_PER_LEVEL * upgrades.hp.amount(player.state.upgrades.hp);
+		player.state.hp = player.state.maxHp - diff;
 	});
 </script>
 

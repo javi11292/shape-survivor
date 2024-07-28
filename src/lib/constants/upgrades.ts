@@ -12,13 +12,21 @@ const percentageAmount = (value: number) => 1 + value * 0.2;
 const percentageFormat = (value: number) => `${Math.floor(value * 100)}%`;
 
 export const upgrades = {
-	damage: { name: "Daño", amount: percentageAmount, format: percentageFormat },
+	damage: {
+		name: "Daño",
+		amount: percentageAmount,
+		format: percentageFormat,
+	},
 	hp: {
 		name: "Vida",
 		amount: percentageAmount,
 		format: percentageFormat,
 	},
-	attackSpeed: { name: "Velocidad de ataque", amount: percentageAmount, format: percentageFormat },
+	attackSpeed: {
+		name: "Velocidad de ataque",
+		amount: percentageAmount,
+		format: percentageFormat,
+	},
 	movementSpeed: {
 		name: "Velocidad de movimiento",
 		amount: percentageAmount,

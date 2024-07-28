@@ -1,4 +1,4 @@
-import { AMOUNT_PER_LEVEL } from "$lib/constants";
+import { AMOUNT_PER_LEVEL, HP_PER_LEVEL } from "$lib/constants";
 import { upgrades } from "$lib/constants/upgrades";
 import { State } from "$lib/core/utils";
 
@@ -13,8 +13,8 @@ const initialUpgrades = (Object.keys(upgrades) as Key[]).reduce(
 );
 
 const getInitialState = () => ({
-	hp: 10,
-	maxHp: 10,
+	hp: HP_PER_LEVEL,
+	maxHp: HP_PER_LEVEL,
 	experience: 0,
 	level: 1,
 	toNextLevel: AMOUNT_PER_LEVEL,
