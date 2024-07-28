@@ -39,20 +39,17 @@ export const createProjectile = ({ scene, position, rotation }: Params) => {
 				return;
 			}
 
-			dispose();
+			mesh.dispose();
 			entity.hit(DAMAGE * upgrades.damage.amount(player.state.upgrades.damage));
 		},
 	});
-
-	const dispose = () => {
-		mesh.dispose();
-		timer.dispose();
-	};
 
 	body.setLinearVelocity(mesh.getDirection(new Vector3(0, 0, SPEED)));
 	body.shape = getShape(mesh.sourceMesh, scene);
 	body.shape.filterMembershipMask = PROJECTILE_MASK;
 	body.shape.filterCollideMask = ENEMY_MASK;
 
-	const timer = createTimer({ scene, timeout: LIFE_TIME, callback: dispose });
+	const timer = createTimer({ scene, timeout: LIFE_TIME, callback: () => mesh.dispose() });
+
+	mesh.onDisposeObservable.add(() => timer.dispose());
 };

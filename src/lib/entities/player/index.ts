@@ -2,12 +2,12 @@ import { ITEM_MASK, PLAYER_AURA_MASK, PLAYER_MASK } from "$lib/constants";
 import { upgrades } from "$lib/constants/upgrades";
 import { effect } from "$lib/core/utils";
 import {
-  CreateCylinder,
-  CreatePolygon,
-  PhysicsMotionType,
-  PhysicsShapeConvexHull,
-  UniversalCamera,
-  Vector3,
+	CreateCylinder,
+	CreatePolygon,
+	PhysicsMotionType,
+	PhysicsShapeConvexHull,
+	UniversalCamera,
+	Vector3,
 } from "$lib/engine";
 import { createBody } from "$lib/engine/body";
 import { createRenderable } from "$lib/engine/renderable";
@@ -96,10 +96,6 @@ export const createPlayer = ({ scene }: Params) => {
 			}),
 	});
 
-	const disposeEffect = effect(() => {
-		timer.timeout = SHOT_SPEED / upgrades.attackSpeed.amount(player.state.upgrades.attackSpeed);
-	});
-
 	const camera = new UniversalCamera("camera", new Vector3(0, 50, 0));
 	const auraMesh = CreateCylinder("aura", { height: 1, diameter: AURA_RADIUS * 2 });
 	const auraBody = createBody({ mesh: auraMesh, type: PhysicsMotionType.ANIMATED, scene });
@@ -115,23 +111,36 @@ export const createPlayer = ({ scene }: Params) => {
 
 	auraMesh.isVisible = false;
 	auraBody.disablePreStep = false;
-	auraBody.shape = new PhysicsShapeConvexHull(auraMesh, scene);
-	auraBody.shape.filterMembershipMask = PLAYER_AURA_MASK;
-	auraBody.shape.filterCollideMask = ITEM_MASK;
-	auraBody.shape.isTrigger = true;
+
+	const disposeTimeout = effect(() => {
+		timer.timeout = SHOT_SPEED / upgrades.attackSpeed.amount(player.state.upgrades.attackSpeed);
+	});
+
+	const disposeRange = effect(() => {
+		auraMesh.scaling = new Vector3(1, 1, 1).scale(
+			upgrades.range.amount(player.state.upgrades.range),
+		);
+
+		const shape = new PhysicsShapeConvexHull(auraMesh, scene);
+
+		auraBody.shape = shape;
+		auraBody.shape.filterMembershipMask = PLAYER_AURA_MASK;
+		auraBody.shape.filterCollideMask = ITEM_MASK;
+		auraBody.shape.isTrigger = true;
+
+		return () => shape.dispose();
+	});
 
 	unit.mesh.addChild(auraMesh);
 	addEvents({ scene, unit, auraBody, input });
 
-	const unitDispose = unit.dispose;
-
-	unit.dispose = () => {
-		unitDispose();
-		timer.dispose();
+	unit.mesh.onDisposeObservable.add(() => {
 		renderable.dispose();
-		disposeEffect();
+		timer.dispose();
+		disposeTimeout();
+		disposeRange();
 		game.state.wasted = true;
-	};
+	});
 
 	return {
 		get position() {

@@ -13,6 +13,11 @@
 	let started = $state(false);
 
 	$effect(() => {
+		game.reset();
+		player.reset();
+	});
+
+	$effect(() => {
 		if (game.state.wasted) {
 			setTimeout(() => {
 				createGame(canvas);

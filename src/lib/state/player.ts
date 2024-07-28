@@ -4,9 +4,9 @@ import { State } from "$lib/core/utils";
 
 type Key = keyof typeof upgrades;
 
-const initialUpgrades = (Object.keys(upgrades) as Key[]).reduce(
+const initialUpgrades = Object.keys(upgrades).reduce(
 	(acc, key) => {
-		acc[key] = 0;
+		acc[key as Key] = 0;
 		return acc;
 	},
 	{} as Record<Key, number>,

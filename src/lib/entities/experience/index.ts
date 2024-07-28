@@ -19,17 +19,6 @@ type Params = {
 export const createExperience = ({ scene, position, amount }: Params) => {
 	const sound = assets.suck;
 
-	const experience = {
-		absorb: (nextTarget: Vector3) => {
-			target = nextTarget;
-		},
-
-		dispose: () => {
-			renderable.dispose();
-			mesh.dispose();
-		},
-	};
-
 	const mesh = getBodyMesh().createInstance("experience body");
 	const body = createBody({ mesh, type: PhysicsMotionType.STATIC, scene });
 
@@ -42,7 +31,7 @@ export const createExperience = ({ scene, position, amount }: Params) => {
 
 			if (Vector3.DistanceSquared(mesh.position, target) <= 1) {
 				sound.play();
-				experience.dispose();
+				mesh.dispose();
 				player.state.experience += amount;
 
 				if (player.state.experience >= player.state.toNextLevel) {
@@ -67,11 +56,15 @@ export const createExperience = ({ scene, position, amount }: Params) => {
 
 	mesh.addChild(childMesh);
 	mesh.position = position;
-	mesh.metadata = experience;
+	mesh.metadata = {
+		absorb: (nextTarget: Vector3) => {
+			target = nextTarget;
+		},
+	};
 
 	body.shape = getShape(mesh.sourceMesh, scene);
 	body.shape.filterMembershipMask = ITEM_MASK;
 	body.shape.filterCollideMask = PLAYER_AURA_MASK;
 
-	return experience;
+	mesh.onDisposeObservable.add(() => renderable.dispose());
 };

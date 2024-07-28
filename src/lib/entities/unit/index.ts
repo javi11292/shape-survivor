@@ -25,17 +25,12 @@ export const createUnit = ({ scene, mesh: childMesh, getBody, state }: Params) =
 			return body;
 		},
 
-		dispose: () => {
-			scene.onAfterPhysicsObservable.remove(observer);
-			mesh.dispose();
-		},
-
 		hit: (damage: number, fromEnemy?: boolean) => {
 			assets.hit.play();
 			state.hp -= damage;
 
 			if (state.hp <= 0) {
-				unit.dispose();
+				mesh.dispose();
 
 				if (!fromEnemy) {
 					createExperience({ scene, position: mesh.position, amount: EXPERIENCE });
@@ -55,6 +50,8 @@ export const createUnit = ({ scene, mesh: childMesh, getBody, state }: Params) =
 	const observer = scene.onAfterPhysicsObservable.add(() => {
 		mesh.position.y = 0;
 	});
+
+	mesh.onDisposeObservable.add(() => scene.onAfterPhysicsObservable.remove(observer));
 
 	return unit;
 };

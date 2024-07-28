@@ -78,16 +78,8 @@ export const createEnemy = ({ scene, position, target }: Params) => {
 	unit.body.shape.filterMembershipMask = ENEMY_MASK;
 	unit.body.shape.filterCollideMask = PROJECTILE_MASK | PLAYER_MASK | ENEMY_MASK;
 
-	const unitDispose = unit.dispose;
-
-	unit.dispose = () => {
-		unitDispose();
+	unit.mesh.onDisposeObservable.add(() => {
 		renderable.dispose();
 		timer.dispose();
-	};
-
-	return {
-		hit: unit.hit,
-		dispose: unit.dispose,
-	};
+	});
 };
