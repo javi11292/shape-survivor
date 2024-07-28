@@ -5,6 +5,7 @@ import { createBody } from "$lib/engine/body";
 import { createRenderable } from "$lib/engine/renderable";
 import { game } from "$lib/state/game";
 import { player } from "$lib/state/player";
+import { isEntity } from "$lib/utils";
 import type { Scene } from "@babylonjs/core";
 import { getBodyMesh, getMesh, getShape } from "./utils";
 
@@ -15,6 +16,10 @@ type Params = {
 	position: Vector3;
 	amount: number;
 };
+
+const experienceType = Symbol("experience");
+
+export const isExperience = isEntity<ReturnType<typeof createExperience>>(experienceType);
 
 export const createExperience = ({ scene, position, amount }: Params) => {
 	const sound = assets.suck;
@@ -54,17 +59,22 @@ export const createExperience = ({ scene, position, amount }: Params) => {
 	const childMesh = getMesh().createInstance("experience");
 	childMesh.rotation.x = Math.PI / 2;
 
-	mesh.addChild(childMesh);
-	mesh.position = position;
-	mesh.metadata = {
+	const experience = {
 		absorb: (nextTarget: Vector3) => {
 			target = nextTarget;
 		},
 	};
+
+	mesh.addChild(childMesh);
+	mesh.position = position;
+	mesh.metadata = experience;
+	mesh.metadata.type = experienceType;
 
 	body.shape = getShape(mesh.sourceMesh, scene);
 	body.shape.filterMembershipMask = ITEM_MASK;
 	body.shape.filterCollideMask = PLAYER_AURA_MASK;
 
 	mesh.onDisposeObservable.add(() => renderable.dispose());
+
+	return experience;
 };

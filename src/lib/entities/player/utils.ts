@@ -1,5 +1,6 @@
 import { HavokPlugin, KeyboardEventTypes, PhysicsEventType, Scene, Vector3 } from "$lib/engine";
 import type { createBody } from "$lib/engine/body";
+import { isExperience } from "../experience";
 import type { createUnit } from "../unit";
 
 export enum KEYS {
@@ -37,7 +38,13 @@ export const addEvents = ({
 			return;
 		}
 
-		trigger.transformNode.metadata.absorb(unit.mesh.position);
+		const entity = trigger.transformNode.metadata;
+
+		if (!isExperience(entity)) {
+			return;
+		}
+
+		entity.absorb(unit.mesh.position);
 	});
 
 	scene.onPointerObservable.add(({ pickInfo }) => {
