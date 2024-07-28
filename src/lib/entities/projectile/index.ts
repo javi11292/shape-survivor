@@ -1,15 +1,17 @@
 import { ENEMY_MASK, PROJECTILE_MASK } from "$lib/constants";
+import { upgrades } from "$lib/constants/upgrades";
 import { PhysicsMotionType, Vector3 } from "$lib/engine";
 import { assets } from "$lib/engine/assets";
 import { createBody } from "$lib/engine/body";
 import { createTimer } from "$lib/engine/timer";
+import { player } from "$lib/state/player";
 import type { Scene } from "@babylonjs/core";
 import { isEnemy } from "../enemy";
 import { getBodyMesh, getMesh, getShape } from "./utils";
 
 const SPEED = 50;
 const LIFE_TIME = 750;
-const DAMAGE = 1;
+const DAMAGE = 10;
 
 type Params = {
 	scene: Scene;
@@ -38,7 +40,7 @@ export const createProjectile = ({ scene, position, rotation }: Params) => {
 			}
 
 			dispose();
-			entity.hit(DAMAGE);
+			entity.hit(DAMAGE * upgrades.damage.amount(player.state.upgrades.damage));
 		},
 	});
 

@@ -10,7 +10,7 @@ import { createUnit } from "../unit";
 import { getMesh, getShape } from "./utils";
 
 const SPEED = 5;
-const HP = 1;
+const HP = 10;
 const DAMAGE = 1;
 const ATTACK_SPEED = 1000;
 

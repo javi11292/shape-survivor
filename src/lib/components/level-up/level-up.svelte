@@ -2,34 +2,37 @@
 	import { upgrades } from "$lib/constants/upgrades";
 	import { Icon } from "$lib/core/components/icon";
 	import { Modal } from "$lib/core/components/modal";
-	import { game } from "$lib/state/game";
-	import { player } from "$lib/state/player";
 
-	const remainingUpgrades = [...upgrades];
+	let {
+		levelup = $bindable(),
+		playerUpgrades = $bindable(),
+	}: { levelup: boolean; playerUpgrades: Record<Key, number> } = $props();
 
-	type Upgrade = (typeof remainingUpgrades)[number];
+	type Key = keyof typeof upgrades;
+
+	const upgradeKeys = Object.keys(upgrades) as Key[];
 
 	const selectRandom = () => {
-		const index = Math.floor(Math.random() * remainingUpgrades.length);
+		const index = Math.floor(Math.random() * upgradeKeys.length);
 
-		return remainingUpgrades.splice(index, 1)[0] as Upgrade;
+		return upgradeKeys.splice(index, 1)[0]!;
 	};
 
 	const randomUpgrades = [selectRandom(), selectRandom(), selectRandom()];
 
-	const handleClick = (upgrade: Upgrade) => () => {
-		player.state.upgrades[upgrade.key] = (player.state.upgrades[upgrade.key] ?? 0) + 1;
-		game.state.levelup = false;
-		game.state.running = true;
+	const handleClick = (key: Key) => () => {
+		playerUpgrades[key] = playerUpgrades[key] + 1;
+		levelup = false;
 	};
 </script>
 
 <div class="modal">
 	<Modal open>
 		<div class="levelUp">
-			{#each randomUpgrades as upgrade}
-				{@const playerUpgrade = player.state.upgrades[upgrade.key] || 0}
-				<div class="card" onclick={handleClick(upgrade)} role="none">
+			{#each randomUpgrades as key}
+				{@const upgrade = upgrades[key]}
+				{@const playerUpgrade = playerUpgrades[key]}
+				<div class="card" onclick={handleClick(key)} role="none">
 					<div class="title">{upgrade.name}</div>
 
 					{#if "description" in upgrade}

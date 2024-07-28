@@ -2,7 +2,15 @@ import { AMOUNT_PER_LEVEL } from "$lib/constants";
 import { upgrades } from "$lib/constants/upgrades";
 import { State } from "$lib/core/utils";
 
-const initialUpgrades = {} as Record<(typeof upgrades)[number]["key"], number | undefined>;
+type Key = keyof typeof upgrades;
+
+const initialUpgrades = (Object.keys(upgrades) as Key[]).reduce(
+	(acc, key) => {
+		acc[key] = 0;
+		return acc;
+	},
+	{} as Record<Key, number>,
+);
 
 const getInitialState = () => ({
 	hp: 10,

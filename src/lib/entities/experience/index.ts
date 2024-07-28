@@ -50,7 +50,6 @@ export const createExperience = ({ scene, position, amount }: Params) => {
 					player.state.experience -= player.state.toNextLevel;
 					player.state.toNextLevel = player.state.level * AMOUNT_PER_LEVEL;
 					game.state.levelup = true;
-					game.state.running = false;
 				}
 
 				return;

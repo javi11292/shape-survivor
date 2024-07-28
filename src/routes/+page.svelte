@@ -36,6 +36,10 @@
 			canvas.focus();
 		}
 	});
+
+	$effect(() => {
+		game.state.running = !game.state.levelup;
+	});
 </script>
 
 <main>
@@ -63,7 +67,7 @@
 		{/if}
 
 		{#if game.state.levelup}
-			<LevelUp />
+			<LevelUp bind:levelup={game.state.levelup} bind:playerUpgrades={player.state.upgrades} />
 		{/if}
 
 		{#if game.state.wasted}
