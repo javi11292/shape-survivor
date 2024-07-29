@@ -6,7 +6,15 @@ import { game, resetGame } from "$lib/state/game";
 import { resetPlayer } from "$lib/state/player";
 import HavokPhysics from "@babylonjs/havok";
 import { untrack } from "svelte";
-import { Color4, Engine, HavokPlugin, HemisphericLight, Scene, Vector3 } from ".";
+import {
+	Color4,
+	Engine,
+	HavokPlugin,
+	HemisphericLight,
+	KeyboardEventTypes,
+	Scene,
+	Vector3,
+} from ".";
 import { getManager } from "./assets";
 import { createTimer } from "./timer";
 
@@ -78,54 +86,45 @@ export const createGame = async (canvas: HTMLCanvasElement) => {
 	const scene = await createScene(engine);
 	await getManager(scene);
 
-	let removeKeyDownListener: (() => void) | undefined;
 	const resize = () => engine.resize();
 
 	if (dev) {
 		const { Inspector } = await import("@babylonjs/inspector");
 
-		const handleKeyDown = (event: KeyboardEvent) => {
-			if (event.key.toUpperCase() === "Ñ") {
-				if (Inspector.IsVisible) {
-					Inspector.Hide();
-				} else {
-					Inspector.Show(scene, { embedMode: true, overlay: true });
-				}
+		scene.onKeyboardObservable.add(({ type, event }) => {
+			if (type !== KeyboardEventTypes.KEYDOWN || event.key.toUpperCase() !== "Ñ") {
+				return;
 			}
 
-			if (event.key.toUpperCase() === "P") {
+			if (Inspector.IsVisible) {
+				Inspector.Hide();
+			} else {
+				Inspector.Show(scene, { embedMode: true, overlay: true });
+			}
+		});
+	}
+
+	scene.onKeyboardObservable.add(({ type, event }) => {
+		if (type !== KeyboardEventTypes.KEYDOWN) {
+			return;
+		}
+
+		const key = event.key.toUpperCase();
+
+		switch (key) {
+			case "P": {
 				game.running = !game.running;
+
+				break;
 			}
-		};
-
-		window.addEventListener("keydown", handleKeyDown);
-
-		removeKeyDownListener = () => window.removeEventListener("keydown", handleKeyDown);
-	}
-
-	if (Engine.audioEngine) {
-		Engine.audioEngine.useCustomUnlockedButton = true;
-
-		window.addEventListener(
-			"click",
-			() => {
-				if (Engine.audioEngine && !Engine.audioEngine.unlocked) {
-					Engine.audioEngine.unlock();
-				}
-			},
-			{ once: true },
-		);
-	}
+		}
+	});
 
 	window.addEventListener("resize", resize);
 
 	const dispose = () => {
 		engine.dispose();
 		window.removeEventListener("resize", resize);
-
-		if (removeKeyDownListener) {
-			removeKeyDownListener();
-		}
 	};
 
 	if (!game.mounted) {
