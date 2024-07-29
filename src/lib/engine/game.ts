@@ -45,7 +45,7 @@ const createScene = async (engine: Engine) => {
 	});
 
 	const disposeTimeout = effect(() => {
-		timer.timeout = SPAWN_SPEED / (1 + game.difficulty * 0.1);
+		timer.timeout = SPAWN_SPEED / (1 + game.difficulty * 0.25);
 	});
 
 	light.intensity = Math.PI;

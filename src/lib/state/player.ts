@@ -21,6 +21,7 @@ const getInitialState = () => ({
 	defeatedEnemies: 0,
 	damageDone: 0,
 	damageTaken: 0,
+	startTime: Date.now(),
 	upgrades: { ...initialUpgrades },
 });
 

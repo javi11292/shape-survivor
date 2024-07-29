@@ -7,6 +7,8 @@
 	let { restart }: { restart: () => void } = $props();
 
 	assets.death.play();
+
+	const duration = (Date.now() - player.startTime) / 1000;
 </script>
 
 <div class="modal">
@@ -15,15 +17,27 @@
 			<span class="title">wasted</span>
 
 			<div class="card">
-				<div class="row">Nivel<span class="green">{player.level}</span></div>
 				<div class="row">
-					Enemigos eliminados<span class="green">{player.defeatedEnemies}</span>
+					Tiempo
+					<span class="green">
+						{Math.floor(duration / 60)}:{(duration % 60).toPrecision(2)}
+					</span>
 				</div>
 				<div class="row">
-					Daño realizado<span class="green">{Math.round(player.damageDone)}</span>
+					Nivel
+					<span class="green">{player.level}</span>
 				</div>
 				<div class="row">
-					Daño recibido<span class="red">{Math.round(player.damageTaken)}</span>
+					Enemigos eliminados
+					<span class="green">{player.defeatedEnemies}</span>
+				</div>
+				<div class="row">
+					Daño realizado
+					<span class="green">{Math.round(player.damageDone)}</span>
+				</div>
+				<div class="row">
+					Daño recibido
+					<span class="red">{Math.round(player.damageTaken)}</span>
 				</div>
 			</div>
 
