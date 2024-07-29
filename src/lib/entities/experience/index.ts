@@ -22,8 +22,6 @@ const experienceType = Symbol("experience");
 export const isExperience = isEntity<ReturnType<typeof createExperience>>(experienceType);
 
 export const createExperience = ({ scene, position, amount }: Params) => {
-	const sound = assets.suck;
-
 	const mesh = getBodyMesh().createInstance("experience body");
 	const body = createBody({ mesh, type: PhysicsMotionType.STATIC, scene });
 
@@ -35,7 +33,7 @@ export const createExperience = ({ scene, position, amount }: Params) => {
 			}
 
 			if (Vector3.DistanceSquared(mesh.position, target) <= 1) {
-				sound.play();
+				assets.suck.play();
 				mesh.dispose();
 				player.experience += amount;
 
