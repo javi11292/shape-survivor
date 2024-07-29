@@ -36,7 +36,7 @@ export const createUnit = ({ scene, mesh: childMesh, getBody, state }: Params) =
 				mesh.dispose();
 
 				if (!fromEnemy) {
-					createExperience({ scene, position: mesh.position, amount: EXPERIENCE });
+					createExperience({ scene, position: mesh.position.clone(), amount: EXPERIENCE });
 				}
 			}
 
