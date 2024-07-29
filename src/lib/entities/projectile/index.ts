@@ -54,11 +54,12 @@ const addProjectile = ({ scene, position, target }: Omit<Params, "amount">) => {
 };
 
 export const createProjectile = ({ scene, position, target, amount }: Params) => {
-	const center = (amount - 1) / 2;
+	const floor = Math.floor(amount);
+	const center = (floor - 1) / 2;
 	const sound = assets.shot;
 	sound.play();
 
-	for (let i = 0; i < amount; i++) {
+	for (let i = 0; i < floor; i++) {
 		const rotation = Quaternion.RotationAxis(Axis.Y, ((i - center) * Math.PI) / 50);
 
 		addProjectile({

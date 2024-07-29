@@ -51,7 +51,7 @@ export const upgrades = {
 	projectiles: {
 		name: "Proyectiles",
 		label: "Nº de proyectiles",
-		amount: (value: number) => value + 1,
+		amount: (value: number) => 1 + value * 0.5,
 		format: (value: number) => value.toString(),
 	},
 } as const satisfies Record<string, Upgrade>;
