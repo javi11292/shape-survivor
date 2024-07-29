@@ -12,7 +12,7 @@
 </script>
 
 <div class="modal">
-	<Modal open>
+	<Modal open preventCancel>
 		<div class="content">
 			<span class="title">wasted</span>
 

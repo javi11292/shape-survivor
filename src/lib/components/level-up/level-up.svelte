@@ -27,7 +27,7 @@
 </script>
 
 <div class="modal">
-	<Modal open>
+	<Modal open preventCancel>
 		<div class="levelUp">
 			{#each randomUpgrades as key}
 				{@const upgrade = upgrades[key]}
