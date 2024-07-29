@@ -11,10 +11,16 @@
 }
 
 .title {
+	$color: rgb(150, 0, 0);
 	color: red;
 	font-size: 5rem;
 	font-weight: 700;
 	line-height: 1;
+	text-shadow:
+		1px 1px 0 $color,
+		-1px 1px 0 $color,
+		-1px -1px 0 $color,
+		1px -1px 0 $color;
 }
 
 .card {
