@@ -61,7 +61,7 @@ export const createPlayer = ({ scene }: Params) => {
 
 				const speed =
 					(position.x && position.z ? SQRT_SPEED : SPEED) *
-					upgrades.movementSpeed.amount(player.state.upgrades.movementSpeed) *
+					upgrades.movementSpeed.amount(player.upgrades.movementSpeed) *
 					delta;
 
 				unit.mesh.position.addInPlace(position.scale(speed));
@@ -81,7 +81,7 @@ export const createPlayer = ({ scene }: Params) => {
 			undefined,
 			earcut,
 		),
-		state: player.state,
+		state: player,
 		getBody: (mesh) => createBody({ scene, mesh, type: PhysicsMotionType.ANIMATED }),
 	});
 
@@ -100,10 +100,7 @@ export const createPlayer = ({ scene }: Params) => {
 		scene,
 		timeout: 1000,
 		callback: () => {
-			player.state.hp = Math.min(
-				player.state.hp + upgrades.regen.amount(player.state.upgrades.regen),
-				player.state.maxHp,
-			);
+			player.hp = Math.min(player.hp + upgrades.regen.amount(player.upgrades.regen), player.maxHp);
 		},
 	});
 
@@ -124,13 +121,11 @@ export const createPlayer = ({ scene }: Params) => {
 	auraBody.disablePreStep = false;
 
 	const disposeTimeout = effect(() => {
-		timer.timeout = SHOT_SPEED / upgrades.attackSpeed.amount(player.state.upgrades.attackSpeed);
+		timer.timeout = SHOT_SPEED / upgrades.attackSpeed.amount(player.upgrades.attackSpeed);
 	});
 
 	const disposeRange = effect(() => {
-		auraMesh.scaling = new Vector3(1, 1, 1).scale(
-			upgrades.range.amount(player.state.upgrades.range),
-		);
+		auraMesh.scaling = new Vector3(1, 1, 1).scale(upgrades.range.amount(player.upgrades.range));
 
 		const shape = new PhysicsShapeConvexHull(auraMesh, scene);
 
@@ -151,7 +146,7 @@ export const createPlayer = ({ scene }: Params) => {
 		regenTimer.dispose();
 		disposeTimeout();
 		disposeRange();
-		game.state.wasted = true;
+		game.wasted = true;
 	});
 
 	return {

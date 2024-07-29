@@ -8,4 +8,8 @@ const getInitialState = () => ({
 	dispose: undefined as undefined | (() => void),
 });
 
-export const game = new State(getInitialState(), getInitialState);
+const gameState = new State(getInitialState());
+
+export const resetGame = () => Object.assign(gameState.state, getInitialState());
+
+export const game = gameState.state;

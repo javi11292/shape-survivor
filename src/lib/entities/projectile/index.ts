@@ -40,7 +40,7 @@ export const createProjectile = ({ scene, position, rotation }: Params) => {
 			}
 
 			mesh.dispose();
-			entity.hit(DAMAGE * upgrades.damage.amount(player.state.upgrades.damage));
+			entity.hit(DAMAGE * upgrades.damage.amount(player.upgrades.damage));
 		},
 	});
 

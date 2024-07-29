@@ -21,4 +21,8 @@ const getInitialState = () => ({
 	upgrades: { ...initialUpgrades },
 });
 
-export const player = new State(getInitialState(), getInitialState);
+const playerState = new State(getInitialState());
+
+export const resetPlayer = () => Object.assign(playerState.state, getInitialState());
+
+export const player = playerState.state;

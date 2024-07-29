@@ -5,20 +5,18 @@
 	import { upgrades } from "$lib/constants/upgrades";
 	import { Button } from "$lib/core/components/button";
 	import { createGame } from "$lib/engine/game";
-	import { game } from "$lib/state/game";
-	import { player } from "$lib/state/player";
+	import { game, resetGame } from "$lib/state/game";
+	import { player, resetPlayer } from "$lib/state/player";
 	import { untrack } from "svelte";
 
 	let canvas: HTMLCanvasElement;
 	let started = $state(false);
 
-	$effect(() => {
-		game.reset();
-		player.reset();
-	});
+	resetGame();
+	resetPlayer();
 
 	$effect(() => {
-		if (game.state.wasted) {
+		if (game.wasted) {
 			setTimeout(() => {
 				createGame(canvas);
 			}, 3000);
@@ -33,25 +31,25 @@
 		createGame(canvas);
 
 		return () => {
-			game.state.mounted = false;
-			game.state.dispose?.();
+			game.mounted = false;
+			game.dispose?.();
 		};
 	});
 
 	$effect(() => {
-		if (started && game.state.running) {
+		if (started && game.running && game.wasted === false) {
 			canvas.focus();
 		}
 	});
 
 	$effect(() => {
-		game.state.running = !game.state.levelup;
+		game.running = !game.levelup;
 	});
 
 	$effect(() => {
-		const diff = untrack(() => player.state.maxHp - player.state.hp);
-		player.state.maxHp = HP_PER_LEVEL * upgrades.hp.amount(player.state.upgrades.hp);
-		player.state.hp = player.state.maxHp - diff;
+		const diff = untrack(() => player.maxHp - player.hp);
+		player.maxHp = HP_PER_LEVEL * upgrades.hp.amount(player.upgrades.hp);
+		player.hp = player.maxHp - diff;
 	});
 </script>
 
@@ -61,17 +59,14 @@
 	<div class="ui">
 		{#if started}
 			<div class="bars">
-				<div class="bar hp" style="--width:{Math.max(player.state.hp / player.state.maxHp, 0)}">
-					<div>{Math.round(player.state.hp)} / {player.state.maxHp}</div>
+				<div class="bar hp" style="--width:{Math.max(player.hp / player.maxHp, 0)}">
+					<div>{Math.round(player.hp)} / {player.maxHp}</div>
 				</div>
 
-				<div
-					class="bar experience"
-					style="--width:{player.state.experience / player.state.toNextLevel}"
-				>
-					<div>{player.state.experience} / {player.state.toNextLevel}</div>
+				<div class="bar experience" style="--width:{player.experience / player.toNextLevel}">
+					<div>{player.experience} / {player.toNextLevel}</div>
 				</div>
-				<div class="level">{player.state.level}</div>
+				<div class="level">{player.level}</div>
 			</div>
 		{:else}
 			<div class="start">
@@ -79,11 +74,11 @@
 			</div>
 		{/if}
 
-		{#if game.state.levelup}
-			<LevelUp bind:levelup={game.state.levelup} bind:playerUpgrades={player.state.upgrades} />
+		{#if game.levelup}
+			<LevelUp bind:levelup={game.levelup} bind:playerUpgrades={player.upgrades} />
 		{/if}
 
-		{#if game.state.wasted}
+		{#if game.wasted}
 			<GameOver />
 		{/if}
 	</div>
