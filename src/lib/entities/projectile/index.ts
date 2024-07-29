@@ -1,6 +1,6 @@
 import { ENEMY_MASK, PROJECTILE_MASK } from "$lib/constants";
 import { upgrades } from "$lib/constants/upgrades";
-import { PhysicsMotionType, Vector3 } from "$lib/engine";
+import { Axis, PhysicsMotionType, Quaternion, Vector3 } from "$lib/engine";
 import { assets } from "$lib/engine/assets";
 import { createBody } from "$lib/engine/body";
 import { createTimer } from "$lib/engine/timer";
@@ -16,17 +16,16 @@ const DAMAGE = 10;
 type Params = {
 	scene: Scene;
 	position: Vector3;
-	rotation: Vector3;
+	target: Vector3;
+	amount: number;
 };
 
-export const createProjectile = ({ scene, position, rotation }: Params) => {
-	const sound = assets.shot;
-	sound.play();
-
+const addProjectile = ({ scene, position, target }: Omit<Params, "amount">) => {
 	const mesh = getBodyMesh().createInstance("projectile body");
 	mesh.addChild(getMesh().createInstance("projectile"));
-	mesh.rotation = rotation;
 	mesh.position = position;
+	mesh.lookAt(target);
+	mesh.rotation.y += Math.PI;
 
 	const body = createBody({
 		scene,
@@ -52,4 +51,20 @@ export const createProjectile = ({ scene, position, rotation }: Params) => {
 	const timer = createTimer({ scene, timeout: LIFE_TIME, callback: () => mesh.dispose() });
 
 	mesh.onDisposeObservable.add(() => timer.dispose());
+};
+
+export const createProjectile = ({ scene, position, target, amount }: Params) => {
+	const center = (amount - 1) / 2;
+	const sound = assets.shot;
+	sound.play();
+
+	for (let i = 0; i < amount; i++) {
+		const rotation = Quaternion.RotationAxis(Axis.Y, ((i - center) * Math.PI) / 50);
+
+		addProjectile({
+			scene,
+			position: position.rotateByQuaternionAroundPointToRef(rotation, target, Vector3.Zero()),
+			target,
+		});
+	}
 };

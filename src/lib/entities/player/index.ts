@@ -92,7 +92,8 @@ export const createPlayer = ({ scene }: Params) => {
 			createProjectile({
 				scene,
 				position: unit.mesh.position.add(unit.mesh.getDirection(PROJECTILE_POSITION)),
-				rotation: unit.mesh.rotation.clone(),
+				target: unit.mesh.position,
+				amount: upgrades.projectiles.amount(player.upgrades.projectiles),
 			}),
 	});
 
