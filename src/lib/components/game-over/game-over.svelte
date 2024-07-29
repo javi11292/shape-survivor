@@ -20,7 +20,7 @@
 				<div class="row">
 					Tiempo
 					<span class="green">
-						{Math.floor(duration / 60)}:{(duration % 60).toPrecision(2)}
+						{Math.floor(duration / 60)}:{Math.round(duration % 60).toPrecision(2)}
 					</span>
 				</div>
 				<div class="row">
