@@ -18,6 +18,9 @@ const getInitialState = () => ({
 	experience: 0,
 	level: 1,
 	toNextLevel: XP_PER_LEVEL,
+	defeatedEnemies: 0,
+	damageDone: 0,
+	damageTaken: 0,
 	upgrades: { ...initialUpgrades },
 });
 

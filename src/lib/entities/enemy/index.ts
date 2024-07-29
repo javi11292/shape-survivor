@@ -4,6 +4,7 @@ import { createBody } from "$lib/engine/body";
 import { createRenderable } from "$lib/engine/renderable";
 import { createTimer } from "$lib/engine/timer";
 import { game } from "$lib/state/game";
+import { player } from "$lib/state/player";
 import { isEntity } from "$lib/utils";
 import type { Scene } from "@babylonjs/core";
 import { isPlayer } from "../player";
@@ -70,6 +71,7 @@ export const createEnemy = ({ scene, position, target }: Params) => {
 					attackEnabled = false;
 					timer.start();
 					entity.hit(damage, true);
+					player.damageTaken += damage;
 				},
 			}),
 	});
@@ -84,5 +86,6 @@ export const createEnemy = ({ scene, position, target }: Params) => {
 	unit.mesh.onDisposeObservable.add(() => {
 		renderable.dispose();
 		timer.dispose();
+		player.defeatedEnemies++;
 	});
 };

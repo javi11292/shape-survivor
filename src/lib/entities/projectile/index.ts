@@ -38,8 +38,10 @@ const addProjectile = ({ scene, position, target }: Omit<Params, "amount">) => {
 				return;
 			}
 
+			const damage = DAMAGE * upgrades.damage.amount(player.upgrades.damage);
 			mesh.dispose();
-			entity.hit(DAMAGE * upgrades.damage.amount(player.upgrades.damage));
+			entity.hit(damage);
+			player.damageDone += damage;
 		},
 	});
 

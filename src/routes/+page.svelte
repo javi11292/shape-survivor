@@ -11,14 +11,15 @@
 
 	let canvas: HTMLCanvasElement;
 	let started = $state(false);
+	let stopAfterDeathTimeout: NodeJS.Timeout | undefined;
 
 	resetGame();
 	resetPlayer();
 
 	$effect(() => {
 		if (game.wasted) {
-			setTimeout(() => {
-				createGame(canvas);
+			stopAfterDeathTimeout = setTimeout(() => {
+				game.running = false;
 			}, 3000);
 		}
 	});
@@ -28,7 +29,7 @@
 			return;
 		}
 
-		createGame(canvas);
+		startGame();
 
 		return () => {
 			game.mounted = false;
@@ -51,6 +52,11 @@
 		player.maxHp = HP_PER_LEVEL * upgrades.hp.amount(player.upgrades.hp);
 		player.hp = player.maxHp - diff;
 	});
+
+	const startGame = () => {
+		clearTimeout(stopAfterDeathTimeout);
+		createGame(canvas);
+	};
 </script>
 
 <main>
@@ -79,7 +85,7 @@
 		{/if}
 
 		{#if game.wasted}
-			<GameOver />
+			<GameOver restart={startGame} />
 		{/if}
 	</div>
 </main>

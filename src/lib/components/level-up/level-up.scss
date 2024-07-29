@@ -1,22 +1,17 @@
 @import "$lib/styles/modal";
+@import "$lib/styles/card";
 
 .levelUp {
-	color: white;
+	pointer-events: all;
 	display: flex;
 	gap: 5rem;
 }
 
 .card {
 	@extend %background;
-	pointer-events: all;
-	background: #111;
-	padding: 3rem;
-	border-radius: 1rem;
-	display: flex;
-	gap: 3rem;
-	flex-direction: column;
 	text-align: center;
 	width: 40rem;
+	gap: 3rem;
 	overflow: hidden;
 }
 

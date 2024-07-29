@@ -1,8 +1,36 @@
 @import "$lib/styles/modal";
+@import "$lib/styles/card";
 
 .content {
-	color: red;
-	font-size: 4rem;
-	font-weight: 700;
+	pointer-events: all;
 	height: 50vh;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.title {
+	color: red;
+	font-size: 5rem;
+	font-weight: 700;
+}
+
+.card {
+	font-size: 2rem;
+	gap: 1rem;
+}
+
+.green {
+	color: limegreen;
+}
+
+.red {
+	color: rgb(255, 70, 70);
+}
+
+.row {
+	display: flex;
+	justify-content: space-between;
+	gap: 4rem;
 }
