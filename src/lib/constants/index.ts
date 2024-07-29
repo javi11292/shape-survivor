@@ -4,5 +4,5 @@ export const PROJECTILE_MASK = 4;
 export const ITEM_MASK = 8;
 export const PLAYER_AURA_MASK = 16;
 
-export const AMOUNT_PER_LEVEL = 1;
+export const XP_PER_LEVEL = 1;
 export const HP_PER_LEVEL = 10;

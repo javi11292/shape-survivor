@@ -55,7 +55,8 @@ const addProjectile = ({ scene, position, target }: Omit<Params, "amount">) => {
 
 export const createProjectile = ({ scene, position, target, amount }: Params) => {
 	assets.shot.play();
-	const randomAmount = Math.random() < 0.5 ? Math.floor(amount) : Math.ceil(amount);
+	const floor = Math.floor(amount);
+	const randomAmount = floor + (Math.random() < amount - floor ? 1 : 0);
 	const center = (randomAmount - 1) / 2;
 
 	for (let i = 0; i < randomAmount; i++) {

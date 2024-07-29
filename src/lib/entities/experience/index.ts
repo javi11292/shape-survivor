@@ -1,4 +1,4 @@
-import { AMOUNT_PER_LEVEL, ITEM_MASK, PLAYER_AURA_MASK } from "$lib/constants";
+import { ITEM_MASK, PLAYER_AURA_MASK, XP_PER_LEVEL } from "$lib/constants";
 import { PhysicsMotionType, Vector3 } from "$lib/engine";
 import { assets } from "$lib/engine/assets";
 import { createBody } from "$lib/engine/body";
@@ -40,7 +40,7 @@ export const createExperience = ({ scene, position, amount }: Params) => {
 				if (player.experience >= player.toNextLevel) {
 					player.level++;
 					player.experience -= player.toNextLevel;
-					player.toNextLevel = player.level * AMOUNT_PER_LEVEL;
+					player.toNextLevel = player.level * XP_PER_LEVEL;
 					game.levelup = true;
 				}
 

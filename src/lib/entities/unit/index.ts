@@ -33,6 +33,7 @@ export const createUnit = ({ scene, mesh: childMesh, getBody, state }: Params) =
 			state.hp -= finalDamage;
 
 			if (state.hp <= 0) {
+				state.hp = 0;
 				mesh.dispose();
 
 				if (!fromEnemy) {

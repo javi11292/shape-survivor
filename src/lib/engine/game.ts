@@ -1,4 +1,5 @@
 import { dev } from "$app/environment";
+import { effect } from "$lib/core/utils";
 import { createEnemy } from "$lib/entities/enemy";
 import { createPlayer } from "$lib/entities/player";
 import { game, resetGame } from "$lib/state/game";
@@ -11,6 +12,7 @@ import { createTimer } from "./timer";
 
 const SPAWN_DISTANCE = 40;
 const SPAWN_SPEED = 1000;
+const DIFFICULTY_DELAY = 20000;
 
 const createScene = async (engine: Engine) => {
 	const havokInstance = await HavokPhysics();
@@ -20,9 +22,17 @@ const createScene = async (engine: Engine) => {
 
 	createTimer({
 		scene,
+		timeout: DIFFICULTY_DELAY,
+		callback: () => {
+			game.difficulty++;
+		},
+	});
+
+	const timer = createTimer({
+		scene,
 		timeout: SPAWN_SPEED,
 		callback: () => {
-			const x = Math.random() * SPAWN_DISTANCE * 2 - SPAWN_DISTANCE;
+			const x = Math.random() * SPAWN_DISTANCE;
 			const y =
 				Math.sqrt(Math.pow(SPAWN_DISTANCE, 2) - Math.pow(x, 2)) * (Math.random() < 0.5 ? -1 : 1);
 
@@ -32,6 +42,10 @@ const createScene = async (engine: Engine) => {
 				target: player.position,
 			});
 		},
+	});
+
+	const disposeTimeout = effect(() => {
+		timer.timeout = SPAWN_SPEED / (1 + game.difficulty * 0.1);
 	});
 
 	light.intensity = Math.PI;
@@ -46,6 +60,10 @@ const createScene = async (engine: Engine) => {
 		}
 
 		scene.render();
+	});
+
+	scene.onDisposeObservable.add(() => {
+		disposeTimeout();
 	});
 
 	return scene;

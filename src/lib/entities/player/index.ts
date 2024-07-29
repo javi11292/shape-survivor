@@ -25,7 +25,7 @@ const SPEED = 0.01;
 const SQRT_SPEED = Math.sqrt(Math.pow(SPEED, 2) / 2);
 const PROJECTILE_POSITION = new Vector3(0, 0, 1);
 const SHOT_SPEED = 1000;
-const AURA_RADIUS = 5;
+const AURA_RADIUS = 2.5;
 
 type Params = {
 	scene: Scene;

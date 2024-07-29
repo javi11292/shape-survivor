@@ -1,6 +1,7 @@
 import { State } from "$lib/core/utils";
 
 const getInitialState = () => ({
+	difficulty: 0,
 	mounted: true,
 	running: true,
 	wasted: false,

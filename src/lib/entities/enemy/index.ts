@@ -3,6 +3,7 @@ import { PhysicsMotionType, Vector3 } from "$lib/engine";
 import { createBody } from "$lib/engine/body";
 import { createRenderable } from "$lib/engine/renderable";
 import { createTimer } from "$lib/engine/timer";
+import { game } from "$lib/state/game";
 import { isEntity } from "$lib/utils";
 import type { Scene } from "@babylonjs/core";
 import { isPlayer } from "../player";
@@ -44,9 +45,11 @@ export const createEnemy = ({ scene, position, target }: Params) => {
 		},
 	});
 
+	const damage = DAMAGE + DAMAGE * game.difficulty * 0.5;
+
 	const unit = createUnit({
 		scene,
-		state: { hp: HP },
+		state: { hp: HP + HP * game.difficulty * 0.2 },
 		mesh: getMesh().createInstance("enemy"),
 		getBody: (mesh) =>
 			createBody({
@@ -66,7 +69,7 @@ export const createEnemy = ({ scene, position, target }: Params) => {
 
 					attackEnabled = false;
 					timer.start();
-					entity.hit(DAMAGE, true);
+					entity.hit(damage, true);
 				},
 			}),
 	});
