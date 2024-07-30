@@ -1,40 +1,29 @@
+import { MAP_SIZE } from "$lib/constants";
 import { ExtrudePolygon, PhysicsShapeConvexHull, Vector3 } from "$lib/engine";
 import type { Mesh, Scene } from "@babylonjs/core";
 import earcut from "earcut";
 
-const DISTANCE = 0.9;
+export const WALL_WIDTH = 2;
 
 const SHAPE = [
-	new Vector3(1, 0, 1),
-	new Vector3(1, 0, -1),
-	new Vector3(-1, 0, -1),
-	new Vector3(-1, 0, 1),
+	new Vector3(0, 0, 0),
+	new Vector3(0, 0, MAP_SIZE + WALL_WIDTH * 2),
+	new Vector3(WALL_WIDTH, 0, MAP_SIZE + WALL_WIDTH * 2),
+	new Vector3(WALL_WIDTH, 0, 0),
 ];
 
-const HOLES: [Vector3[]] = [
-	[
-		new Vector3(DISTANCE, 0, DISTANCE),
-		new Vector3(DISTANCE, 0, -DISTANCE),
-		new Vector3(-DISTANCE, 0, -DISTANCE),
-		new Vector3(-DISTANCE, 0, DISTANCE),
-	],
-];
-
-const SCALING = new Vector3(5, 1, 5);
-
-export const getMesh = () => {
+export const getWallMesh = () => {
 	const mesh = ExtrudePolygon(
-		"map",
+		"wall source",
 		{
 			shape: SHAPE,
-			holes: HOLES,
 			depth: 1,
 		},
 		undefined,
 		earcut,
 	);
 
-	mesh.scaling = SCALING;
+	mesh.isVisible = false;
 
 	return mesh;
 };

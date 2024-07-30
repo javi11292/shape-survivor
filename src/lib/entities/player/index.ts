@@ -1,4 +1,4 @@
-import { ITEM_MASK, PLAYER_AURA_MASK, PLAYER_MASK } from "$lib/constants";
+import { ITEM_MASK, PLAYER_AURA_MASK, PLAYER_MASK, WALL_MASK } from "$lib/constants";
 import { upgrades } from "$lib/constants/upgrades";
 import { effect } from "$lib/core/utils";
 import {
@@ -17,13 +17,14 @@ import { isEntity } from "$lib/utils";
 import type { Scene } from "@babylonjs/core";
 import { createProjectile } from "../projectile";
 import { createUnit } from "../unit";
-import { KEYS, addEvents, getMesh } from "./utils";
+import { KEYS, addEvents, getMesh, getShape } from "./utils";
 
-const SPEED = 0.01;
+const SPEED = 10;
 const SQRT_SPEED = Math.sqrt(Math.pow(SPEED, 2) / 2);
 const PROJECTILE_POSITION = new Vector3(0, 0, 1);
 const SHOT_SPEED = 1000;
 const AURA_RADIUS = 2.5;
+const CAMERA_POSITION = 30;
 
 type Params = {
 	scene: Scene;
@@ -38,10 +39,11 @@ export const createPlayer = ({ scene }: Params) => {
 		{
 			scene,
 			state: player,
+			getShape,
 		},
 		{
 			name: "player",
-			type: PhysicsMotionType.ANIMATED,
+			type: PhysicsMotionType.DYNAMIC,
 		},
 	);
 
@@ -50,17 +52,21 @@ export const createPlayer = ({ scene }: Params) => {
 	const mesh = getMesh();
 	const node = unit.body.transformNode;
 	const auraMesh = CreateCylinder("aura", { height: 1, diameter: AURA_RADIUS * 2 });
-	const auraBody = createBody({ name: "aura", type: PhysicsMotionType.ANIMATED, scene });
+	const auraBody = createBody({ name: "aura", type: PhysicsMotionType.STATIC, scene });
+	const entityBody = createBody({ name: "player enemy", type: PhysicsMotionType.STATIC, scene });
 
 	camera.rotation.x = Math.PI / 2;
 	camera.mode = UniversalCamera.ORTHOGRAPHIC_CAMERA;
 
-	auraMesh.isVisible = false;
-	auraBody.transformNode.addChild(auraMesh);
 	node.metadata.type = playerType;
-	node.addChild(auraBody.transformNode);
 	node.addChild(mesh);
-	unit.body.shape!.filterMembershipMask = PLAYER_MASK;
+	node.addChild(auraBody.transformNode);
+	node.addChild(entityBody.transformNode);
+
+	entityBody.transformNode.metadata = unit.body.transformNode.metadata;
+	entityBody.shape = getShape(unit.mesh, scene);
+	entityBody.shape.filterMembershipMask = PLAYER_MASK;
+	unit.body.shape!.filterCollideMask = WALL_MASK;
 
 	const timer = createTimer({
 		scene,
@@ -103,46 +109,43 @@ export const createPlayer = ({ scene }: Params) => {
 
 	const render = createRender({
 		scene,
-		render: (delta) => {
-			if (input.size > 0) {
-				const position = new Vector3();
+		render: () => {
+			const position = new Vector3();
 
-				input.forEach((key) => {
-					switch (key) {
-						case KEYS.right:
-							position.x = 1;
-							break;
-						case KEYS.left:
-							position.x = -1;
-							break;
-						case KEYS.up:
-							position.z = 1;
-							break;
-						case KEYS.down:
-							position.z = -1;
-							break;
-					}
-				});
+			input.forEach((key) => {
+				switch (key) {
+					case KEYS.right:
+						position.x = 1;
+						break;
+					case KEYS.left:
+						position.x = -1;
+						break;
+					case KEYS.up:
+						position.z = 1;
+						break;
+					case KEYS.down:
+						position.z = -1;
+						break;
+				}
+			});
 
-				const speed =
-					(position.x && position.z ? SQRT_SPEED : SPEED) *
-					upgrades.movementSpeed.amount(player.upgrades.movementSpeed) *
-					delta;
+			const speed =
+				(position.x && position.z ? SQRT_SPEED : SPEED) *
+				upgrades.movementSpeed.amount(player.upgrades.movementSpeed);
 
-				node.position.addInPlace(position.scale(speed));
-				camera.position.x = node.position.x;
-				camera.position.z = node.position.z;
-			}
+			unit.body.setLinearVelocity(position.scale(speed));
+			camera.position.x = node.position.x;
+			camera.position.z = node.position.z;
 		},
 	});
 
 	const resizeCamera = () => {
 		const aspectRatio = window.innerWidth / window.innerHeight;
 
-		camera.orthoLeft = -50;
-		camera.orthoRight = 50;
-		camera.orthoTop = camera.orthoRight / aspectRatio;
-		camera.orthoBottom = camera.orthoLeft / aspectRatio;
+		camera.orthoRight = CAMERA_POSITION;
+		camera.orthoLeft = -CAMERA_POSITION;
+		camera.orthoTop = CAMERA_POSITION / aspectRatio;
+		camera.orthoBottom = -CAMERA_POSITION / aspectRatio;
 	};
 
 	resizeCamera();

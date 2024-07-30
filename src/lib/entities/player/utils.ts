@@ -3,10 +3,12 @@ import {
 	HavokPlugin,
 	KeyboardEventTypes,
 	PhysicsEventType,
+	PhysicsShapeConvexHull,
 	Scene,
 	TransformNode,
 } from "$lib/engine";
 import type { createBody } from "$lib/engine/body";
+import type { Mesh } from "@babylonjs/core";
 import earcut from "earcut";
 import { isExperience } from "../experience";
 import { SHAPE } from "../unit";
@@ -19,6 +21,8 @@ export enum KEYS {
 }
 
 const keys = new Set<string>(Object.values(KEYS));
+
+export const getShape = (mesh: Mesh, scene: Scene) => new PhysicsShapeConvexHull(mesh, scene);
 
 export const getMesh = () =>
 	CreatePolygon(

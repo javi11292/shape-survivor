@@ -1,6 +1,6 @@
 import { Damage } from "$lib/components/damage";
-import { State, memo } from "$lib/core/utils";
-import { ExtrudePolygon, Matrix, PhysicsShapeConvexHull, Vector3 } from "$lib/engine";
+import { State } from "$lib/core/utils";
+import { ExtrudePolygon, Matrix, Vector3 } from "$lib/engine";
 import { createMeshSource } from "$lib/engine/mesh";
 import type { Scene } from "@babylonjs/core";
 import earcut from "earcut";
@@ -8,9 +8,9 @@ import { mount, unmount } from "svelte";
 
 export const SHAPE = [new Vector3(0, 0, 1), new Vector3(-1, 0, -1), new Vector3(1, 0, -1)];
 
-const getMesh = createMeshSource(() =>
+export const getMesh = createMeshSource(() =>
 	ExtrudePolygon(
-		"unit body source",
+		"unit",
 		{
 			shape: SHAPE,
 			depth: 1,
@@ -19,8 +19,6 @@ const getMesh = createMeshSource(() =>
 		earcut,
 	),
 );
-
-export const getShape = memo((scene: Scene) => new PhysicsShapeConvexHull(getMesh(), scene));
 
 export const showDamage = ({
 	scene,

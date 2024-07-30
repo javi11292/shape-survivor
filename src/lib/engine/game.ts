@@ -1,4 +1,5 @@
 import { dev } from "$app/environment";
+import { MAP_SIZE } from "$lib/constants";
 import { effect } from "$lib/core/utils";
 import { createEnemy } from "$lib/entities/enemy";
 import { createMap } from "$lib/entities/map";
@@ -23,6 +24,7 @@ import { createTimer } from "./timer";
 const SPAWN_DISTANCE = 40;
 const SPAWN_SPEED = 1000;
 const DIFFICULTY_DELAY = 20000;
+const MAX = MAP_SIZE / 2 - 2;
 
 const createScene = async (engine: Engine) => {
 	const havokInstance = await HavokPhysics();
@@ -46,9 +48,23 @@ const createScene = async (engine: Engine) => {
 			const y =
 				Math.sqrt(Math.pow(SPAWN_DISTANCE, 2) - Math.pow(x, 2)) * (Math.random() < 0.5 ? -1 : 1);
 
+			const position = player.position.add(new Vector3(x, 0, y));
+
+			if (position.x < -MAX) {
+				position.x = -MAX;
+			} else if (position.x > MAX) {
+				position.x = MAX;
+			}
+
+			if (position.z < -MAX) {
+				position.z = -MAX;
+			} else if (position.z > MAX) {
+				position.z = MAX;
+			}
+
 			createEnemy({
 				scene,
-				position: player.position.add(new Vector3(x, 0, y)),
+				position,
 				target: player.position,
 			});
 		},

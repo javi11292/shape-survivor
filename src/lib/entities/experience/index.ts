@@ -30,7 +30,7 @@ export const createExperience = ({ scene, position, amount }: Params) => {
 		},
 	};
 
-	const body = createBody({ name: "experience", type: PhysicsMotionType.STATIC, scene });
+	const body = createBody({ name: "experience", type: PhysicsMotionType.ANIMATED, scene });
 
 	const mesh = getMesh().createInstance("experience");
 	const node = body.transformNode;
