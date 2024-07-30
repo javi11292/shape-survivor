@@ -9,13 +9,14 @@ import { resetPlayer } from "$lib/state/player";
 import HavokPhysics from "@babylonjs/havok";
 import { untrack } from "svelte";
 import {
+	Color3,
 	Color4,
 	Engine,
 	HavokPlugin,
-	HemisphericLight,
 	KeyboardEventTypes,
 	Scene,
 	ScenePerformancePriority,
+	StandardMaterial,
 	Vector3,
 } from ".";
 import { getManager } from "./assets";
@@ -30,7 +31,6 @@ const createScene = async (engine: Engine) => {
 	const havokInstance = await HavokPhysics();
 	const havok = new HavokPlugin(true, havokInstance);
 	const scene = new Scene(engine);
-	const light = new HemisphericLight("light", new Vector3());
 
 	createTimer({
 		scene,
@@ -74,10 +74,13 @@ const createScene = async (engine: Engine) => {
 		timer.timeout = SPAWN_SPEED / (1 + game.difficulty * 0.25);
 	});
 
-	light.intensity = Math.PI;
+	const material = new StandardMaterial("default");
+
+	material.emissiveColor = new Color3(1, 1, 1);
 	scene.clearColor = new Color4(0, 0, 0);
 	scene.enablePhysics(Vector3.Zero(), havok);
 	scene.performancePriority = ScenePerformancePriority.Intermediate;
+	scene.defaultMaterial = material;
 
 	const player = createPlayer({ scene });
 	createMap({ scene });

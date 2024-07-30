@@ -10,7 +10,7 @@ export const SHAPE = [new Vector3(0, 0, 1), new Vector3(-1, 0, -1), new Vector3(
 
 export const getMesh = createMeshSource(() =>
 	ExtrudePolygon(
-		"unit",
+		"unit body",
 		{
 			shape: SHAPE,
 			depth: 1,

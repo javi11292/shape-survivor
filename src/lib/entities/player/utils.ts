@@ -48,14 +48,14 @@ export const addEvents = ({
 	const plugin = scene.getPhysicsEngine()?.getPhysicsPlugin() as HavokPlugin;
 
 	plugin.onTriggerCollisionObservable.add(({ type, collider, collidedAgainst }) => {
-		const trigger = collider === auraBody ? collidedAgainst : collider;
-
 		if (
 			type !== PhysicsEventType.TRIGGER_ENTERED ||
 			(collider !== auraBody && collidedAgainst !== auraBody)
 		) {
 			return;
 		}
+
+		const trigger = collider === auraBody ? collidedAgainst : collider;
 
 		const entity = trigger.transformNode.metadata;
 

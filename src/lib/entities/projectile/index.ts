@@ -7,7 +7,7 @@ import { createTimer } from "$lib/engine/timer";
 import { player } from "$lib/state/player";
 import type { Scene } from "@babylonjs/core";
 import { isEnemy } from "../enemy";
-import { getMesh, getShape } from "./utils";
+import { getBodyMesh, getMesh, getShape } from "./utils";
 
 const SPEED = 50;
 const LIFE_TIME = 750;
@@ -48,7 +48,7 @@ const addProjectile = ({ scene, position, target }: Omit<Params, "amount">) => {
 	node.computeWorldMatrix();
 
 	body.setLinearVelocity(node.getDirection(new Vector3(0, 0, -SPEED)));
-	body.shape = getShape(mesh.sourceMesh, scene);
+	body.shape = getShape(getBodyMesh(), scene);
 	body.shape.filterMembershipMask = PROJECTILE_MASK;
 	body.shape.filterCollideMask = ENEMY_MASK;
 

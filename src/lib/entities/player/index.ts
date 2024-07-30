@@ -52,16 +52,14 @@ export const createPlayer = ({ scene }: Params) => {
 	const mesh = getMesh();
 	const node = unit.body.transformNode;
 	const auraMesh = CreateCylinder("aura", { height: 1, diameter: AURA_RADIUS * 2 });
-	const auraBody = createBody({ name: "aura", type: PhysicsMotionType.STATIC, scene });
-	const entityBody = createBody({ name: "player enemy", type: PhysicsMotionType.STATIC, scene });
+	const auraBody = createBody({ name: "aura", type: PhysicsMotionType.ANIMATED, scene });
+	const entityBody = createBody({ name: "entity", type: PhysicsMotionType.ANIMATED, scene });
 
 	camera.rotation.x = Math.PI / 2;
 	camera.mode = UniversalCamera.ORTHOGRAPHIC_CAMERA;
 
-	node.metadata.type = playerType;
 	node.addChild(mesh);
-	node.addChild(auraBody.transformNode);
-	node.addChild(entityBody.transformNode);
+	node.metadata.type = playerType;
 
 	entityBody.transformNode.metadata = unit.body.transformNode.metadata;
 	entityBody.shape = getShape(unit.mesh, scene);
@@ -136,6 +134,14 @@ export const createPlayer = ({ scene }: Params) => {
 			unit.body.setLinearVelocity(position.scale(speed));
 			camera.position.x = node.position.x;
 			camera.position.z = node.position.z;
+
+			const nodePosition = node.position.clone();
+			const nodeRotation = node.rotationQuaternion!.clone();
+
+			auraBody.transformNode.position = nodePosition;
+			entityBody.transformNode.position = nodePosition;
+			auraBody.transformNode.rotationQuaternion = nodeRotation;
+			entityBody.transformNode.rotationQuaternion = nodeRotation;
 		},
 	});
 

@@ -7,7 +7,7 @@ import { game } from "$lib/state/game";
 import { player } from "$lib/state/player";
 import { isEntity } from "$lib/utils";
 import type { Scene } from "@babylonjs/core";
-import { getMesh, getShape } from "./utils";
+import { getBodyMesh, getMesh, getShape } from "./utils";
 
 const SPEED = 0.02;
 
@@ -35,9 +35,10 @@ export const createExperience = ({ scene, position, amount }: Params) => {
 	const mesh = getMesh().createInstance("experience");
 	const node = body.transformNode;
 
-	body.shape = getShape(mesh.sourceMesh, scene);
+	body.shape = getShape(getBodyMesh(), scene);
 	body.shape.filterMembershipMask = ITEM_MASK;
 	body.shape.filterCollideMask = PLAYER_AURA_MASK;
+	body.shape.isTrigger = true;
 
 	node.addChild(mesh);
 	node.position = position;
