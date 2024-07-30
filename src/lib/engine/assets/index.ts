@@ -24,7 +24,7 @@ export const getManager = memo((scene: Scene) => {
 		(assets.shot = new Sound("shot sound", task.data, scene));
 
 	manager.addBinaryFileTask("suck", suck).onSuccess = (task) =>
-		(assets.suck = new Sound("suck sound", task.data, scene));
+		(assets.suck = new Sound("suck sound", task.data, scene, undefined, { volume: 0.4 }));
 
 	manager.addBinaryFileTask("death", death).onSuccess = (task) =>
 		(assets.death = new Sound("death sound", task.data, scene));

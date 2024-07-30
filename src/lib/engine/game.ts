@@ -30,7 +30,7 @@ const createScene = async (engine: Engine) => {
 	const havokInstance = await HavokPhysics();
 	const havok = new HavokPlugin(true, havokInstance);
 	const scene = new Scene(engine);
-	const light = new HemisphericLight("light", new Vector3(0, 0, 1));
+	const light = new HemisphericLight("light", new Vector3());
 
 	createTimer({
 		scene,

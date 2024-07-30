@@ -11,11 +11,8 @@ const SHAPE = [
 	new Vector3(-0.05, 0, 0),
 ];
 
-export const getMesh = createMeshSource(() => {
-	const mesh = CreatePolygon("projectile source", { shape: SHAPE }, undefined, earcut);
-
-	mesh.doNotSyncBoundingInfo = false;
-	return mesh;
-});
+export const getMesh = createMeshSource(() =>
+	CreatePolygon("projectile source", { shape: SHAPE }, undefined, earcut),
+);
 
 export const getShape = memo((mesh: Mesh, scene: Scene) => new PhysicsShapeConvexHull(mesh, scene));
