@@ -1,6 +1,7 @@
 import { dev } from "$app/environment";
 import { effect } from "$lib/core/utils";
 import { createEnemy } from "$lib/entities/enemy";
+import { createMap } from "$lib/entities/map";
 import { createPlayer } from "$lib/entities/player";
 import { game, resetGame } from "$lib/state/game";
 import { resetPlayer } from "$lib/state/player";
@@ -63,6 +64,7 @@ const createScene = async (engine: Engine) => {
 	scene.performancePriority = ScenePerformancePriority.Intermediate;
 
 	const player = createPlayer({ scene });
+	createMap({ scene });
 
 	engine.runRenderLoop(() => {
 		if (!game.running) {

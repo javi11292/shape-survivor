@@ -12,6 +12,7 @@ export { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
 export { Axis } from "@babylonjs/core/Maths/math.axis";
 export { Color3, Color4 } from "@babylonjs/core/Maths/math.color";
 export { Matrix, Quaternion, Vector3 } from "@babylonjs/core/Maths/math.vector";
+export { CreateBox } from "@babylonjs/core/Meshes/Builders/boxBuilder";
 export { CreateCylinder } from "@babylonjs/core/Meshes/Builders/cylinderBuilder";
 export { CreateDisc } from "@babylonjs/core/Meshes/Builders/discBuilder";
 export { CreateLines } from "@babylonjs/core/Meshes/Builders/linesBuilder";

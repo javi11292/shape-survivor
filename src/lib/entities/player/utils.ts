@@ -69,7 +69,7 @@ export const addEvents = ({
 			return;
 		}
 
-		node.lookAt(origin, 0, Math.PI / 2);
+		node.lookAt(origin);
 	});
 
 	scene.onKeyboardObservable.add(({ type, event }) => {

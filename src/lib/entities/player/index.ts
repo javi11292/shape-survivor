@@ -45,15 +45,16 @@ export const createPlayer = ({ scene }: Params) => {
 		},
 	);
 
-	const camera = new UniversalCamera("camera", new Vector3(0, 50, 0));
+	const camera = new UniversalCamera("camera", new Vector3(0, 1, 0));
 	const input = new Set<KEYS>();
 	const mesh = getMesh();
 	const node = unit.body.transformNode;
 	const auraMesh = CreateCylinder("aura", { height: 1, diameter: AURA_RADIUS * 2 });
 	const auraBody = createBody({ name: "aura", type: PhysicsMotionType.ANIMATED, scene });
 
-	camera.target = new Vector3();
-	camera.rotation.y = 0;
+	camera.rotation.x = Math.PI / 2;
+	camera.mode = UniversalCamera.ORTHOGRAPHIC_CAMERA;
+
 	auraMesh.isVisible = false;
 	auraBody.transformNode.addChild(auraMesh);
 	node.metadata.type = playerType;
@@ -135,7 +136,21 @@ export const createPlayer = ({ scene }: Params) => {
 		},
 	});
 
+	const resizeCamera = () => {
+		const aspectRatio = window.innerWidth / window.innerHeight;
+
+		camera.orthoLeft = -50;
+		camera.orthoRight = 50;
+		camera.orthoTop = camera.orthoRight / aspectRatio;
+		camera.orthoBottom = camera.orthoLeft / aspectRatio;
+	};
+
+	resizeCamera();
+
+	window.addEventListener("resize", resizeCamera);
+
 	node.onDisposeObservable.add(() => {
+		window.removeEventListener("resize", resizeCamera);
 		render.dispose();
 		timer.dispose();
 		regenTimer.dispose();
