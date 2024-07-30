@@ -166,6 +166,8 @@ export const createPlayer = ({ scene }: Params) => {
 		disposeTimeout();
 		disposeRange();
 		game.wasted = true;
+		auraBody.transformNode.dispose();
+		entityBody.transformNode.dispose();
 	});
 
 	return {
