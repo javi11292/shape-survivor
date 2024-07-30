@@ -7,7 +7,7 @@ import { createTimer } from "$lib/engine/timer";
 import { player } from "$lib/state/player";
 import type { Scene } from "@babylonjs/core";
 import { isEnemy } from "../enemy";
-import { getBodyMesh, getMesh, getShape } from "./utils";
+import { getMesh, getShape } from "./utils";
 
 const SPEED = 50;
 const LIFE_TIME = 750;
@@ -21,15 +21,9 @@ type Params = {
 };
 
 const addProjectile = ({ scene, position, target }: Omit<Params, "amount">) => {
-	const mesh = getBodyMesh().createInstance("projectile body");
-	mesh.addChild(getMesh().createInstance("projectile"));
-	mesh.position = position;
-	mesh.lookAt(target);
-	mesh.rotation.y += Math.PI;
-
 	const body = createBody({
 		scene,
-		mesh,
+		name: "projectile",
 		type: PhysicsMotionType.ANIMATED,
 		onCollision: ({ collidedAgainst }) => {
 			const entity = collidedAgainst.transformNode.metadata;
@@ -39,20 +33,28 @@ const addProjectile = ({ scene, position, target }: Omit<Params, "amount">) => {
 			}
 
 			const damage = DAMAGE * upgrades.damage.amount(player.upgrades.damage);
-			mesh.dispose();
+			node.dispose();
 			entity.hit(damage);
 			player.damageDone += damage;
 		},
 	});
 
-	body.setLinearVelocity(mesh.getDirection(new Vector3(0, 0, SPEED)));
+	const node = body.transformNode;
+	const mesh = getMesh().createInstance("projectile");
+
+	node.addChild(mesh);
+	node.position = position;
+	node.lookAt(target);
+	node.computeWorldMatrix();
+
+	body.setLinearVelocity(node.getDirection(new Vector3(0, 0, -SPEED)));
 	body.shape = getShape(mesh.sourceMesh, scene);
 	body.shape.filterMembershipMask = PROJECTILE_MASK;
 	body.shape.filterCollideMask = ENEMY_MASK;
 
-	const timer = createTimer({ scene, timeout: LIFE_TIME, callback: () => mesh.dispose() });
+	const timer = createTimer({ scene, timeout: LIFE_TIME, callback: () => node.dispose() });
 
-	mesh.onDisposeObservable.add(() => timer.dispose());
+	node.onDisposeObservable.add(() => timer.dispose());
 };
 
 export const createProjectile = ({ scene, position, target, amount }: Params) => {

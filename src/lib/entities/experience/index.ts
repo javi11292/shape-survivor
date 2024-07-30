@@ -2,12 +2,12 @@ import { ITEM_MASK, PLAYER_AURA_MASK, XP_PER_LEVEL } from "$lib/constants";
 import { PhysicsMotionType, Vector3 } from "$lib/engine";
 import { assets } from "$lib/engine/assets";
 import { createBody } from "$lib/engine/body";
-import { createRenderable } from "$lib/engine/renderable";
+import { createRender } from "$lib/engine/render";
 import { game } from "$lib/state/game";
 import { player } from "$lib/state/player";
 import { isEntity } from "$lib/utils";
 import type { Scene } from "@babylonjs/core";
-import { getBodyMesh, getMesh, getShape } from "./utils";
+import { getMesh, getShape } from "./utils";
 
 const SPEED = 0.02;
 
@@ -22,19 +22,40 @@ const experienceType = Symbol("experience");
 export const isExperience = isEntity<ReturnType<typeof createExperience>>(experienceType);
 
 export const createExperience = ({ scene, position, amount }: Params) => {
-	const mesh = getBodyMesh().createInstance("experience body");
-	const body = createBody({ mesh, type: PhysicsMotionType.STATIC, scene });
+	let target: Vector3 | undefined;
 
-	const renderable = createRenderable({
+	const experience = {
+		absorb: (nextTarget: Vector3) => {
+			target = nextTarget;
+		},
+	};
+
+	const body = createBody({ name: "experience", type: PhysicsMotionType.STATIC, scene });
+
+	const mesh = getMesh().createInstance("experience");
+	const node = body.transformNode;
+
+	body.shape = getShape(mesh.sourceMesh, scene);
+	body.shape.filterMembershipMask = ITEM_MASK;
+	body.shape.filterCollideMask = PLAYER_AURA_MASK;
+
+	node.addChild(mesh);
+	node.position = position;
+	node.metadata = experience;
+	node.metadata.type = experienceType;
+
+	node.onDisposeObservable.add(() => render.dispose());
+
+	const render = createRender({
 		scene,
 		render: (delta) => {
 			if (!target) {
 				return;
 			}
 
-			if (Vector3.DistanceSquared(mesh.position, target) <= 1) {
+			if (Vector3.DistanceSquared(node.position, target) <= 1) {
 				assets.suck.play();
-				mesh.dispose();
+				node.dispose();
 				player.experience += amount;
 
 				if (player.experience >= player.toNextLevel) {
@@ -47,32 +68,10 @@ export const createExperience = ({ scene, position, amount }: Params) => {
 				return;
 			}
 
-			mesh.lookAt(target);
-			mesh.position.addInPlace(mesh.getDirection(new Vector3(0, 0, SPEED * delta)));
+			node.lookAt(target);
+			node.position.addInPlace(node.getDirection(new Vector3(0, 0, SPEED * delta)));
 		},
 	});
-
-	let target: Vector3 | undefined;
-
-	const childMesh = getMesh().createInstance("experience");
-	childMesh.rotation.x = Math.PI / 2;
-
-	const experience = {
-		absorb: (nextTarget: Vector3) => {
-			target = nextTarget;
-		},
-	};
-
-	mesh.addChild(childMesh);
-	mesh.position = position;
-	mesh.metadata = experience;
-	mesh.metadata.type = experienceType;
-
-	body.shape = getShape(mesh.sourceMesh, scene);
-	body.shape.filterMembershipMask = ITEM_MASK;
-	body.shape.filterCollideMask = PLAYER_AURA_MASK;
-
-	mesh.onDisposeObservable.add(() => renderable.dispose());
 
 	return experience;
 };

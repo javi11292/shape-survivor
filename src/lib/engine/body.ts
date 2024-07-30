@@ -1,19 +1,17 @@
-import type { AbstractMesh, IPhysicsCollisionEvent, Observable, Scene } from "@babylonjs/core";
-import { PhysicsBody, PhysicsMotionType, Vector3 } from ".";
+import type { IPhysicsCollisionEvent, Observable, Scene } from "@babylonjs/core";
+import { PhysicsBody, PhysicsMotionType, TransformNode, Vector3 } from ".";
 
 type Params = {
 	scene: Scene;
-	mesh: AbstractMesh;
+	name: string;
 	type: PhysicsMotionType;
 	onCollision?: Parameters<Observable<IPhysicsCollisionEvent>["add"]>[0];
 };
 
-export const createBody = ({ scene, mesh, type, onCollision }: Params) => {
-	const body = new PhysicsBody(mesh, type, false, scene);
+export const createBody = ({ scene, name, type, onCollision }: Params) => {
+	const body = new PhysicsBody(new TransformNode(name), type, false, scene);
 	body.disablePreStep = false;
 	body.setMassProperties({ inertia: Vector3.Zero() });
-
-	mesh.isVisible = false;
 
 	if (onCollision) {
 		body.setCollisionCallbackEnabled(true);

@@ -13,6 +13,7 @@ import {
 	HemisphericLight,
 	KeyboardEventTypes,
 	Scene,
+	ScenePerformancePriority,
 	Vector3,
 } from ".";
 import { getManager } from "./assets";
@@ -40,7 +41,7 @@ const createScene = async (engine: Engine) => {
 		scene,
 		timeout: SPAWN_SPEED,
 		callback: () => {
-			const x = Math.random() * SPAWN_DISTANCE;
+			const x = Math.random() * SPAWN_DISTANCE * 2 - SPAWN_DISTANCE;
 			const y =
 				Math.sqrt(Math.pow(SPAWN_DISTANCE, 2) - Math.pow(x, 2)) * (Math.random() < 0.5 ? -1 : 1);
 
@@ -59,6 +60,7 @@ const createScene = async (engine: Engine) => {
 	light.intensity = Math.PI;
 	scene.clearColor = new Color4(0, 0, 0);
 	scene.enablePhysics(Vector3.Zero(), havok);
+	scene.performancePriority = ScenePerformancePriority.Intermediate;
 
 	const player = createPlayer({ scene });
 

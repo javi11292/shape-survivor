@@ -6,7 +6,7 @@ type Params = {
 	autostart?: boolean;
 };
 
-export const createRenderable = ({ scene, render, autostart = true }: Params) => {
+export const createRender = ({ scene, render, autostart = true }: Params) => {
 	const engine = scene.getEngine();
 
 	let observer: ReturnType<typeof scene.onBeforeRenderObservable.add>;

@@ -27,4 +27,4 @@ export { HavokPlugin } from "@babylonjs/core/Physics/v2/Plugins/havokPlugin";
 export { PhysicsAggregate } from "@babylonjs/core/Physics/v2/physicsAggregate";
 export { PhysicsBody } from "@babylonjs/core/Physics/v2/physicsBody";
 export { PhysicsShapeConvexHull } from "@babylonjs/core/Physics/v2/physicsShape";
-export { Scene } from "@babylonjs/core/scene";
+export { Scene, ScenePerformancePriority } from "@babylonjs/core/scene";

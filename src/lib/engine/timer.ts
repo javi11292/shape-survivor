@@ -1,5 +1,5 @@
 import type { Scene } from "@babylonjs/core";
-import { createRenderable } from "./renderable";
+import { createRender } from "./render";
 
 type Params = {
 	repeat?: boolean;
@@ -17,7 +17,7 @@ export const createTimer = ({
 	let timeout = initialTimeout;
 	let elapsed = 0;
 
-	const renderable = createRenderable({
+	const render = createRender({
 		autostart: repeat,
 		scene,
 		render: (delta) => {
@@ -29,7 +29,7 @@ export const createTimer = ({
 				if (repeat) {
 					elapsed -= timeout;
 				} else {
-					renderable.dispose();
+					render.dispose();
 					elapsed = 0;
 				}
 			}
@@ -37,8 +37,8 @@ export const createTimer = ({
 	});
 
 	return {
-		dispose: renderable.dispose,
-		start: renderable.start,
+		dispose: render.dispose,
+		start: render.start,
 
 		get timeout() {
 			return timeout;

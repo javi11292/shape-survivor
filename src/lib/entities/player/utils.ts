@@ -1,7 +1,15 @@
-import { HavokPlugin, KeyboardEventTypes, PhysicsEventType, Scene, Vector3 } from "$lib/engine";
+import {
+	CreatePolygon,
+	HavokPlugin,
+	KeyboardEventTypes,
+	PhysicsEventType,
+	Scene,
+	TransformNode,
+} from "$lib/engine";
 import type { createBody } from "$lib/engine/body";
+import earcut from "earcut";
 import { isExperience } from "../experience";
-import type { createUnit } from "../unit";
+import { SHAPE } from "../unit";
 
 export enum KEYS {
 	"up" = "W",
@@ -12,18 +20,25 @@ export enum KEYS {
 
 const keys = new Set<string>(Object.values(KEYS));
 
-const getAngle = (pointA: Vector3, pointB: Vector3) =>
-	Math.atan2(pointB.x - pointA.x, pointB.z - pointA.z);
+export const getMesh = () =>
+	CreatePolygon(
+		"player",
+		{
+			shape: SHAPE,
+		},
+		undefined,
+		earcut,
+	);
 
 export const addEvents = ({
 	scene,
 	auraBody,
-	unit,
+	node,
 	input,
 }: {
 	scene: Scene;
 	auraBody: ReturnType<typeof createBody>;
-	unit: ReturnType<typeof createUnit>;
+	node: TransformNode;
 	input: Set<KEYS>;
 }) => {
 	const plugin = scene.getPhysicsEngine()?.getPhysicsPlugin() as HavokPlugin;
@@ -44,7 +59,7 @@ export const addEvents = ({
 			return;
 		}
 
-		entity.absorb(unit.mesh.position);
+		entity.absorb(node.position);
 	});
 
 	scene.onPointerObservable.add(({ pickInfo }) => {
@@ -54,8 +69,7 @@ export const addEvents = ({
 			return;
 		}
 
-		unit.mesh.rotation = unit.mesh.rotation.clone();
-		unit.mesh.rotation.y = getAngle(unit.mesh.position, origin);
+		node.lookAt(origin, 0, Math.PI / 2);
 	});
 
 	scene.onKeyboardObservable.add(({ type, event }) => {
