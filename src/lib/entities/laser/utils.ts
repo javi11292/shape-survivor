@@ -7,12 +7,20 @@ export const HEIGHT = 30;
 export const LIFE_TIME = 500;
 export const KEYFRAMES = [
 	{
+		frame: 0,
+		value: 0.1,
+	},
+	{
 		frame: LIFE_TIME * 0.6,
 		value: 0.1,
 	},
 	{
 		frame: LIFE_TIME * 0.8,
 		value: 0.3,
+	},
+	{
+		frame: LIFE_TIME * 0.9,
+		value: 1,
 	},
 	{
 		frame: LIFE_TIME,

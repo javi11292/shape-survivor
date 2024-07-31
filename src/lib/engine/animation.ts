@@ -5,33 +5,39 @@ export const createAnimation = ({
 	scene,
 	keyframes,
 	callback,
+	onAnimationEnd,
 }: {
 	scene: Scene;
+	onAnimationEnd?: () => void;
 	callback: (value: number) => void;
 	keyframes: { value: number; frame: number }[];
 }) => {
 	let frame = 0;
+	let remainingFrames = keyframes;
+	let prevFrame = { frame: 0, value: 0 };
 
 	const render = createRender({
 		scene,
 		render: (delta) => {
-			let prevFrame = { frame: 0, value: 0 };
-
-			for (let keyframe of keyframes) {
+			for (const keyframe of remainingFrames) {
 				if (frame <= keyframe.frame) {
 					const elapsed = (frame - prevFrame.frame) / (keyframe.frame - prevFrame.frame);
-					const value = prevFrame.value + elapsed * (keyframe.value - prevFrame.value);
+					const value =
+						prevFrame.value +
+						(Number.isNaN(elapsed) ? 1 : elapsed) * (keyframe.value - prevFrame.value);
 
 					callback(value);
 
 					break;
+				} else {
+					remainingFrames = remainingFrames.slice(1);
+					prevFrame = keyframe;
 				}
-
-				prevFrame = keyframe;
 			}
 
-			if (frame > keyframes[keyframes.length - 1]!.frame) {
+			if (!remainingFrames.length) {
 				render.dispose();
+				onAnimationEnd?.();
 				return;
 			}
 

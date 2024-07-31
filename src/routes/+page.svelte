@@ -11,7 +11,7 @@
 
 	let canvas: HTMLCanvasElement;
 	let started = $state(false);
-	let stopAfterDeathTimeout: NodeJS.Timeout | undefined;
+	let stopAfterDeathTimeout: ReturnType<typeof setTimeout> | undefined;
 
 	resetGame();
 	resetPlayer();

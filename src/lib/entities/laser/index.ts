@@ -41,6 +41,7 @@ export const createLaser = ({ scene, position }: Params) => {
 	const animation = createAnimation({
 		scene,
 		keyframes: KEYFRAMES,
+		onAnimationEnd: () => laser.dispose(),
 		callback: (value) => (mesh.scaling.z = value),
 	});
 
@@ -79,10 +80,6 @@ export const createLaser = ({ scene, position }: Params) => {
 			body.shape.isTrigger = true;
 
 			scene.onAfterPhysicsObservable.addOnce(() => {
-				laser.dispose();
-			});
-
-			laser.onDisposeObservable.add(() => {
 				node.dispose();
 			});
 		},
