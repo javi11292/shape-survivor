@@ -20,7 +20,6 @@ type Params = {
 };
 
 export const createLaser = ({ scene, position }: Params) => {
-	let frame = 0;
 	const laser = new TransformNode("laser");
 	const mesh = getMesh().createInstance("laser");
 
