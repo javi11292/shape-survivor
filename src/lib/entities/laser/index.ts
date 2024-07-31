@@ -1,6 +1,7 @@
 import { ENEMY_MASK, PROJECTILE_MASK } from "$lib/constants";
 import { upgrades } from "$lib/constants/upgrades";
 import { PhysicsMotionType, TransformNode, Vector3 } from "$lib/engine";
+import { createAnimation } from "$lib/engine/animation";
 import { assets } from "$lib/engine/assets";
 import { createBody } from "$lib/engine/body";
 import { createRender } from "$lib/engine/render";
@@ -8,7 +9,7 @@ import { createTimer } from "$lib/engine/timer";
 import { player } from "$lib/state/player";
 import type { Scene } from "@babylonjs/core";
 import { isEnemy } from "../enemy";
-import { HEIGHT, LIFE_TIME, getAnimation, getMesh, getShape } from "./utils";
+import { HEIGHT, KEYFRAMES, LIFE_TIME, getMesh, getShape } from "./utils";
 
 const DAMAGE = 20;
 const POSITION = new Vector3(HEIGHT / 2 + 1.5, 0, 0);
@@ -19,30 +20,39 @@ type Params = {
 };
 
 export const createLaser = ({ scene, position }: Params) => {
+	let frame = 0;
 	const laser = new TransformNode("laser");
 	const mesh = getMesh().createInstance("laser");
-	const animation = getAnimation();
 
-	mesh.animations = [animation];
 	mesh.position = POSITION;
+	mesh.scaling.z = 0;
 
 	laser.addChild(mesh);
 	laser.position = position;
 
 	const sound = createTimer({
 		scene,
-		timeout: LIFE_TIME * 1000 - 100,
+		timeout: LIFE_TIME - 100,
 		callback: () => {
 			assets.laser.play();
 			sound.dispose();
 		},
 	});
 
-	const render = createRender({ scene, render: () => laser.markAsDirty() });
+	const animation = createAnimation({
+		scene,
+		keyframes: KEYFRAMES,
+		callback: (value) => (mesh.scaling.z = value),
+	});
+
+	const render = createRender({
+		scene,
+		render: () => laser.markAsDirty(),
+	});
 
 	const timer = createTimer({
 		scene,
-		timeout: LIFE_TIME * 1000,
+		timeout: LIFE_TIME,
 		callback: () => {
 			const body = createBody({
 				scene,
@@ -62,9 +72,6 @@ export const createLaser = ({ scene, position }: Params) => {
 			});
 
 			const node = body.transformNode;
-			node.position = POSITION;
-			node.scaling.z = 0;
-
 			node.position = mesh.absolutePosition;
 
 			body.shape = getShape(mesh.sourceMesh, scene);
@@ -86,7 +93,6 @@ export const createLaser = ({ scene, position }: Params) => {
 		timer.dispose();
 		render.dispose();
 		sound.dispose();
+		animation.dispose();
 	});
-
-	scene.beginAnimation(mesh, 0, LIFE_TIME);
 };
