@@ -3,6 +3,7 @@ import "@babylonjs/core/Culling/ray";
 import "@babylonjs/core/Materials/standardMaterial";
 import "@babylonjs/core/Physics/physicsEngineComponent";
 
+export { Animation } from "@babylonjs/core/Animations/animation";
 export { Sound } from "@babylonjs/core/Audio/sound";
 export { UniversalCamera } from "@babylonjs/core/Cameras/universalCamera";
 export { Engine } from "@babylonjs/core/Engines/engine";
@@ -13,6 +14,7 @@ export { Axis } from "@babylonjs/core/Maths/math.axis";
 export { Color3, Color4 } from "@babylonjs/core/Maths/math.color";
 export { Matrix, Quaternion, Vector3 } from "@babylonjs/core/Maths/math.vector";
 export { CreateBox } from "@babylonjs/core/Meshes/Builders/boxBuilder";
+export { CreateCapsule } from "@babylonjs/core/Meshes/Builders/capsuleBuilder";
 export { CreateCylinder } from "@babylonjs/core/Meshes/Builders/cylinderBuilder";
 export { CreateDisc } from "@babylonjs/core/Meshes/Builders/discBuilder";
 export { CreateLines } from "@babylonjs/core/Meshes/Builders/linesBuilder";

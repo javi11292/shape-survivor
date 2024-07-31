@@ -32,11 +32,6 @@ export const showDamage = ({
 	fromEnemy?: boolean;
 }) => {
 	let vectorProjection = getVectorProjection({ scene, point });
-
-	if (!vectorProjection) {
-		return;
-	}
-
 	const position = new State({ x: vectorProjection.x, y: vectorProjection.y });
 
 	const component = mount(Damage, {
@@ -46,10 +41,6 @@ export const showDamage = ({
 
 	const observer = scene.onBeforeRenderObservable.add(() => {
 		vectorProjection = getVectorProjection({ scene, point });
-
-		if (!vectorProjection || !position) {
-			return;
-		}
 
 		position.state.x = vectorProjection.x;
 		position.state.y = vectorProjection.y;
@@ -62,14 +53,10 @@ export const showDamage = ({
 };
 
 const getVectorProjection = ({ scene, point }: { scene: Scene; point: Vector3 }) => {
-	if (!scene.activeCamera) {
-		return;
-	}
-
 	return Vector3.Project(
 		point,
 		Matrix.Identity(),
 		scene.getTransformMatrix(),
-		scene.activeCamera.viewport.toGlobal(window.innerWidth, window.innerHeight),
+		scene.activeCamera!.viewport.toGlobal(window.innerWidth, window.innerHeight),
 	);
 };

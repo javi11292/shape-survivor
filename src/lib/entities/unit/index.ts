@@ -47,11 +47,5 @@ export const createUnit = ({ scene, state, getShape }: Params[0], bodyParams: Pa
 	node.metadata = unit;
 	body.shape = getShape(unit.mesh, scene);
 
-	const observer = scene.onAfterPhysicsObservable.add(() => {
-		node.position.y = 0;
-	});
-
-	node.onDisposeObservable.add(() => scene.onAfterPhysicsObservable.remove(observer));
-
 	return unit;
 };

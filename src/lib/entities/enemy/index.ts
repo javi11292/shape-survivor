@@ -38,10 +38,10 @@ export const createEnemy = ({ scene, position, target }: Params) => {
 		{
 			name: "enemy",
 			type: PhysicsMotionType.DYNAMIC,
-			onCollision: ({ collidedAgainst }) => {
-				const entity = collidedAgainst.transformNode.metadata;
+			onCollision: (trigger) => {
+				const { metadata } = trigger.transformNode;
 
-				if (!isPlayer(entity)) {
+				if (!isPlayer(metadata)) {
 					return;
 				}
 
@@ -51,7 +51,7 @@ export const createEnemy = ({ scene, position, target }: Params) => {
 
 				attackEnabled = false;
 				timer.start();
-				entity.hit(damage, true);
+				metadata.hit(damage, true);
 				player.damageTaken += damage;
 			},
 		},

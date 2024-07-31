@@ -1,16 +1,13 @@
 import {
 	CreatePolygon,
-	HavokPlugin,
 	KeyboardEventTypes,
-	PhysicsEventType,
 	PhysicsShapeConvexHull,
 	Scene,
 	TransformNode,
+	Vector3,
 } from "$lib/engine";
-import type { createBody } from "$lib/engine/body";
 import type { Mesh } from "@babylonjs/core";
 import earcut from "earcut";
-import { isExperience } from "../experience";
 import { SHAPE } from "../unit";
 
 export enum KEYS {
@@ -21,6 +18,8 @@ export enum KEYS {
 }
 
 const keys = new Set<string>(Object.values(KEYS));
+
+const CAMERA_HEIGHT = new Vector3(0, -9, 0);
 
 export const getShape = (mesh: Mesh, scene: Scene) => new PhysicsShapeConvexHull(mesh, scene);
 
@@ -36,44 +35,17 @@ export const getMesh = () =>
 
 export const addEvents = ({
 	scene,
-	auraBody,
 	node,
 	input,
 }: {
 	scene: Scene;
-	auraBody: ReturnType<typeof createBody>;
 	node: TransformNode;
 	input: Set<KEYS>;
 }) => {
-	const plugin = scene.getPhysicsEngine()?.getPhysicsPlugin() as HavokPlugin;
-
-	plugin.onTriggerCollisionObservable.add(({ type, collider, collidedAgainst }) => {
-		if (
-			type !== PhysicsEventType.TRIGGER_ENTERED ||
-			(collider !== auraBody && collidedAgainst !== auraBody)
-		) {
-			return;
-		}
-
-		const trigger = collider === auraBody ? collidedAgainst : collider;
-
-		const entity = trigger.transformNode.metadata;
-
-		if (!isExperience(entity)) {
-			return;
-		}
-
-		entity.absorb(node.position);
-	});
-
 	scene.onPointerObservable.add(({ pickInfo }) => {
-		const origin = pickInfo?.ray?.origin;
+		const origin = pickInfo!.ray!.origin;
 
-		if (!origin) {
-			return;
-		}
-
-		node.lookAt(origin);
+		node.lookAt(origin.addInPlace(CAMERA_HEIGHT));
 	});
 
 	scene.onKeyboardObservable.add(({ type, event }) => {

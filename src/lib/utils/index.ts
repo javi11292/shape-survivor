@@ -1,4 +1,7 @@
 export const isEntity =
 	<T>(type: unknown) =>
-	(entity: unknown): entity is T =>
-		entity !== null && typeof entity === "object" && "type" in entity && entity.type === type;
+	(metadata: unknown): metadata is T =>
+		metadata !== null &&
+		typeof metadata === "object" &&
+		"type" in metadata &&
+		metadata.type === type;

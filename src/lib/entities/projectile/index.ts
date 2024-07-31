@@ -7,6 +7,7 @@ import { createTimer } from "$lib/engine/timer";
 import { player } from "$lib/state/player";
 import type { Scene } from "@babylonjs/core";
 import { isEnemy } from "../enemy";
+import { isWall } from "../map";
 import { getBodyMesh, getMesh, getShape } from "./utils";
 
 const SPEED = 50;
@@ -25,16 +26,21 @@ const addProjectile = ({ scene, position, target }: Omit<Params, "amount">) => {
 		scene,
 		name: "projectile",
 		type: PhysicsMotionType.ANIMATED,
-		onCollision: ({ collidedAgainst }) => {
-			const entity = collidedAgainst.transformNode.metadata;
+		onTrigger: (trigger) => {
+			const { metadata } = trigger.transformNode;
 
-			if (!isEnemy(entity)) {
+			if (isWall(metadata)) {
+				node.dispose();
+				return;
+			}
+
+			if (!isEnemy(metadata)) {
 				return;
 			}
 
 			const damage = DAMAGE * upgrades.damage.amount(player.upgrades.damage);
 			node.dispose();
-			entity.hit(damage);
+			metadata.hit(damage);
 			player.damageDone += damage;
 		},
 	});
@@ -51,6 +57,7 @@ const addProjectile = ({ scene, position, target }: Omit<Params, "amount">) => {
 	body.shape = getShape(getBodyMesh(), scene);
 	body.shape.filterMembershipMask = PROJECTILE_MASK;
 	body.shape.filterCollideMask = ENEMY_MASK;
+	body.shape.isTrigger = true;
 
 	const timer = createTimer({ scene, timeout: LIFE_TIME, callback: () => node.dispose() });
 

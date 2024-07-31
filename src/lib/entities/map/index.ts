@@ -1,12 +1,17 @@
 import { MAP_SIZE } from "$lib/constants";
 import { PhysicsMotionType, Vector3 } from "$lib/engine";
 import { createBody } from "$lib/engine/body";
+import { isEntity } from "$lib/utils";
 import type { Mesh, Scene } from "@babylonjs/core";
 import { WALL_WIDTH, getShape, getWallMesh } from "./utils";
 
 type Params = {
 	scene: Scene;
 };
+
+const wallType = Symbol("wall");
+
+export const isWall = isEntity(wallType);
 
 const addWall = ({
 	mesh,
@@ -23,6 +28,7 @@ const addWall = ({
 	body.transformNode.addChild(mesh.createInstance("wall"));
 	body.transformNode.position = position;
 	body.transformNode.rotation = rotation;
+	body.transformNode.metadata = { type: wallType };
 	body.shape = getShape(mesh, scene);
 };
 

@@ -15,6 +15,8 @@ import { game } from "$lib/state/game";
 import { player } from "$lib/state/player";
 import { isEntity } from "$lib/utils";
 import type { Scene } from "@babylonjs/core";
+import { isExperience } from "../experience";
+import { createLaser } from "../laser";
 import { createProjectile } from "../projectile";
 import { createUnit } from "../unit";
 import { KEYS, addEvents, getMesh, getShape } from "./utils";
@@ -47,12 +49,25 @@ export const createPlayer = ({ scene }: Params) => {
 		},
 	);
 
-	const camera = new UniversalCamera("camera", new Vector3(0, 1, 0));
+	const camera = new UniversalCamera("camera", new Vector3(0, 10, 0));
 	const input = new Set<KEYS>();
 	const mesh = getMesh();
 	const node = unit.body.transformNode;
 	const auraMesh = CreateCylinder("aura", { height: 1, diameter: AURA_RADIUS * 2 });
-	const auraBody = createBody({ name: "aura", type: PhysicsMotionType.ANIMATED, scene });
+	const auraBody = createBody({
+		name: "aura",
+		type: PhysicsMotionType.ANIMATED,
+		scene,
+		onTrigger: (trigger) => {
+			const { metadata } = trigger.transformNode;
+
+			if (!isExperience(metadata)) {
+				return;
+			}
+
+			metadata.absorb(node.position);
+		},
+	});
 	const entityBody = createBody({ name: "entity", type: PhysicsMotionType.ANIMATED, scene });
 
 	camera.rotation.x = Math.PI / 2;
@@ -61,12 +76,13 @@ export const createPlayer = ({ scene }: Params) => {
 	node.addChild(mesh);
 	node.metadata.type = playerType;
 
+	auraMesh.isVisible = false;
 	entityBody.transformNode.metadata = unit.body.transformNode.metadata;
 	entityBody.shape = getShape(unit.mesh, scene);
 	entityBody.shape.filterMembershipMask = PLAYER_MASK;
 	unit.body.shape!.filterCollideMask = WALL_MASK;
 
-	const timer = createTimer({
+	const projectileTimer = createTimer({
 		scene,
 		timeout: SHOT_SPEED,
 		callback: () =>
@@ -75,6 +91,16 @@ export const createPlayer = ({ scene }: Params) => {
 				position: node.position.add(node.getDirection(PROJECTILE_POSITION)),
 				target: node.position,
 				amount: upgrades.projectiles.amount(player.upgrades.projectiles),
+			}),
+	});
+
+	const laserTimer = createTimer({
+		scene,
+		timeout: SHOT_SPEED * 2,
+		callback: () =>
+			createLaser({
+				scene,
+				position: node.position,
 			}),
 	});
 
@@ -87,7 +113,9 @@ export const createPlayer = ({ scene }: Params) => {
 	});
 
 	const disposeTimeout = effect(() => {
-		timer.timeout = SHOT_SPEED / upgrades.attackSpeed.amount(player.upgrades.attackSpeed);
+		projectileTimer.timeout = SHOT_SPEED / upgrades.attackSpeed.amount(player.upgrades.attackSpeed);
+		laserTimer.timeout =
+			(SHOT_SPEED * 2) / upgrades.attackSpeed.amount(player.upgrades.attackSpeed);
 	});
 
 	const disposeRange = effect(() => {
@@ -103,7 +131,7 @@ export const createPlayer = ({ scene }: Params) => {
 		return () => shape.dispose();
 	});
 
-	addEvents({ scene, node, auraBody, input });
+	addEvents({ scene, node, input });
 
 	const render = createRender({
 		scene,
@@ -161,7 +189,8 @@ export const createPlayer = ({ scene }: Params) => {
 	node.onDisposeObservable.add(() => {
 		window.removeEventListener("resize", resizeCamera);
 		render.dispose();
-		timer.dispose();
+		projectileTimer.dispose();
+		laserTimer.dispose();
 		regenTimer.dispose();
 		disposeTimeout();
 		disposeRange();
