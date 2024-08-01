@@ -8,28 +8,28 @@ type Upgrade = {
 
 const ARMOR = 10;
 
-const percentageAmount = (value: number) => 1 + value * 0.2;
+const percentageAmount = (amount: number) => (value: number) => 1 + value * amount;
 const percentageFormat = (value: number) => `${Math.round(value * 100)}%`;
 
 export const upgrades = {
 	damage: {
 		name: "Daño",
-		amount: percentageAmount,
+		amount: percentageAmount(0.2),
 		format: percentageFormat,
 	},
 	hp: {
 		name: "Vida",
-		amount: percentageAmount,
+		amount: percentageAmount(0.2),
 		format: percentageFormat,
 	},
 	attackSpeed: {
 		name: "Velocidad de ataque",
-		amount: percentageAmount,
+		amount: percentageAmount(0.2),
 		format: percentageFormat,
 	},
 	movementSpeed: {
 		name: "Velocidad de movimiento",
-		amount: percentageAmount,
+		amount: percentageAmount(0.1),
 		format: percentageFormat,
 	},
 	armor: {
@@ -40,7 +40,7 @@ export const upgrades = {
 	},
 	range: {
 		name: "Rango de recogida",
-		amount: (value: number) => 1 + value * 0.4,
+		amount: percentageAmount(0.4),
 		format: percentageFormat,
 	},
 	regen: {

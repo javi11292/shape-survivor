@@ -9,7 +9,7 @@ import { isEntity } from "$lib/utils";
 import type { Scene } from "@babylonjs/core";
 import { getBodyMesh, getMesh, getShape } from "./utils";
 
-const SPEED = 0.02;
+const SPEED = 0.03;
 
 type Params = {
 	scene: Scene;
