@@ -77,6 +77,12 @@
 				</div>
 				<div class="level">{player.level}</div>
 			</div>
+
+			{#if !game.running && !game.levelup && !game.wasted}
+				<div class="backdrop">
+					<div class="paused">Paused</div>
+				</div>
+			{/if}
 		{:else}
 			<div class="start">
 				<Button onclick={() => (started = true)}>Empezar</Button>
