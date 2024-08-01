@@ -27,7 +27,7 @@
 		const index = Math.floor(Math.random() * keys.length);
 		const key = keys[index]!;
 
-		if (key in weapons) {
+		if (keys === weaponKeys) {
 			weaponKeys.splice(index, 1);
 
 			return { key, weapon: true, upgrade: weapons[key as WeaponKey] };
