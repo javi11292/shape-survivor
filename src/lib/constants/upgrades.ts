@@ -87,7 +87,7 @@ export const weapons = {
 			},
 			knockback: {
 				label: "Empuje",
-				amount: (value = 0) => (value - 1) * 0.3,
+				amount: (value = 0) => (value - 1) * 0.375,
 				format: fixedFormat,
 			},
 		},

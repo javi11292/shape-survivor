@@ -84,7 +84,7 @@
 							{#if !level}
 								NEW
 							{:else}
-								Lv.{level}
+								Lv.{level + 1}
 							{/if}
 						</div>
 						<div class="title">{upgrade.name}</div>
