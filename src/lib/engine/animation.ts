@@ -1,4 +1,5 @@
 import type { Scene } from "@babylonjs/core";
+import { Scalar } from ".";
 import { createRender } from "./render";
 
 export const createAnimation = ({
@@ -22,9 +23,12 @@ export const createAnimation = ({
 			for (const keyframe of remainingFrames) {
 				if (frame <= keyframe.frame) {
 					const elapsed = (frame - prevFrame.frame) / (keyframe.frame - prevFrame.frame);
-					const value =
-						prevFrame.value +
-						(Number.isNaN(elapsed) ? 1 : elapsed) * (keyframe.value - prevFrame.value);
+
+					const value = Scalar.Lerp(
+						prevFrame.value,
+						keyframe.value,
+						Number.isNaN(elapsed) ? 1 : elapsed,
+					);
 
 					callback(value);
 

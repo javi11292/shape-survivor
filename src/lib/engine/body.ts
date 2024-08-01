@@ -12,7 +12,7 @@ type Params = {
 export const createBody = ({ scene, name, type, onCollision, onTrigger }: Params) => {
 	const body = new PhysicsBody(new TransformNode(name), type, false, scene);
 	body.disablePreStep = false;
-	body.setMassProperties({ inertia: Vector3.Zero() });
+	body.setMassProperties({ inertia: Vector3.Zero(), mass: 1 });
 
 	const observer = scene.onAfterPhysicsObservable.add(() => {
 		body.transformNode.position.y = 0;

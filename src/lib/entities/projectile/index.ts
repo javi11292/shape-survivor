@@ -13,6 +13,8 @@ import { getBodyMesh, getMesh, getShape } from "./utils";
 const SPEED = 50;
 const LIFE_TIME = 750;
 const DAMAGE = 10;
+const IMPULSE_POSITION = Vector3.Zero();
+const IMPULSE_FORCE = new Vector3(0, 0, -100);
 
 type Params = {
 	scene: Scene;
@@ -38,10 +40,14 @@ const addProjectile = ({ scene, position, target }: Omit<Params, "amount">) => {
 				return;
 			}
 
+			if (metadata.body.transformNode.metadata === false) {
+				metadata.body.applyImpulse(node.getDirection(IMPULSE_FORCE), IMPULSE_POSITION);
+			}
+
 			const damage = DAMAGE * upgrades.damage.amount(player.upgrades.damage);
-			node.dispose();
 			metadata.hit(damage);
 			player.damageDone += damage;
+			node.dispose();
 		},
 	});
 

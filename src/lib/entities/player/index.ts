@@ -95,6 +95,7 @@ export const createPlayer = ({ scene }: Params) => {
 	});
 
 	const laserTimer = createTimer({
+		autostart: false,
 		scene,
 		timeout: SHOT_SPEED * 2,
 		callback: () =>
