@@ -1,16 +1,6 @@
 import { HP_PER_LEVEL, XP_PER_LEVEL } from "$lib/constants";
-import { upgrades } from "$lib/constants/upgrades";
+import { upgrades, weapons } from "$lib/constants/upgrades";
 import { State } from "$lib/core/utils";
-
-type Key = keyof typeof upgrades;
-
-const initialUpgrades = Object.keys(upgrades).reduce(
-	(acc, key) => {
-		acc[key as Key] = 0;
-		return acc;
-	},
-	{} as Record<Key, number>,
-);
 
 const getInitialState = () => ({
 	hp: HP_PER_LEVEL,
@@ -22,7 +12,8 @@ const getInitialState = () => ({
 	damageDone: 0,
 	damageTaken: 0,
 	startTime: Date.now(),
-	upgrades: { ...initialUpgrades },
+	upgrades: {} as Record<keyof typeof upgrades, number | undefined>,
+	weapons: { projectile: 1 } as Record<keyof typeof weapons, number | undefined>,
 });
 
 const playerState = new State(getInitialState());

@@ -1,5 +1,5 @@
 import { ENEMY_MASK, PROJECTILE_MASK } from "$lib/constants";
-import { upgrades } from "$lib/constants/upgrades";
+import { upgrades, weapons } from "$lib/constants/upgrades";
 import { Axis, PhysicsMotionType, Quaternion, Vector3 } from "$lib/engine";
 import { assets } from "$lib/engine/assets";
 import { createBody } from "$lib/engine/body";
@@ -12,9 +12,10 @@ import { getBodyMesh, getMesh, getShape } from "./utils";
 
 const SPEED = 50;
 const LIFE_TIME = 750;
-const DAMAGE = 10;
 const IMPULSE_POSITION = Vector3.Zero();
 const IMPULSE_FORCE = new Vector3(0, 0, -100);
+
+const weapon = weapons.projectile.stats;
 
 type Params = {
 	scene: Scene;
@@ -40,11 +41,15 @@ const addProjectile = ({ scene, position, target }: Omit<Params, "amount">) => {
 				return;
 			}
 
-			if (metadata.body.transformNode.metadata === false) {
-				metadata.body.applyImpulse(node.getDirection(IMPULSE_FORCE), IMPULSE_POSITION);
-			}
+			metadata.body.applyImpulse(
+				node.getDirection(IMPULSE_FORCE).scale(weapon.knockback.amount(player.weapons.projectile)),
+				IMPULSE_POSITION,
+			);
 
-			const damage = DAMAGE * upgrades.damage.amount(player.upgrades.damage);
+			const damage =
+				weapon.damage.amount(player.weapons.projectile) *
+				upgrades.damage.amount(player.upgrades.damage);
+
 			metadata.hit(damage);
 			player.damageDone += damage;
 			node.dispose();

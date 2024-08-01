@@ -10,7 +10,7 @@ const EXPERIENCE = 1;
 type Params = [
 	{
 		scene: Scene;
-		state: { hp: number; upgrades?: { armor: number } };
+		state: { hp: number; upgrades?: { armor: number | undefined } };
 		getShape: (mesh: Mesh, scene: Scene) => PhysicsShape;
 	},
 	Omit<Parameters<typeof createBody>[0], "scene">,

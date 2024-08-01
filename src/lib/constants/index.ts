@@ -7,4 +7,4 @@ export const WALL_MASK = 32;
 
 export const XP_PER_LEVEL = 1;
 export const HP_PER_LEVEL = 10;
-export const MAP_SIZE = 60;
+export const MAP_SIZE = 100;

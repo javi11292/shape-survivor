@@ -38,3 +38,16 @@
 	color: grey;
 	margin-bottom: 0.5rem;
 }
+
+.label ~ .label {
+	margin-top: 2rem;
+}
+
+.weapon {
+	background: rgb(50, 0, 50);
+}
+
+.level {
+	margin-top: -1rem;
+	margin-bottom: -2rem;
+}

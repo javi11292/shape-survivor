@@ -1,6 +1,5 @@
 import {
 	CreatePolygon,
-	KeyboardEventTypes,
 	PhysicsShapeConvexHull,
 	PointerEventTypes,
 	Scene,
@@ -49,9 +48,9 @@ export const addEvents = ({
 		node.lookAt(origin.addInPlace(CAMERA_HEIGHT));
 	}, PointerEventTypes.POINTERMOVE);
 
-	scene.onKeyboardObservable.add(({ type, event }) => {
-		switch (type) {
-			case KeyboardEventTypes.KEYDOWN: {
+	const handleEvent = (event: KeyboardEvent) => {
+		switch (event.type) {
+			case "keydown": {
 				const key = event.key.toUpperCase();
 
 				if (keys.has(key)) {
@@ -61,7 +60,7 @@ export const addEvents = ({
 				break;
 			}
 
-			case KeyboardEventTypes.KEYUP: {
+			case "keyup": {
 				const key = event.key.toUpperCase();
 
 				if (keys.has(key)) {
@@ -71,5 +70,13 @@ export const addEvents = ({
 				break;
 			}
 		}
+	};
+
+	window.addEventListener("keydown", handleEvent);
+	window.addEventListener("keyup", handleEvent);
+
+	scene.onDisposeObservable.add(() => {
+		window.removeEventListener("keydown", handleEvent);
+		window.removeEventListener("keyup", handleEvent);
 	});
 };
