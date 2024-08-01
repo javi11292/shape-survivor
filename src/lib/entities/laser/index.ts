@@ -1,5 +1,5 @@
 import { ENEMY_MASK, PROJECTILE_MASK } from "$lib/constants";
-import { upgrades } from "$lib/constants/upgrades";
+import { upgrades, weapons } from "$lib/constants/upgrades";
 import { PhysicsMotionType, TransformNode, Vector3 } from "$lib/engine";
 import { createAnimation } from "$lib/engine/animation";
 import { assets } from "$lib/engine/assets";
@@ -11,15 +11,27 @@ import type { Scene } from "@babylonjs/core";
 import { isEnemy } from "../enemy";
 import { HEIGHT, KEYFRAMES, LIFE_TIME, getMesh, getShape } from "./utils";
 
-const DAMAGE = 20;
 const POSITION = new Vector3(HEIGHT / 2 + 1.5, 0, 0);
+const ROTATION = new Vector3(0, Math.PI / 2, 0);
+const WEAPON = weapons.laser.stats;
+const ROTATIONS = [
+	ROTATION.scale(0),
+	ROTATION.scale(2),
+	ROTATION.scale(3),
+	ROTATION.scale(1),
+] as const;
 
 type Params = {
 	scene: Scene;
 	position: Vector3;
 };
 
-export const createLaser = ({ scene, position }: Params) => {
+const addLaser = ({
+	scene,
+	position,
+	rotation,
+	playSound,
+}: Params & { rotation: Vector3; playSound: boolean }) => {
 	const laser = new TransformNode("laser");
 	const mesh = getMesh().createInstance("laser");
 
@@ -27,16 +39,19 @@ export const createLaser = ({ scene, position }: Params) => {
 	mesh.scaling.z = 0;
 
 	laser.addChild(mesh);
+	laser.rotation = rotation;
 	laser.position = position;
 
-	const sound = createTimer({
-		scene,
-		timeout: LIFE_TIME - 100,
-		callback: () => {
-			assets.laser.play();
-			sound.dispose();
-		},
-	});
+	const sound = !playSound
+		? undefined
+		: createTimer({
+				scene,
+				timeout: LIFE_TIME - 100,
+				callback: () => {
+					assets.laser.play();
+					sound?.dispose();
+				},
+			});
 
 	const animation = createAnimation({
 		scene,
@@ -65,7 +80,9 @@ export const createLaser = ({ scene, position }: Params) => {
 						return;
 					}
 
-					const damage = DAMAGE * upgrades.damage.amount(player.upgrades.damage);
+					const damage =
+						WEAPON.damage.amount(player.weapons.laser) *
+						upgrades.damage.amount(player.upgrades.damage);
 					metadata.hit(damage);
 					player.damageDone += damage;
 				},
@@ -73,6 +90,7 @@ export const createLaser = ({ scene, position }: Params) => {
 
 			const node = body.transformNode;
 			node.position = mesh.absolutePosition;
+			node.rotationQuaternion = mesh.absoluteRotationQuaternion;
 
 			body.shape = getShape(mesh.sourceMesh, scene);
 			body.shape.filterMembershipMask = PROJECTILE_MASK;
@@ -88,7 +106,15 @@ export const createLaser = ({ scene, position }: Params) => {
 	laser.onDisposeObservable.add(() => {
 		timer.dispose();
 		render.dispose();
-		sound.dispose();
 		animation.dispose();
+		sound?.dispose();
 	});
+};
+
+export const createLaser = ({ scene, position }: Params) => {
+	const projectiles = WEAPON.projectiles.amount(player.weapons.laser);
+
+	for (let i = 0; i < projectiles; i++) {
+		addLaser({ scene, position, rotation: ROTATIONS[i] || ROTATIONS[3], playSound: i === 0 });
+	}
 };

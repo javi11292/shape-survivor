@@ -14,8 +14,7 @@ const SPEED = 50;
 const LIFE_TIME = 750;
 const IMPULSE_POSITION = Vector3.Zero();
 const IMPULSE_FORCE = new Vector3(0, 0, -100);
-
-const weapon = weapons.projectile.stats;
+const WEAPON = weapons.projectile.stats;
 
 type Params = {
 	scene: Scene;
@@ -42,12 +41,12 @@ const addProjectile = ({ scene, position, target }: Omit<Params, "amount">) => {
 			}
 
 			metadata.body.applyImpulse(
-				node.getDirection(IMPULSE_FORCE).scale(weapon.knockback.amount(player.weapons.projectile)),
+				node.getDirection(IMPULSE_FORCE).scale(WEAPON.knockback.amount(player.weapons.projectile)),
 				IMPULSE_POSITION,
 			);
 
 			const damage =
-				weapon.damage.amount(player.weapons.projectile) *
+				WEAPON.damage.amount(player.weapons.projectile) *
 				upgrades.damage.amount(player.upgrades.damage);
 
 			metadata.hit(damage);

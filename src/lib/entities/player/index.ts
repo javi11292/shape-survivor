@@ -25,6 +25,7 @@ const SPEED = 10;
 const SQRT_SPEED = Math.sqrt(Math.pow(SPEED, 2) / 2);
 const PROJECTILE_POSITION = new Vector3(0, 0, 1);
 const SHOT_SPEED = 1000;
+const LASER_SPEED = 3000;
 const AURA_RADIUS = 2.5;
 const CAMERA_POSITION = 40;
 
@@ -97,7 +98,7 @@ export const createPlayer = ({ scene }: Params) => {
 	const laserTimer = createTimer({
 		autostart: false,
 		scene,
-		timeout: SHOT_SPEED * 2,
+		timeout: LASER_SPEED,
 		callback: () =>
 			createLaser({
 				scene,
@@ -115,8 +116,7 @@ export const createPlayer = ({ scene }: Params) => {
 
 	const disposeTimeout = effect(() => {
 		projectileTimer.timeout = SHOT_SPEED / upgrades.attackSpeed.amount(player.upgrades.attackSpeed);
-		laserTimer.timeout =
-			(SHOT_SPEED * 2) / upgrades.attackSpeed.amount(player.upgrades.attackSpeed);
+		laserTimer.timeout = LASER_SPEED / upgrades.attackSpeed.amount(player.upgrades.attackSpeed);
 	});
 
 	const disposeRange = effect(() => {
@@ -130,6 +130,13 @@ export const createPlayer = ({ scene }: Params) => {
 		auraBody.shape.isTrigger = true;
 
 		return () => shape.dispose();
+	});
+
+	const disposeLaser = effect(() => {
+		if (player.weapons.laser) {
+			laserTimer.start();
+			disposeLaser();
+		}
 	});
 
 	addEvents({ scene, node, input });
@@ -195,6 +202,7 @@ export const createPlayer = ({ scene }: Params) => {
 		regenTimer.dispose();
 		disposeTimeout();
 		disposeRange();
+		disposeLaser();
 		game.wasted = true;
 		auraBody.transformNode.dispose();
 		entityBody.transformNode.dispose();

@@ -28,8 +28,15 @@ export const KEYFRAMES = [
 	},
 ];
 
-export const getMesh = createMeshSource(() =>
-	CreateCapsule("laser source", { orientation: Vector3.Right(), height: HEIGHT, radius: 1 }),
-);
+export const getMesh = createMeshSource(() => {
+	const mesh = CreateCapsule("laser source", {
+		orientation: Vector3.Right(),
+		height: HEIGHT,
+		radius: 1,
+	});
+
+	mesh.visibility = 0.75;
+	return mesh;
+});
 
 export const getShape = memo((mesh: Mesh, scene: Scene) => new PhysicsShapeConvexHull(mesh, scene));

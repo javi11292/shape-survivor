@@ -97,7 +97,17 @@ export const weapons = {
 			},
 			projectiles: {
 				label: "Disparos",
-				amount: (value = 0) => value,
+				amount: (value = 0) => {
+					if (value < 2) {
+						return value;
+					}
+
+					if (value > 3) {
+						return value - 1;
+					}
+
+					return 2;
+				},
 				format: fixedFormat,
 			},
 		},
