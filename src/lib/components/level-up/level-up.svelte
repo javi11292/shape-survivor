@@ -21,15 +21,19 @@
 
 	const upgradeKeys = Object.keys(upgrades);
 	const weaponKeys = Object.keys(weapons);
-	const keys = [...upgradeKeys, ...weaponKeys];
 
 	const selectRandom = () => {
+		const keys = Math.random() < 0.5 ? upgradeKeys : weaponKeys;
 		const index = Math.floor(Math.random() * keys.length);
-		const key = keys.splice(index, 1)[0]!;
+		const key = keys[index]!;
 
 		if (key in weapons) {
+			weaponKeys.splice(index, 1);
+
 			return { key, weapon: true, upgrade: weapons[key as WeaponKey] };
 		} else {
+			upgradeKeys.splice(index, 1);
+
 			return {
 				key,
 				weapon: false,
