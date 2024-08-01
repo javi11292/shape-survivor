@@ -143,7 +143,7 @@ export const createPlayer = ({ scene }: Params) => {
 
 	const render = createRender({
 		scene,
-		render: () => {
+		render: (delta) => {
 			const position = new Vector3();
 
 			input.forEach((key) => {
@@ -170,6 +170,8 @@ export const createPlayer = ({ scene }: Params) => {
 			unit.body.setLinearVelocity(position.scale(speed));
 			camera.position.x = node.position.x;
 			camera.position.z = node.position.z;
+
+			player.time += delta;
 
 			const nodePosition = node.position.clone();
 			const nodeRotation = node.rotationQuaternion!.clone();

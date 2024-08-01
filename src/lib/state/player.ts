@@ -11,7 +11,7 @@ const getInitialState = () => ({
 	defeatedEnemies: 0,
 	damageDone: 0,
 	damageTaken: 0,
-	startTime: Date.now(),
+	time: 0,
 	upgrades: {} as Record<keyof typeof upgrades, number | undefined>,
 	weapons: { projectile: 1 } as Record<keyof typeof weapons, number | undefined>,
 });

@@ -8,7 +8,7 @@
 
 	assets.death.play();
 
-	const duration = (Date.now() - player.startTime) / 1000;
+	const duration = player.time / 1000;
 </script>
 
 <div class="modal">
