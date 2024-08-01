@@ -1,3 +1,5 @@
+import { HP } from ".";
+
 type Upgrade = {
 	name: string;
 	label?: string;
@@ -32,8 +34,8 @@ export const upgrades = {
 	},
 	hp: {
 		name: "Vida",
-		amount: percentageAmount(0.4),
-		format: percentageFormat,
+		amount: (value = 0) => HP * percentageAmount(0.4)(value),
+		format: fixedFormat,
 	},
 	attackSpeed: {
 		name: "Velocidad de ataque",

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { GameOver } from "$lib/components/game-over";
 	import { LevelUp } from "$lib/components/level-up";
-	import { HP_PER_LEVEL } from "$lib/constants";
 	import { upgrades } from "$lib/constants/upgrades";
 	import { Button } from "$lib/core/components/button";
 	import { createGame } from "$lib/engine/game";
@@ -50,7 +49,7 @@
 
 	$effect(() => {
 		const diff = untrack(() => player.maxHp - player.hp);
-		player.maxHp = HP_PER_LEVEL * upgrades.hp.amount(player.upgrades.hp);
+		player.maxHp = upgrades.hp.amount(player.upgrades.hp);
 		player.hp = player.maxHp - diff;
 	});
 

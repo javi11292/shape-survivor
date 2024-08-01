@@ -6,5 +6,5 @@ export const PLAYER_AURA_MASK = 16;
 export const WALL_MASK = 32;
 
 export const XP_PER_LEVEL = 1;
-export const HP_PER_LEVEL = 10;
+export const HP = 10;
 export const MAP_SIZE = 100;

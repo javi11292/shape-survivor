@@ -1,10 +1,10 @@
-import { HP_PER_LEVEL, XP_PER_LEVEL } from "$lib/constants";
+import { HP, XP_PER_LEVEL } from "$lib/constants";
 import { upgrades, weapons } from "$lib/constants/upgrades";
 import { State } from "$lib/core/utils";
 
 const getInitialState = () => ({
-	hp: HP_PER_LEVEL,
-	maxHp: HP_PER_LEVEL,
+	hp: HP,
+	maxHp: HP,
 	experience: 0,
 	level: 1,
 	toNextLevel: XP_PER_LEVEL,
