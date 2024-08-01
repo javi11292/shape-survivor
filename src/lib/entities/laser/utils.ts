@@ -35,7 +35,7 @@ export const getMesh = createMeshSource(() => {
 		radius: 1,
 	});
 
-	mesh.visibility = 0.75;
+	mesh.visibility = 0.5;
 	return mesh;
 });
 

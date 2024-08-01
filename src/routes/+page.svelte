@@ -7,6 +7,7 @@
 	import { createGame } from "$lib/engine/game";
 	import { game, resetGame } from "$lib/state/game";
 	import { player, resetPlayer } from "$lib/state/player";
+	import { getTime } from "$lib/utils";
 	import { untrack } from "svelte";
 
 	let canvas: HTMLCanvasElement;
@@ -64,6 +65,8 @@
 
 	<div class="ui">
 		{#if started}
+			<div class="time">{getTime()}</div>
+
 			<div class="bars">
 				<div class="bar hp" style="--width:{player.hp / player.maxHp}">
 					<div>{Math.round(player.hp)} / {player.maxHp}</div>

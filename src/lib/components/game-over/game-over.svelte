@@ -3,12 +3,11 @@
 	import { Modal } from "$lib/core/components/modal";
 	import { assets } from "$lib/engine/assets";
 	import { player } from "$lib/state/player";
+	import { getTime } from "$lib/utils";
 
 	let { restart }: { restart: () => void } = $props();
 
 	assets.death.play();
-
-	const duration = player.time / 1000;
 </script>
 
 <div class="modal">
@@ -20,9 +19,7 @@
 				<div class="row">
 					Tiempo
 					<span class="green">
-						{Math.floor(duration / 60)}:{Math.round(duration % 60)
-							.toString()
-							.padStart(2, "0")}
+						{getTime()}
 					</span>
 				</div>
 				<div class="row">
