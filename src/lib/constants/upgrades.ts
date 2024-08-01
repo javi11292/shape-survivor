@@ -64,7 +64,13 @@ export const upgrades = {
 	projectiles: {
 		name: "Proyectiles",
 		label: "Nº de proyectiles",
-		amount: percentageAmount(0.5),
+		amount: (value = 0) => {
+			if (value === 5) {
+				return 4;
+			}
+
+			return percentageAmount(0.5)(value);
+		},
 		format: fixedFormat,
 	},
 } as const satisfies Record<string, Upgrade>;
