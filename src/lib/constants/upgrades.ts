@@ -32,7 +32,7 @@ export const upgrades = {
 	},
 	hp: {
 		name: "Vida",
-		amount: percentageAmount(0.2),
+		amount: percentageAmount(0.4),
 		format: percentageFormat,
 	},
 	attackSpeed: {

@@ -1,6 +1,6 @@
 <script lang="ts" context="module">
-	const eligibleUpgrades = new Set(Object.keys(upgrades));
-	const eligibleWeapons = new Set(Object.keys(weapons));
+	let eligibleUpgrades = $state(new Set<string>());
+	let eligibleWeapons = $state(new Set<string>());
 </script>
 
 <script lang="ts">
@@ -12,6 +12,11 @@
 
 	type UpgradeKey = keyof typeof upgrades;
 	type WeaponKey = keyof typeof weapons;
+
+	if (player.level === 2) {
+		eligibleUpgrades = new Set(Object.keys(upgrades));
+		eligibleWeapons = new Set(Object.keys(weapons));
+	}
 
 	const upgradeKeys = [...eligibleUpgrades];
 	const weaponKeys = [...eligibleWeapons];
