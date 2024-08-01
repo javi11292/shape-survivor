@@ -38,7 +38,7 @@
 	});
 
 	$effect(() => {
-		if (started && game.running && game.wasted === false) {
+		if (started && game.running) {
 			canvas.focus();
 		}
 	});
