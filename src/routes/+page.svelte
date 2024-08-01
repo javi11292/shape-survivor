@@ -81,11 +81,7 @@
 		{/if}
 
 		{#if game.levelup}
-			<LevelUp
-				bind:levelup={game.levelup}
-				bind:playerUpgrades={player.upgrades}
-				bind:playerWeapons={player.weapons}
-			/>
+			<LevelUp />
 		{/if}
 
 		{#if game.wasted}

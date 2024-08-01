@@ -1,26 +1,20 @@
+<script lang="ts" context="module">
+	const eligibleUpgrades = new Set(Object.keys(upgrades));
+	const eligibleWeapons = new Set(Object.keys(weapons));
+</script>
+
 <script lang="ts">
 	import { upgrades, weapons } from "$lib/constants/upgrades";
 	import { Icon } from "$lib/core/components/icon";
 	import { Modal } from "$lib/core/components/modal";
-	import type { player } from "$lib/state/player";
+	import { game } from "$lib/state/game";
+	import { player } from "$lib/state/player";
 
 	type UpgradeKey = keyof typeof upgrades;
 	type WeaponKey = keyof typeof weapons;
 
-	type Props = {
-		levelup: boolean;
-		playerUpgrades: (typeof player)["upgrades"];
-		playerWeapons: (typeof player)["weapons"];
-	};
-
-	let {
-		levelup = $bindable(),
-		playerUpgrades = $bindable(),
-		playerWeapons = $bindable(),
-	}: Props = $props();
-
-	const upgradeKeys = Object.keys(upgrades);
-	const weaponKeys = Object.keys(weapons);
+	const upgradeKeys = [...eligibleUpgrades];
+	const weaponKeys = [...eligibleWeapons];
 
 	const getKeys = () => {
 		if (weaponKeys.length > 0 && upgradeKeys.length > 0) {
@@ -53,23 +47,39 @@
 		};
 	};
 
-	const randomUpgrades = [selectRandom(), selectRandom(), selectRandom()];
+	const cards = [selectRandom(), selectRandom(), selectRandom()].filter(Boolean);
 
-	const handleClick = (items: Record<string, number | undefined>, key: string) => () => {
-		items[key] = (items[key] || 0) + 1;
-		levelup = false;
-	};
+	const handleClick =
+		(items: Record<string, number | undefined>, key: string, eligible: Set<string>) => () => {
+			items[key] = (items[key] || 0) + 1;
+
+			if (items[key] === 5) {
+				eligible.delete(key);
+			}
+
+			game.levelup = false;
+		};
+
+	if (cards.length === 0) {
+		game.levelup = false;
+		player.hp = player.maxHp;
+	}
 </script>
 
 <div class="modal">
 	<Modal open preventCancel>
 		<div class="levelUp">
-			{#each randomUpgrades as randomUpgrade}
-				{#if randomUpgrade}
-					{@const { key, weapon, upgrade } = randomUpgrade}
-					{@const items: Record<string, number | undefined> = weapon ? playerWeapons : playerUpgrades}
+			{#each cards as card}
+				{#if card}
+					{@const { key, weapon, upgrade } = card}
+					{@const items: Record<string, number | undefined> = weapon ? player.weapons : player.upgrades}
 					{@const level = items[key] || 0}
-					<div class="card" class:weapon onclick={handleClick(items, key)} role="none">
+					<div
+						class="card"
+						class:weapon
+						onclick={handleClick(items, key, weapon ? eligibleWeapons : eligibleUpgrades)}
+						role="none"
+					>
 						<div class="level">
 							{#if !level}
 								NEW
@@ -94,13 +104,17 @@
 							{:else if level}
 								{@const stats = Object.values(upgrade.stats) as (typeof upgrade.stats)[keyof typeof upgrade.stats][]}
 								{#each stats as stat}
-									<div class="label">{stat.label}</div>
+									{@const current = stat.amount(level)}
+									{@const next = stat.amount(level + 1)}
+									{#if current !== next}
+										<div class="label">{stat.label}</div>
 
-									<div class="difference">
-										<span>{stat.format(stat.amount(level))}</span>
-										<Icon icon="arrow-right" />
-										<span class="nextValue">{stat.format(stat.amount(level + 1))}</span>
-									</div>
+										<div class="difference">
+											<span>{stat.format(current)}</span>
+											<Icon icon="arrow-right" />
+											<span class="nextValue">{stat.format(next)}</span>
+										</div>
+									{/if}
 								{/each}
 							{/if}
 						</div>
