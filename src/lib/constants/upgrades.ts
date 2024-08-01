@@ -82,12 +82,12 @@ export const weapons = {
 		stats: {
 			damage: {
 				label: "Daño",
-				amount: (value = 0) => 10 * percentageAmount(0.2)(value - 1),
+				amount: (value = 0) => 10 * percentageAmount(0.25)(value - 1),
 				format: fixedFormat,
 			},
 			knockback: {
 				label: "Empuje",
-				amount: (value = 0) => (value - 1) * 0.2,
+				amount: (value = 0) => (value - 1) * 0.3,
 				format: fixedFormat,
 			},
 		},
@@ -98,7 +98,7 @@ export const weapons = {
 		stats: {
 			damage: {
 				label: "Daño",
-				amount: (value = 0) => 20 * percentageAmount(0.4)(value - 1),
+				amount: (value = 0) => 20 * percentageAmount(0.5)(value - 1),
 				format: fixedFormat,
 			},
 			projectiles: {
