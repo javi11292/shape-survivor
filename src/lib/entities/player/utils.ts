@@ -2,6 +2,7 @@ import {
 	CreatePolygon,
 	KeyboardEventTypes,
 	PhysicsShapeConvexHull,
+	PointerEventTypes,
 	Scene,
 	TransformNode,
 	Vector3,
@@ -46,7 +47,7 @@ export const addEvents = ({
 		const origin = pickInfo!.ray!.origin;
 
 		node.lookAt(origin.addInPlace(CAMERA_HEIGHT));
-	});
+	}, PointerEventTypes.POINTERMOVE);
 
 	scene.onKeyboardObservable.add(({ type, event }) => {
 		switch (type) {
