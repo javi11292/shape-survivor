@@ -1,25 +1,12 @@
-<script lang="ts" context="module">
-	let eligibleUpgrades = $state(new Set<string>());
-	let eligibleWeapons = $state(new Set<string>());
-</script>
-
 <script lang="ts">
-	import { upgrades, weapons } from "$lib/constants/upgrades";
+	import { upgrades, weapons, type Upgrade, type Weapon } from "$lib/constants/upgrades";
 	import { Icon } from "$lib/core/components/icon";
 	import { Modal } from "$lib/core/components/modal";
 	import { game } from "$lib/state/game";
 	import { player } from "$lib/state/player";
 
-	type UpgradeKey = keyof typeof upgrades;
-	type WeaponKey = keyof typeof weapons;
-
-	if (player.level === 2) {
-		eligibleUpgrades = new Set(Object.keys(upgrades));
-		eligibleWeapons = new Set(Object.keys(weapons));
-	}
-
-	const upgradeKeys = [...eligibleUpgrades];
-	const weaponKeys = [...eligibleWeapons];
+	const upgradeKeys = [...player.eligibleUpgrades];
+	const weaponKeys = [...player.eligibleWeapons];
 
 	const getKeys = () => {
 		if (weaponKeys.length > 0 && upgradeKeys.length > 0) {
@@ -48,7 +35,7 @@
 		return {
 			key,
 			weapon: keys === weaponKeys,
-			upgrade: keys === weaponKeys ? weapons[key as WeaponKey] : upgrades[key as UpgradeKey],
+			upgrade: keys === weaponKeys ? weapons[key as Weapon] : upgrades[key as Upgrade],
 		};
 	};
 
@@ -82,7 +69,11 @@
 					<div
 						class="card"
 						class:weapon
-						onclick={handleClick(items, key, weapon ? eligibleWeapons : eligibleUpgrades)}
+						onclick={handleClick(
+							items,
+							key,
+							weapon ? player.eligibleWeapons : player.eligibleUpgrades,
+						)}
 						role="none"
 					>
 						<div class="level">

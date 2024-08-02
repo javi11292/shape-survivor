@@ -84,7 +84,7 @@ const addLaser = ({
 						WEAPON.damage.amount(player.weapons.laser) *
 						upgrades.damage.amount(player.upgrades.damage);
 					metadata.hit(damage);
-					player.damageDone += damage;
+					player.damageDone.laser += damage;
 				},
 			});
 

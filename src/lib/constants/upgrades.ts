@@ -1,13 +1,13 @@
 import { HP } from ".";
 
-type Upgrade = {
+type UpgradeInfo = {
 	name: string;
 	label?: string;
 	amount: (value?: number) => number;
 	format: (value: number) => string;
 };
 
-type Weapon = {
+type WeaponInfo = {
 	name: string;
 	description: string;
 	stats: Record<
@@ -75,7 +75,7 @@ export const upgrades = {
 		},
 		format: fixedFormat,
 	},
-} as const satisfies Record<string, Upgrade>;
+} as const satisfies Record<string, UpgradeInfo>;
 
 export const weapons = {
 	projectile: {
@@ -120,4 +120,7 @@ export const weapons = {
 			},
 		},
 	},
-} as const satisfies Record<string, Weapon>;
+} as const satisfies Record<string, WeaponInfo>;
+
+export type Upgrade = keyof typeof upgrades;
+export type Weapon = keyof typeof weapons;

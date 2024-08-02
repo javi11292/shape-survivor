@@ -50,7 +50,7 @@ const addProjectile = ({ scene, position, target }: Omit<Params, "amount">) => {
 				upgrades.damage.amount(player.upgrades.damage);
 
 			metadata.hit(damage);
-			player.damageDone += damage;
+			player.damageDone.projectile += damage;
 			node.dispose();
 		},
 	});
