@@ -44,7 +44,7 @@
 				{#each Object.entries(player.damageDone) as [weapon, damage]}
 					<div class="row subRow">
 						{weapons[weapon as Weapon].name}
-						<span class="green">{damage}</span>
+						<span class="green">{Math.round(damage)}</span>
 					</div>
 				{/each}
 
