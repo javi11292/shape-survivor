@@ -1,18 +1,17 @@
 <script lang="ts">
+	import { UI, type Position } from "../ui";
+
 	type Props = {
-		position: { x: number; y: number };
 		damage: number;
 		fromEnemy?: boolean;
-	};
+	} & Position;
 
-	let { position, damage, fromEnemy }: Props = $props();
+	let { damage, fromEnemy, position }: Props = $props();
 </script>
 
-<div class="container" style="--x:{position.x}px; --y:{position.y}px">
-	<div class="content">
-		<div class="damage" class:fromEnemy>{damage}</div>
-	</div>
-</div>
+<UI {position}>
+	<div class="damage" class:fromEnemy>{damage}</div>
+</UI>
 
 <style>
 	@import "./damage.scss";

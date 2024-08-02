@@ -1,0 +1,21 @@
+.bar {
+	position: relative;
+	top: -5rem;
+	background: black;
+	height: 1.5rem;
+	width: 8rem;
+	opacity: 0.8;
+	border-radius: 0.1rem;
+	outline: 1px solid red;
+	overflow: hidden;
+
+	&::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		transform-origin: left;
+		scale: var(--width) 1;
+		background: red;
+		transition: scale 200ms;
+	}
+}

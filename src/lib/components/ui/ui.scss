@@ -1,0 +1,12 @@
+.container {
+	pointer-events: none;
+	position: fixed;
+	translate: var(--x) var(--y);
+	top: 0;
+	left: 0;
+}
+
+.content {
+	position: relative;
+	translate: -50% -50%;
+}

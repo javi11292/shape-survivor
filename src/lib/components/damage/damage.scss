@@ -1,15 +1,3 @@
-.container {
-	position: fixed;
-	translate: var(--x) var(--y);
-	top: 0;
-	left: 0;
-}
-
-.content {
-	position: relative;
-	translate: -50% -50%;
-}
-
 .damage {
 	color: yellow;
 	font-weight: 700;

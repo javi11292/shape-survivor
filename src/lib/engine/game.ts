@@ -28,6 +28,7 @@ const DIFFICULTY_DELAY = 20000;
 const MAX = MAP_SIZE / 2 - 2;
 
 const createScene = async (engine: Engine) => {
+	let boss = false;
 	game.havok = new HavokPlugin(true, await HavokPhysics());
 	const scene = new Scene(engine);
 
@@ -36,6 +37,7 @@ const createScene = async (engine: Engine) => {
 		timeout: DIFFICULTY_DELAY,
 		callback: () => {
 			game.difficulty++;
+			boss = true;
 		},
 	});
 
@@ -65,7 +67,10 @@ const createScene = async (engine: Engine) => {
 				scene,
 				position,
 				target: player.position,
+				boss,
 			});
+
+			boss = false;
 		},
 	});
 

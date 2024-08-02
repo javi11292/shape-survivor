@@ -1,4 +1,5 @@
 import { ENEMY_MASK, PLAYER_MASK, PROJECTILE_MASK, WALL_MASK } from "$lib/constants";
+import { State } from "$lib/core/utils";
 import { PhysicsMotionType, Vector3 } from "$lib/engine";
 import { createRender } from "$lib/engine/render";
 import { createTimer } from "$lib/engine/timer";
@@ -8,7 +9,15 @@ import { isEntity } from "$lib/utils";
 import type { Scene } from "@babylonjs/core";
 import { isPlayer } from "../player";
 import { createUnit } from "../unit";
-import { getMesh, getShape, SHAPE } from "./utils";
+import {
+	BASIC_SHAPE,
+	BOSS_SHAPE,
+	getBasicMesh,
+	getBasicShape,
+	getBossMesh,
+	getBossShape,
+	showHPBar,
+} from "./utils";
 
 const SPEED = 5;
 const HP = 10;
@@ -19,22 +28,25 @@ type Params = {
 	scene: Scene;
 	position: Vector3;
 	target: Vector3;
+	boss?: boolean;
 };
 
 const enemyType = Symbol("enemy");
 
 export const isEnemy = isEntity<ReturnType<typeof createUnit>>(enemyType);
 
-export const createEnemy = ({ scene, position, target }: Params) => {
+export const createEnemy = ({ scene, position, target, boss }: Params) => {
 	let attackEnabled = true;
-	const damage = DAMAGE + DAMAGE * game.difficulty * 0.5;
+	const damage = (DAMAGE + DAMAGE * game.difficulty * 0.5) * (boss ? 2 : 1);
+	const hp = (HP + HP * game.difficulty * 0.2) * (boss ? 20 : 1);
+	const { state } = new State({ hp });
 
 	const unit = createUnit(
 		{
 			scene,
-			state: { hp: HP + HP * game.difficulty * 0.2 },
-			shape: SHAPE,
-			getShape,
+			state,
+			shape: boss ? BOSS_SHAPE : BASIC_SHAPE,
+			getShape: boss ? getBossShape : getBasicShape,
 		},
 		{
 			name: "enemy",
@@ -58,7 +70,7 @@ export const createEnemy = ({ scene, position, target }: Params) => {
 		},
 	);
 
-	const mesh = getMesh().createInstance("enemy");
+	const mesh = boss ? getBossMesh().createInstance("boss") : getBasicMesh().createInstance("enemy");
 	const node = unit.body.transformNode;
 
 	node.addChild(mesh);
@@ -67,9 +79,12 @@ export const createEnemy = ({ scene, position, target }: Params) => {
 	unit.body.shape!.filterMembershipMask = ENEMY_MASK;
 	unit.body.shape!.filterCollideMask = PROJECTILE_MASK | PLAYER_MASK | ENEMY_MASK | WALL_MASK;
 
+	const disposeHPBar = !boss ? undefined : showHPBar({ scene, point: node.position, state, hp });
+
 	node.onDisposeObservable.add(() => {
 		render.dispose();
 		timer.dispose();
+		disposeHPBar?.();
 		player.defeatedEnemies++;
 	});
 
