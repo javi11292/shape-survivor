@@ -1,4 +1,4 @@
-import { MAP_SIZE } from "$lib/constants";
+import { MAP_SIZE, WALL_MASK } from "$lib/constants";
 import { PhysicsMotionType, Vector3 } from "$lib/engine";
 import { createBody } from "$lib/engine/body";
 import { isEntity } from "$lib/utils";
@@ -30,6 +30,7 @@ const addWall = ({
 	body.transformNode.rotation = rotation;
 	body.transformNode.metadata = { type: wallType };
 	body.shape = getShape(mesh, scene);
+	body.shape.filterMembershipMask = WALL_MASK;
 };
 
 const POSITION = MAP_SIZE / 2 + WALL_WIDTH;

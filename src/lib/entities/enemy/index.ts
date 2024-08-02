@@ -1,4 +1,4 @@
-import { ENEMY_MASK, PLAYER_MASK, PROJECTILE_MASK } from "$lib/constants";
+import { ENEMY_MASK, PLAYER_MASK, PROJECTILE_MASK, WALL_MASK } from "$lib/constants";
 import { PhysicsMotionType, Vector3 } from "$lib/engine";
 import { createRender } from "$lib/engine/render";
 import { createTimer } from "$lib/engine/timer";
@@ -64,7 +64,7 @@ export const createEnemy = ({ scene, position, target }: Params) => {
 	node.metadata.type = enemyType;
 	node.position = position;
 	unit.body.shape!.filterMembershipMask = ENEMY_MASK;
-	unit.body.shape!.filterCollideMask = PROJECTILE_MASK | PLAYER_MASK | ENEMY_MASK;
+	unit.body.shape!.filterCollideMask = PROJECTILE_MASK | PLAYER_MASK | ENEMY_MASK | WALL_MASK;
 
 	node.onDisposeObservable.add(() => {
 		render.dispose();
