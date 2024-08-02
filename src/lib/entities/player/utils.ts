@@ -8,7 +8,9 @@ import {
 } from "$lib/engine";
 import type { Mesh } from "@babylonjs/core";
 import earcut from "earcut";
-import { SHAPE } from "../unit";
+
+const CAMERA_HEIGHT = new Vector3(0, -9, 0);
+export const SHAPE = [new Vector3(0, 0, 1), new Vector3(-1, 0, -1), new Vector3(1, 0, -1)];
 
 export enum KEYS {
 	"up" = "W",
@@ -18,8 +20,6 @@ export enum KEYS {
 }
 
 const keys = new Set<string>(Object.values(KEYS));
-
-const CAMERA_HEIGHT = new Vector3(0, -9, 0);
 
 export const getShape = (mesh: Mesh, scene: Scene) => new PhysicsShapeConvexHull(mesh, scene);
 

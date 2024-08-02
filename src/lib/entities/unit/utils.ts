@@ -6,13 +6,11 @@ import type { Scene } from "@babylonjs/core";
 import earcut from "earcut";
 import { mount, unmount } from "svelte";
 
-export const SHAPE = [new Vector3(0, 0, 1), new Vector3(-1, 0, -1), new Vector3(1, 0, -1)];
-
-export const getMesh = createMeshSource(() =>
+export const getMesh = createMeshSource((shape: Vector3[]) =>
 	ExtrudePolygon(
 		"unit body",
 		{
-			shape: SHAPE,
+			shape,
 			depth: 1,
 		},
 		undefined,

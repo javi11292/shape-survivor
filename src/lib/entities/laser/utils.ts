@@ -5,6 +5,7 @@ import type { Mesh, Scene } from "@babylonjs/core";
 
 export const HEIGHT = 30;
 export const LIFE_TIME = 500;
+export const EVOLVED_LIFE_TIME = 1000;
 export const KEYFRAMES = [
 	{
 		frame: 0,
@@ -32,7 +33,7 @@ export const getMesh = createMeshSource(() =>
 	CreateCapsule("laser source", {
 		orientation: Vector3.Right(),
 		height: HEIGHT,
-		radius: 0.25,
+		radius: 0.15,
 	}),
 );
 
@@ -48,6 +49,5 @@ export const getShape = memo((mesh: Mesh, scene: Scene) => new PhysicsShapeConve
 
 export const addGlow = memo((scene: Scene) => {
 	const gl = new GlowLayer("laser", scene);
-	gl.intensity = 0.5;
 	gl.addIncludedOnlyMesh(getMesh());
 });

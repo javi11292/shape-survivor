@@ -9,7 +9,16 @@ import { createTimer } from "$lib/engine/timer";
 import { player } from "$lib/state/player";
 import type { Scene } from "@babylonjs/core";
 import { isEnemy } from "../enemy";
-import { HEIGHT, KEYFRAMES, LIFE_TIME, addGlow, getBodyMesh, getMesh, getShape } from "./utils";
+import {
+	EVOLVED_LIFE_TIME,
+	HEIGHT,
+	KEYFRAMES,
+	LIFE_TIME,
+	addGlow,
+	getBodyMesh,
+	getMesh,
+	getShape,
+} from "./utils";
 
 const POSITION = new Vector3(HEIGHT / 2 + 1.5, 0, 0);
 const ROTATION = new Vector3(0, Math.PI / 2, 0);
@@ -29,19 +38,20 @@ type Params = {
 
 const addLaser = ({
 	scene,
-	position,
 	rotation,
 	playSound,
-}: Params & { rotation: Vector3; playSound: boolean }) => {
+	parent,
+}: Omit<Params, "position"> & { rotation: Vector3; playSound: boolean; parent: TransformNode }) => {
+	const evolved = player.evolved.has("laser");
 	const laser = new TransformNode("laser");
 	const mesh = getMesh().createInstance("laser");
 
+	laser.rotation = rotation;
+	laser.parent = parent;
+
+	mesh.parent = laser;
 	mesh.position = POSITION;
 	mesh.scaling.z = 0;
-
-	laser.addChild(mesh);
-	laser.rotation = rotation;
-	laser.position = position;
 
 	const sound = !playSound
 		? undefined
@@ -57,13 +67,13 @@ const addLaser = ({
 	const animation = createAnimation({
 		scene,
 		keyframes: KEYFRAMES,
-		onAnimationEnd: () => laser.dispose(),
+		onAnimationEnd: () => !evolved && laser.dispose(),
 		callback: (value) => (mesh.scaling.z = value),
 	});
 
 	const render = createRender({
 		scene,
-		render: () => laser.markAsDirty(),
+		render: () => parent.markAsDirty(),
 	});
 
 	const timer = createTimer({
@@ -90,34 +100,56 @@ const addLaser = ({
 			});
 
 			const node = body.transformNode;
-			node.position = mesh.absolutePosition;
-			node.rotationQuaternion = mesh.absoluteRotationQuaternion;
 
 			body.shape = getShape(getBodyMesh(), scene);
 			body.shape.filterMembershipMask = PROJECTILE_MASK;
 			body.shape.filterCollideMask = ENEMY_MASK;
 			body.shape.isTrigger = true;
 
-			scene.onAfterPhysicsObservable.addOnce(() => {
-				node.dispose();
-			});
+			node.parent = mesh;
+
+			timer.dispose();
+			mesh.onDisposeObservable.add(() => node.dispose());
 		},
 	});
 
-	laser.onDisposeObservable.add(() => {
+	mesh.onDisposeObservable.add(() => {
 		timer.dispose();
-		render.dispose();
 		animation.dispose();
+		render.dispose();
 		sound?.dispose();
 	});
 };
 
 export const createLaser = ({ scene, position }: Params) => {
-	addGlow(scene);
+	const evolved = player.evolved.has("laser");
 
 	const projectiles = WEAPON.projectiles.amount(player.weapons.laser);
+	addGlow(scene);
+
+	const parent = new TransformNode("laser");
+	parent.position = position;
+
+	const evolvedAnimation = !evolved
+		? undefined
+		: createAnimation({
+				scene,
+				keyframes: [
+					{ frame: LIFE_TIME, value: 0 },
+					{ frame: EVOLVED_LIFE_TIME, value: Math.PI },
+				],
+				onAnimationEnd: () => parent.dispose(),
+				callback: (value) => (parent.rotation.y = value),
+			});
 
 	for (let i = 0; i < projectiles; i++) {
-		addLaser({ scene, position, rotation: ROTATIONS[i] || ROTATIONS[3], playSound: i === 0 });
+		addLaser({
+			scene,
+			rotation: (ROTATIONS[i] || ROTATIONS[3]).clone(),
+			playSound: i === 0,
+			parent,
+		});
 	}
+
+	parent.onDisposeObservable.add(() => evolvedAnimation?.dispose());
 };

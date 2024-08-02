@@ -3,10 +3,10 @@ import { CreatePolygon, PhysicsShapeConvexHull, Scene, Vector3 } from "$lib/engi
 import { createMeshSource } from "$lib/engine/mesh";
 import type { Mesh } from "@babylonjs/core";
 import earcut from "earcut";
-import { SHAPE } from "../unit";
 
 const DISTANCE = 0.1;
 const SQRT = Math.sqrt(Math.pow(DISTANCE, 2) / 2);
+export const SHAPE = [new Vector3(0, 0, 1), new Vector3(-1, 0, -1), new Vector3(1, 0, -1)];
 
 const HOLES: [Vector3[]] = [
 	[

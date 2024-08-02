@@ -19,14 +19,14 @@ import { isExperience } from "../experience";
 import { createLaser } from "../laser";
 import { createProjectile } from "../projectile";
 import { createUnit } from "../unit";
-import { KEYS, addEvents, getMesh, getShape } from "./utils";
+import { KEYS, SHAPE, addEvents, getMesh, getShape } from "./utils";
 
 const SPEED = 10;
 const SQRT_SPEED = Math.sqrt(Math.pow(SPEED, 2) / 2);
 const PROJECTILE_POSITION = new Vector3(0, 0, 1);
 const SHOT_SPEED = 1000;
 const LASER_SPEED = 3000;
-const AURA_RADIUS = 3;
+const AURA_RADIUS = 5;
 const CAMERA_POSITION = 40;
 
 type Params = {
@@ -42,6 +42,7 @@ export const createPlayer = ({ scene }: Params) => {
 		{
 			scene,
 			state: player,
+			shape: SHAPE,
 			getShape,
 		},
 		{

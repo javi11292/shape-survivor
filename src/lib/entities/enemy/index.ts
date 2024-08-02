@@ -8,7 +8,7 @@ import { isEntity } from "$lib/utils";
 import type { Scene } from "@babylonjs/core";
 import { isPlayer } from "../player";
 import { createUnit } from "../unit";
-import { getMesh, getShape } from "./utils";
+import { getMesh, getShape, SHAPE } from "./utils";
 
 const SPEED = 5;
 const HP = 10;
@@ -33,6 +33,7 @@ export const createEnemy = ({ scene, position, target }: Params) => {
 		{
 			scene,
 			state: { hp: HP + HP * game.difficulty * 0.2 },
+			shape: SHAPE,
 			getShape,
 		},
 		{
