@@ -1,4 +1,5 @@
 import { State } from "$lib/core/utils";
+import { HavokPlugin } from "@babylonjs/core";
 
 const getInitialState = () => ({
 	difficulty: 0,
@@ -6,6 +7,7 @@ const getInitialState = () => ({
 	running: true,
 	wasted: false,
 	levelup: false,
+	havok: undefined as unknown as HavokPlugin,
 	dispose: undefined as undefined | (() => void),
 });
 

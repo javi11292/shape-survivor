@@ -1,4 +1,5 @@
-import type { HavokPlugin, Scene } from "@babylonjs/core";
+import { game } from "$lib/state/game";
+import type { Scene } from "@babylonjs/core";
 import { PhysicsBody, PhysicsEventType, PhysicsMotionType, TransformNode, Vector3 } from ".";
 
 type Params = {
@@ -21,12 +22,10 @@ export const createBody = ({ scene, name, type, onCollision, onTrigger }: Params
 	body.transformNode.onDisposeObservable.add(() => scene.onAfterPhysicsObservable.remove(observer));
 
 	if (onCollision) {
-		const plugin = scene.getPhysicsEngine()!.getPhysicsPlugin() as HavokPlugin;
-
 		body.setCollisionCallbackEnabled(true);
 		body.getCollisionObservable;
 
-		const observer = plugin.onCollisionObservable.add((data) => {
+		const observer = game.havok.onCollisionObservable.add((data) => {
 			let owner: PhysicsBody;
 			let trigger: PhysicsBody;
 
@@ -46,14 +45,12 @@ export const createBody = ({ scene, name, type, onCollision, onTrigger }: Params
 		});
 
 		body.transformNode.onDisposeObservable.add(() => {
-			plugin.onCollisionObservable.remove(observer);
+			game.havok.onCollisionObservable.remove(observer);
 		});
 	}
 
 	if (onTrigger) {
-		const plugin = scene.getPhysicsEngine()!.getPhysicsPlugin() as HavokPlugin;
-
-		const observer = plugin.onTriggerCollisionObservable.add((data) => {
+		const observer = game.havok.onTriggerCollisionObservable.add((data) => {
 			let owner: PhysicsBody;
 			let trigger: PhysicsBody;
 
@@ -77,7 +74,7 @@ export const createBody = ({ scene, name, type, onCollision, onTrigger }: Params
 		});
 
 		body.transformNode.onDisposeObservable.add(() => {
-			plugin.onTriggerCollisionObservable.remove(observer);
+			game.havok.onTriggerCollisionObservable.remove(observer);
 		});
 	}
 

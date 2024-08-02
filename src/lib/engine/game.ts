@@ -28,8 +28,7 @@ const DIFFICULTY_DELAY = 20000;
 const MAX = MAP_SIZE / 2 - 2;
 
 const createScene = async (engine: Engine) => {
-	const havokInstance = await HavokPhysics();
-	const havok = new HavokPlugin(true, havokInstance);
+	game.havok = new HavokPlugin(true, await HavokPhysics());
 	const scene = new Scene(engine);
 
 	createTimer({
@@ -78,7 +77,7 @@ const createScene = async (engine: Engine) => {
 
 	material.emissiveColor = new Color3(1, 1, 1);
 	scene.clearColor = new Color4(0, 0, 0);
-	scene.enablePhysics(Vector3.Zero(), havok);
+	scene.enablePhysics(Vector3.Zero(), game.havok);
 	scene.performancePriority = ScenePerformancePriority.Intermediate;
 	scene.defaultMaterial = material;
 
