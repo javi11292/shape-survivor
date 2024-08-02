@@ -26,6 +26,7 @@ const getInitialState = () => ({
 	weapons: { projectile: 1 } as Record<Weapon, number | undefined>,
 	eligibleUpgrades: new Set(Object.keys(upgrades)),
 	eligibleWeapons: new Set(Object.keys(weapons)),
+	evolved: new Set<Weapon>(),
 });
 
 const playerState = new State(getInitialState());

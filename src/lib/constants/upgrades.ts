@@ -14,6 +14,8 @@ type WeaponInfo = {
 		string,
 		{ amount: (value?: number) => number; format: (value: number) => string; label: string }
 	>;
+	evolve: string;
+	unlock: Upgrade;
 };
 
 const ARMOR = 10;
@@ -93,6 +95,9 @@ export const weapons = {
 				format: fixedFormat,
 			},
 		},
+		evolve:
+			"Los proyectiles rebotan entre los enemigos y tienen mas alcance. Una papa para dominarlos a todos",
+		unlock: "projectiles",
 	},
 	laser: {
 		name: "Laser destructor",
@@ -119,6 +124,8 @@ export const weapons = {
 				format: fixedFormat,
 			},
 		},
+		evolve: "Los disparos giran durante un segundo",
+		unlock: "damage",
 	},
 } as const satisfies Record<string, WeaponInfo>;
 
