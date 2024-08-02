@@ -9,11 +9,12 @@ import { createTimer } from "$lib/engine/timer";
 import { player } from "$lib/state/player";
 import type { Scene } from "@babylonjs/core";
 import { isEnemy } from "../enemy";
-import { HEIGHT, KEYFRAMES, LIFE_TIME, getMesh, getShape } from "./utils";
+import { HEIGHT, KEYFRAMES, LIFE_TIME, addGlow, getBodyMesh, getMesh, getShape } from "./utils";
 
 const POSITION = new Vector3(HEIGHT / 2 + 1.5, 0, 0);
 const ROTATION = new Vector3(0, Math.PI / 2, 0);
 const WEAPON = weapons.laser.stats;
+
 const ROTATIONS = [
 	ROTATION.scale(0),
 	ROTATION.scale(2),
@@ -92,7 +93,7 @@ const addLaser = ({
 			node.position = mesh.absolutePosition;
 			node.rotationQuaternion = mesh.absoluteRotationQuaternion;
 
-			body.shape = getShape(mesh.sourceMesh, scene);
+			body.shape = getShape(getBodyMesh(), scene);
 			body.shape.filterMembershipMask = PROJECTILE_MASK;
 			body.shape.filterCollideMask = ENEMY_MASK;
 			body.shape.isTrigger = true;
@@ -112,6 +113,8 @@ const addLaser = ({
 };
 
 export const createLaser = ({ scene, position }: Params) => {
+	addGlow(scene);
+
 	const projectiles = WEAPON.projectiles.amount(player.weapons.laser);
 
 	for (let i = 0; i < projectiles; i++) {

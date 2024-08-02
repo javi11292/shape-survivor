@@ -1,5 +1,5 @@
 import { memo } from "$lib/core/utils";
-import { CreateCapsule, PhysicsShapeConvexHull, Vector3 } from "$lib/engine";
+import { CreateCapsule, GlowLayer, PhysicsShapeConvexHull, Vector3 } from "$lib/engine";
 import { createMeshSource } from "$lib/engine/mesh";
 import type { Mesh, Scene } from "@babylonjs/core";
 
@@ -28,15 +28,26 @@ export const KEYFRAMES = [
 	},
 ];
 
-export const getMesh = createMeshSource(() => {
-	const mesh = CreateCapsule("laser source", {
+export const getMesh = createMeshSource(() =>
+	CreateCapsule("laser source", {
+		orientation: Vector3.Right(),
+		height: HEIGHT,
+		radius: 0.25,
+	}),
+);
+
+export const getBodyMesh = createMeshSource(() =>
+	CreateCapsule("laser body", {
 		orientation: Vector3.Right(),
 		height: HEIGHT,
 		radius: 1,
-	});
-
-	mesh.visibility = 0.5;
-	return mesh;
-});
+	}),
+);
 
 export const getShape = memo((mesh: Mesh, scene: Scene) => new PhysicsShapeConvexHull(mesh, scene));
+
+export const addGlow = memo((scene: Scene) => {
+	const gl = new GlowLayer("laser", scene);
+	gl.intensity = 0.5;
+	gl.addIncludedOnlyMesh(getMesh());
+});

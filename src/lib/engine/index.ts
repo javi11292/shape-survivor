@@ -9,6 +9,7 @@ export { UniversalCamera } from "@babylonjs/core/Cameras/universalCamera";
 export { Engine } from "@babylonjs/core/Engines/engine";
 export { KeyboardEventTypes } from "@babylonjs/core/Events/keyboardEvents";
 export { PointerEventTypes } from "@babylonjs/core/Events/pointerEvents";
+export { GlowLayer } from "@babylonjs/core/Layers/glowLayer";
 export { HemisphericLight } from "@babylonjs/core/Lights/hemisphericLight";
 export { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
 export { Axis } from "@babylonjs/core/Maths/math.axis";

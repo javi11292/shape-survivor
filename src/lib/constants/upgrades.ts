@@ -96,7 +96,7 @@ export const weapons = {
 			},
 		},
 		evolve:
-			"Los proyectiles rebotan entre los enemigos y tienen mas alcance. Una papa para dominarlos a todos",
+			"Los proyectiles rebotan entre los enemigos y tienen más alcance. Una papa para dominarlos a todos",
 		unlock: "projectiles",
 	},
 	laser: {
