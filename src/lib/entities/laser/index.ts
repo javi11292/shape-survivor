@@ -21,15 +21,10 @@ import {
 } from "./utils";
 
 const POSITION = new Vector3(HEIGHT / 2 + 1.5, 0, 0);
-const ROTATION = new Vector3(0, Math.PI / 2, 0);
+const ROTATION = Math.PI / 2;
 const WEAPON = weapons.laser.stats;
 
-const ROTATIONS = [
-	ROTATION.scale(0),
-	ROTATION.scale(2),
-	ROTATION.scale(3),
-	ROTATION.scale(1),
-] as const;
+const ROTATIONS = [0, ROTATION * 2, ROTATION * 3, ROTATION] as const;
 
 type Params = {
 	scene: Scene;
@@ -41,12 +36,12 @@ const addLaser = ({
 	rotation,
 	playSound,
 	parent,
-}: Omit<Params, "position"> & { rotation: Vector3; playSound: boolean; parent: TransformNode }) => {
+}: Omit<Params, "position"> & { rotation: number; playSound: boolean; parent: TransformNode }) => {
 	const evolved = player.evolved.has("laser");
 	const laser = new TransformNode("laser");
 	const mesh = getMesh().createInstance("laser");
 
-	laser.rotation = rotation;
+	laser.rotation.y = rotation;
 	laser.parent = parent;
 
 	mesh.parent = laser;
@@ -67,7 +62,7 @@ const addLaser = ({
 	const animation = createAnimation({
 		scene,
 		keyframes: KEYFRAMES,
-		onAnimationEnd: () => !evolved && laser.dispose(),
+		onAnimationEnd: () => !evolved && parent.dispose(),
 		callback: (value) => (mesh.scaling.z = value),
 	});
 
@@ -109,11 +104,11 @@ const addLaser = ({
 			node.parent = mesh;
 
 			timer.dispose();
-			mesh.onDisposeObservable.add(() => node.dispose());
+			parent.onDisposeObservable.add(() => node.dispose());
 		},
 	});
 
-	mesh.onDisposeObservable.add(() => {
+	parent.onDisposeObservable.add(() => {
 		timer.dispose();
 		animation.dispose();
 		render.dispose();
@@ -145,7 +140,7 @@ export const createLaser = ({ scene, position }: Params) => {
 	for (let i = 0; i < projectiles; i++) {
 		addLaser({
 			scene,
-			rotation: (ROTATIONS[i] || ROTATIONS[3]).clone(),
+			rotation: ROTATIONS[i] ?? ROTATIONS[3],
 			playSound: i === 0,
 			parent,
 		});
