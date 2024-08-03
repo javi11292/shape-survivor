@@ -102,14 +102,14 @@ export const createEnemy = ({ scene, position, target, boss, improved }: Params)
 
 	const render = createRender({
 		scene,
-		render: (delta) => {
+		render: () => {
 			node.lookAt(target);
 
 			unit.body.setLinearVelocity(
 				Vector3.Lerp(
 					unit.body.getLinearVelocity(),
 					node.getDirection(new Vector3(0, 0, speed)),
-					1 / delta,
+					0.1,
 				),
 			);
 		},

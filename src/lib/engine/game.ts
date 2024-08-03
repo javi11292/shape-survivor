@@ -94,7 +94,7 @@ const createScene = async (engine: Engine) => {
 				scene,
 				position: getPosition(),
 				target: player.position,
-				improved: Math.random() < game.difficulty * 0.03,
+				improved: Math.random() < game.difficulty * 0.025,
 			});
 		},
 	});
