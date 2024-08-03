@@ -13,7 +13,7 @@ import { getBodyMesh, getMesh, getShape } from "./utils";
 
 const SPEED = 50;
 const LIFE_TIME = 750;
-const EVOLVED_LIFE_TIME = 2000;
+const EVOLVED_LIFE_TIME = 1500;
 const IMPULSE_POSITION = Vector3.Zero();
 const IMPULSE_FORCE = new Vector3(0, 0, 100);
 const WEAPON = weapons.projectile.stats;
@@ -40,7 +40,7 @@ const targetClosestEnemy = (
 	game.havok.pointProximity(
 		{
 			position: node.position,
-			maxDistance: 40,
+			maxDistance: 25,
 			shouldHitTriggers: true,
 			collisionFilter: { membership: PROJECTILE_MASK, collideWith: ENEMY_MASK },
 			ignoreBody: ignoreBody.isDisposed ? undefined : ignoreBody,
