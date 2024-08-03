@@ -5,7 +5,7 @@
 	import { game } from "$lib/state/game";
 	import { player } from "$lib/state/player";
 
-	const UPGRADE_CHANCE = 0.7;
+	const UPGRADE_CHANCE = 0.8;
 	const upgradeKeys = [...player.eligibleUpgrades];
 	const weaponKeys = [...player.eligibleWeapons];
 

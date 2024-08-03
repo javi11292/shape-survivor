@@ -6,7 +6,7 @@ import { createBody } from "$lib/engine/body";
 import { createTimer } from "$lib/engine/timer";
 import { game } from "$lib/state/game";
 import { player } from "$lib/state/player";
-import type { Scene } from "@babylonjs/core";
+import type { PhysicsBody, Scene } from "@babylonjs/core";
 import { isEnemy } from "../enemy";
 import { isWall } from "../map";
 import { getBodyMesh, getMesh, getShape } from "./utils";
@@ -25,7 +25,11 @@ type Params = {
 	amount: number;
 };
 
-const targetClosestEnemy = (body: ReturnType<typeof createBody>, evolved: boolean) => {
+const targetClosestEnemy = (
+	body: ReturnType<typeof createBody>,
+	evolved: boolean,
+	ignoreBody: PhysicsBody,
+) => {
 	if (!evolved) {
 		return false;
 	}
@@ -39,6 +43,7 @@ const targetClosestEnemy = (body: ReturnType<typeof createBody>, evolved: boolea
 			maxDistance: 40,
 			shouldHitTriggers: true,
 			collisionFilter: { membership: PROJECTILE_MASK, collideWith: ENEMY_MASK },
+			ignoreBody: ignoreBody.isDisposed ? undefined : ignoreBody,
 		},
 		result,
 	);
@@ -69,11 +74,7 @@ const addProjectile = ({ scene, position, target }: Omit<Params, "amount">) => {
 			const { metadata } = trigger.transformNode;
 
 			if (isWall(metadata)) {
-				if (!targetClosestEnemy(body, evolved)) {
-					node.dispose();
-				} else {
-					rebound = true;
-				}
+				node.dispose();
 
 				return;
 			}
@@ -98,7 +99,7 @@ const addProjectile = ({ scene, position, target }: Omit<Params, "amount">) => {
 			metadata.hit(damage);
 			player.damageDone.projectile += damage;
 
-			if (!targetClosestEnemy(body, evolved)) {
+			if (!targetClosestEnemy(body, evolved, trigger)) {
 				node.dispose();
 			} else {
 				rebound = true;

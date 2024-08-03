@@ -7,9 +7,10 @@ import { player } from "$lib/state/player";
 import { isEntity } from "$lib/utils";
 import type { Scene } from "@babylonjs/core";
 import {
-	getBodyMesh,
+	getExperienceBodyMesh,
 	getExperienceMesh,
 	getExperienceShape,
+	getUpgradeBodyMesh,
 	getUpgradeMesh,
 	getUpgradeShape,
 } from "./utils";
@@ -45,8 +46,8 @@ export const createExperience = ({ scene, position, amount, upgrade }: Params) =
 	const node = body.transformNode;
 
 	body.shape = upgrade
-		? getUpgradeShape(getBodyMesh(), scene)
-		: getExperienceShape(getBodyMesh(), scene);
+		? getUpgradeShape(getUpgradeBodyMesh(), scene)
+		: getExperienceShape(getExperienceBodyMesh(), scene);
 
 	node.addChild(mesh);
 	node.position = position;

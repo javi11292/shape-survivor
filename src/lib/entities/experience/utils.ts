@@ -38,8 +38,12 @@ export const getExperienceMesh = createMeshSource(() => {
 	return mesh;
 });
 
-export const getBodyMesh = createMeshSource(() =>
+export const getExperienceBodyMesh = createMeshSource(() =>
 	CreateCylinder("experience body", { diameter: 0.5, height: 1 }),
+);
+
+export const getUpgradeBodyMesh = createMeshSource(() =>
+	CreateCylinder("upgrade body", { diameter: 2, height: 1 }),
 );
 
 export const getExperienceShape = memo((mesh: Mesh, scene: Scene) => {
@@ -51,6 +55,7 @@ export const getExperienceShape = memo((mesh: Mesh, scene: Scene) => {
 
 	return shape;
 });
+
 export const getUpgradeShape = memo((mesh: Mesh, scene: Scene) => {
 	const shape = new PhysicsShapeConvexHull(mesh, scene);
 

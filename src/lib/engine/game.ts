@@ -23,7 +23,7 @@ import { getManager } from "./assets";
 import { createTimer } from "./timer";
 
 const SPAWN_DISTANCE = 40;
-const SPAWN_SPEED = 2000;
+const SPAWN_SPEED = 1500;
 const MAX = MAP_SIZE / 2 - 2;
 
 const createScene = async (engine: Engine) => {
@@ -32,7 +32,7 @@ const createScene = async (engine: Engine) => {
 
 	createTimer({
 		scene,
-		timeout: 20000,
+		timeout: 30000,
 		callback: () => {
 			game.difficulty++;
 		},
@@ -49,7 +49,7 @@ const createScene = async (engine: Engine) => {
 				boss: true,
 			});
 
-			game.difficulty += 2;
+			game.difficulty++;
 		},
 	});
 
