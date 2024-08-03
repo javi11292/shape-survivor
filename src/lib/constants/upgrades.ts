@@ -105,7 +105,7 @@ export const weapons = {
 		stats: {
 			damage: {
 				label: "Daño",
-				amount: (value = 0) => 20 * percentageAmount(0.5)(value - 1),
+				amount: (value = 0) => 20 * percentageAmount(0.25)(value - 1),
 				format: fixedFormat,
 			},
 			projectiles: {

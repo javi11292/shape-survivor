@@ -13,7 +13,7 @@ export const isEntity =
 		metadata.type === type;
 
 export const getTime = () =>
-	`${Math.floor(player.time / 1000 / 60)}:${Math.round((player.time / 1000) % 60)
+	`${Math.floor(player.time / 1000 / 60)}:${Math.floor((player.time / 1000) % 60)
 		.toString()
 		.padStart(2, "0")}`;
 

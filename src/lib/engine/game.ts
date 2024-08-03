@@ -22,7 +22,7 @@ import {
 import { getManager } from "./assets";
 import { createTimer } from "./timer";
 
-const SPAWN_DISTANCE = 40;
+const SPAWN_DISTANCE = 50;
 const SPAWN_SPEED = 1500;
 const MAX = MAP_SIZE / 2 - 2;
 
