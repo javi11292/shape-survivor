@@ -13,7 +13,7 @@ import { getBodyMesh, getMesh, getShape } from "./utils";
 
 const SPEED = 50;
 const LIFE_TIME = 750;
-const EVOLVED_LIFE_TIME = 1500;
+const EVOLVED_LIFE_TIME = 1000;
 const IMPULSE_POSITION = Vector3.Zero();
 const IMPULSE_FORCE = new Vector3(0, 0, 100);
 const WEAPON = weapons.projectile.stats;

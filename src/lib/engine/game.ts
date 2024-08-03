@@ -40,11 +40,12 @@ const createScene = async (engine: Engine) => {
 		},
 	});
 
-	createTimer({
+	const improveTimeout = createTimer({
 		scene,
 		timeout: BOSS_SPAWN_SPEED * 5,
 		callback: () => {
 			improved = true;
+			improveTimeout.dispose();
 		},
 	});
 
