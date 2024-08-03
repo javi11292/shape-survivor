@@ -97,7 +97,7 @@ export const createEnemy = ({ scene, position, target, boss }: Params) => {
 			unit.body.setLinearVelocity(
 				Vector3.Lerp(
 					unit.body.getLinearVelocity(),
-					node.getDirection(new Vector3(0, 0, SPEED)),
+					node.getDirection(new Vector3(0, 0, SPEED * (boss ? 1.5 : 1))),
 					1 / delta,
 				),
 			);
