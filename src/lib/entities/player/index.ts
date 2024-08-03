@@ -24,7 +24,7 @@ import { addEvents, getMesh, getShape, KEYS, SHAPE } from "./utils";
 const SPEED = 10;
 const SQRT_SPEED = Math.sqrt(Math.pow(SPEED, 2) / 2);
 const PROJECTILE_POSITION = new Vector3(0, 0, 1);
-const SHOT_SPEED = 1000;
+const SHOT_SPEED = 750;
 const LASER_SPEED = 3000;
 const AURA_RADIUS = 5;
 const CAMERA_POSITION = 40;
