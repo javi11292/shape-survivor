@@ -61,9 +61,11 @@
 		};
 	};
 
-	const cards = game.upgrade
-		? [selectEvolve()].filter(Boolean)
-		: [selectRandom(), selectRandom(), selectRandom()].filter(Boolean);
+	const cards = $derived(
+		game.upgrade
+			? [selectEvolve()].filter(Boolean)
+			: [selectRandom(), selectRandom(), selectRandom()].filter(Boolean),
+	);
 
 	const handleClick =
 		(
@@ -90,11 +92,13 @@
 			}
 		};
 
-	if (cards.length === 0) {
-		game.levelup = false;
-		game.upgrade = false;
-		player.hp = player.maxHp;
-	}
+	$effect(() => {
+		if (cards.length === 0) {
+			game.levelup = false;
+			game.upgrade = false;
+			player.hp = player.maxHp;
+		}
+	});
 </script>
 
 <div class="modal">
