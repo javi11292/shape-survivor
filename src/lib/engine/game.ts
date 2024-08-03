@@ -24,9 +24,11 @@ import { createTimer } from "./timer";
 
 const SPAWN_DISTANCE = 50;
 const SPAWN_SPEED = 1500;
+const BOSS_SPAWN_SPEED = 60000;
 const MAX = MAP_SIZE / 2 - 2;
 
 const createScene = async (engine: Engine) => {
+	let improved = false;
 	game.havok = new HavokPlugin(true, await HavokPhysics());
 	const scene = new Scene(engine);
 
@@ -40,13 +42,22 @@ const createScene = async (engine: Engine) => {
 
 	createTimer({
 		scene,
-		timeout: 60000,
+		timeout: BOSS_SPAWN_SPEED * 5,
+		callback: () => {
+			improved = true;
+		},
+	});
+
+	createTimer({
+		scene,
+		timeout: BOSS_SPAWN_SPEED,
 		callback: () => {
 			createEnemy({
 				scene,
 				position: getPosition(),
 				target: player.position,
 				boss: true,
+				improved,
 			});
 
 			game.difficulty++;
@@ -83,6 +94,7 @@ const createScene = async (engine: Engine) => {
 				scene,
 				position: getPosition(),
 				target: player.position,
+				improved: Math.random() < game.difficulty * 0.03,
 			});
 		},
 	});

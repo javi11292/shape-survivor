@@ -1,6 +1,13 @@
 import { HPBar } from "$lib/components/hp-bar";
 import { memo } from "$lib/core/utils";
-import { CreatePolygon, PhysicsShapeConvexHull, Scene, Vector3 } from "$lib/engine";
+import {
+	Color3,
+	CreatePolygon,
+	PhysicsShapeConvexHull,
+	Scene,
+	StandardMaterial,
+	Vector3,
+} from "$lib/engine";
 import { createMeshSource } from "$lib/engine/mesh";
 import { mountComponent } from "$lib/utils";
 import type { Mesh } from "@babylonjs/core";
@@ -48,6 +55,25 @@ export const getBasicMesh = createMeshSource(() =>
 	),
 );
 
+export const getImprovedMesh = createMeshSource(() => {
+	const mesh = CreatePolygon(
+		"improved enemy source",
+		{
+			shape: BASIC_SHAPE,
+			holes: BASIC_HOLES,
+		},
+		undefined,
+		earcut,
+	);
+
+	const material = new StandardMaterial("improved");
+	material.emissiveColor = new Color3(1, 0.35, 0);
+
+	mesh.material = material;
+
+	return mesh;
+});
+
 export const getBossMesh = createMeshSource(() =>
 	CreatePolygon(
 		"boss source",
@@ -59,6 +85,25 @@ export const getBossMesh = createMeshSource(() =>
 		earcut,
 	),
 );
+
+export const getImprovedBossMesh = createMeshSource(() => {
+	const mesh = CreatePolygon(
+		"improved boss source",
+		{
+			shape: BOSS_SHAPE,
+			holes: BOSS_HOLES,
+		},
+		undefined,
+		earcut,
+	);
+
+	const material = new StandardMaterial("improved");
+	material.emissiveColor = new Color3(1, 0.5, 0);
+
+	mesh.material = material;
+
+	return mesh;
+});
 
 export const getBasicShape = memo(
 	(mesh: Mesh, scene: Scene) => new PhysicsShapeConvexHull(mesh, scene),

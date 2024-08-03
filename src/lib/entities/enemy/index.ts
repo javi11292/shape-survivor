@@ -16,6 +16,8 @@ import {
 	getBasicShape,
 	getBossMesh,
 	getBossShape,
+	getImprovedBossMesh,
+	getImprovedMesh,
 	showHPBar,
 } from "./utils";
 
@@ -29,16 +31,18 @@ type Params = {
 	position: Vector3;
 	target: Vector3;
 	boss?: boolean;
+	improved?: boolean;
 };
 
 const enemyType = Symbol("enemy");
 
 export const isEnemy = isEntity<ReturnType<typeof createUnit>>(enemyType);
 
-export const createEnemy = ({ scene, position, target, boss }: Params) => {
+export const createEnemy = ({ scene, position, target, boss, improved }: Params) => {
 	let attackEnabled = true;
 	const damage = (DAMAGE + DAMAGE * game.difficulty * 0.25) * (boss ? 2 : 1);
-	const hp = (HP + HP * game.difficulty * 0.5) * (boss ? 20 : 1);
+	const hp = (HP + HP * game.difficulty * 0.5) * (boss ? 20 : 1) * (improved ? 5 : 1);
+	const speed = SPEED * (boss ? 1.5 : 1) * (improved ? 2 : 1);
 	const { state } = new State({ hp });
 
 	const unit = createUnit(
@@ -71,7 +75,14 @@ export const createEnemy = ({ scene, position, target, boss }: Params) => {
 		},
 	);
 
-	const mesh = boss ? getBossMesh().createInstance("boss") : getBasicMesh().createInstance("enemy");
+	const mesh = boss
+		? improved
+			? getImprovedBossMesh().createInstance("improved boss")
+			: getBossMesh().createInstance("boss")
+		: improved
+			? getImprovedMesh().createInstance("improved enemy")
+			: getBasicMesh().createInstance("enemy");
+
 	const node = unit.body.transformNode;
 
 	node.addChild(mesh);
@@ -97,7 +108,7 @@ export const createEnemy = ({ scene, position, target, boss }: Params) => {
 			unit.body.setLinearVelocity(
 				Vector3.Lerp(
 					unit.body.getLinearVelocity(),
-					node.getDirection(new Vector3(0, 0, SPEED * (boss ? 1.5 : 1))),
+					node.getDirection(new Vector3(0, 0, speed)),
 					1 / delta,
 				),
 			);
