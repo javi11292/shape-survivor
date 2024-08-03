@@ -58,6 +58,7 @@ const targetClosestEnemy = (body: ReturnType<typeof createBody>, evolved: boolea
 };
 
 const addProjectile = ({ scene, position, target }: Omit<Params, "amount">) => {
+	let rebound = false;
 	const evolved = player.evolved.has("projectile");
 
 	const body = createBody({
@@ -70,6 +71,8 @@ const addProjectile = ({ scene, position, target }: Omit<Params, "amount">) => {
 			if (isWall(metadata)) {
 				if (!targetClosestEnemy(body, evolved)) {
 					node.dispose();
+				} else {
+					rebound = true;
 				}
 
 				return;
@@ -79,10 +82,14 @@ const addProjectile = ({ scene, position, target }: Omit<Params, "amount">) => {
 				return;
 			}
 
-			metadata.body.applyImpulse(
-				node.getDirection(IMPULSE_FORCE).scale(WEAPON.knockback.amount(player.weapons.projectile)),
-				IMPULSE_POSITION,
-			);
+			if (!rebound) {
+				metadata.body.applyImpulse(
+					node
+						.getDirection(IMPULSE_FORCE)
+						.scale(WEAPON.knockback.amount(player.weapons.projectile)),
+					IMPULSE_POSITION,
+				);
+			}
 
 			const damage =
 				WEAPON.damage.amount(player.weapons.projectile) *
@@ -93,6 +100,8 @@ const addProjectile = ({ scene, position, target }: Omit<Params, "amount">) => {
 
 			if (!targetClosestEnemy(body, evolved)) {
 				node.dispose();
+			} else {
+				rebound = true;
 			}
 		},
 	});

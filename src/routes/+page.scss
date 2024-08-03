@@ -20,6 +20,7 @@ canvas {
 	pointer-events: none;
 	position: absolute;
 	inset: 0;
+	z-index: 1;
 }
 
 .bars {
@@ -47,7 +48,7 @@ canvas {
 		position: absolute;
 		inset: 0;
 		transform-origin: left;
-		scale: var(--width) 1;
+		scale: min(var(--width), 1) 1;
 		background: var(--color);
 		transition: scale 200ms;
 	}
@@ -109,6 +110,7 @@ canvas {
 	position: absolute;
 	inset: 0;
 	background: rgba(0, 0, 0, 0.8);
+	z-index: 1;
 }
 
 .paused {

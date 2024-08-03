@@ -23,54 +23,67 @@ import { getManager } from "./assets";
 import { createTimer } from "./timer";
 
 const SPAWN_DISTANCE = 40;
-const SPAWN_SPEED = 1000;
-const DIFFICULTY_DELAY = 20000;
+const SPAWN_SPEED = 2000;
 const MAX = MAP_SIZE / 2 - 2;
 
 const createScene = async (engine: Engine) => {
-	let boss = false;
 	game.havok = new HavokPlugin(true, await HavokPhysics());
 	const scene = new Scene(engine);
 
 	createTimer({
 		scene,
-		timeout: DIFFICULTY_DELAY,
+		timeout: 20000,
 		callback: () => {
 			game.difficulty++;
-			boss = true;
 		},
 	});
+
+	createTimer({
+		scene,
+		timeout: 60000,
+		callback: () => {
+			createEnemy({
+				scene,
+				position: getPosition(),
+				target: player.position,
+				boss: true,
+			});
+
+			game.difficulty += 2;
+		},
+	});
+
+	const getPosition = () => {
+		const x = Math.random() * SPAWN_DISTANCE * 2 - SPAWN_DISTANCE;
+		const y =
+			Math.sqrt(Math.pow(SPAWN_DISTANCE, 2) - Math.pow(x, 2)) * (Math.random() < 0.5 ? -1 : 1);
+
+		const position = player.position.add(new Vector3(x, 0, y));
+
+		if (position.x < -MAX) {
+			position.x = -MAX;
+		} else if (position.x > MAX) {
+			position.x = MAX;
+		}
+
+		if (position.z < -MAX) {
+			position.z = -MAX;
+		} else if (position.z > MAX) {
+			position.z = MAX;
+		}
+
+		return position;
+	};
 
 	const timer = createTimer({
 		scene,
 		timeout: SPAWN_SPEED,
 		callback: () => {
-			const x = Math.random() * SPAWN_DISTANCE * 2 - SPAWN_DISTANCE;
-			const y =
-				Math.sqrt(Math.pow(SPAWN_DISTANCE, 2) - Math.pow(x, 2)) * (Math.random() < 0.5 ? -1 : 1);
-
-			const position = player.position.add(new Vector3(x, 0, y));
-
-			if (position.x < -MAX) {
-				position.x = -MAX;
-			} else if (position.x > MAX) {
-				position.x = MAX;
-			}
-
-			if (position.z < -MAX) {
-				position.z = -MAX;
-			} else if (position.z > MAX) {
-				position.z = MAX;
-			}
-
 			createEnemy({
 				scene,
-				position,
+				position: getPosition(),
 				target: player.position,
-				boss,
 			});
-
-			boss = false;
 		},
 	});
 

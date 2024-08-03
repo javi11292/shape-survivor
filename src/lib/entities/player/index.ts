@@ -14,12 +14,12 @@ import { createTimer } from "$lib/engine/timer";
 import { game } from "$lib/state/game";
 import { player } from "$lib/state/player";
 import { isEntity } from "$lib/utils";
-import type { Scene } from "@babylonjs/core";
+import type { PhysicsBody, Scene } from "@babylonjs/core";
 import { isExperience } from "../experience";
 import { createLaser } from "../laser";
 import { createProjectile } from "../projectile";
-import { createUnit } from "../unit";
-import { KEYS, SHAPE, addEvents, getMesh, getShape } from "./utils";
+import { createUnit, TYPE } from "../unit";
+import { addEvents, getMesh, getShape, KEYS, SHAPE } from "./utils";
 
 const SPEED = 10;
 const SQRT_SPEED = Math.sqrt(Math.pow(SPEED, 2) / 2);
@@ -43,6 +43,7 @@ export const createPlayer = ({ scene }: Params) => {
 			scene,
 			state: player,
 			shape: SHAPE,
+			type: TYPE.player,
 			getShape,
 		},
 		{
@@ -51,26 +52,35 @@ export const createPlayer = ({ scene }: Params) => {
 		},
 	);
 
+	const handleTrigger = (trigger: PhysicsBody) => {
+		const { metadata } = trigger.transformNode;
+
+		if (!isExperience(metadata)) {
+			return;
+		}
+
+		metadata.absorb(node.position);
+	};
+
 	const camera = new UniversalCamera("camera", new Vector3(0, 10, 0));
 	const input = new Set<KEYS>();
 	const mesh = getMesh();
 	const node = unit.body.transformNode;
 	const auraMesh = CreateCylinder("aura", { height: 1, diameter: AURA_RADIUS * 2 });
+
 	const auraBody = createBody({
 		name: "aura",
 		type: PhysicsMotionType.ANIMATED,
 		scene,
-		onTrigger: (trigger) => {
-			const { metadata } = trigger.transformNode;
-
-			if (!isExperience(metadata)) {
-				return;
-			}
-
-			metadata.absorb(node.position);
-		},
+		onTrigger: handleTrigger,
 	});
-	const entityBody = createBody({ name: "entity", type: PhysicsMotionType.ANIMATED, scene });
+
+	const entityBody = createBody({
+		name: "entity",
+		type: PhysicsMotionType.ANIMATED,
+		scene,
+		onTrigger: handleTrigger,
+	});
 
 	camera.rotation.x = Math.PI / 2;
 	camera.mode = UniversalCamera.ORTHOGRAPHIC_CAMERA;

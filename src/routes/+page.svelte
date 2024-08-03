@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { GameOver } from "$lib/components/game-over";
 	import { LevelUp } from "$lib/components/level-up";
+	import { XP_PER_LEVEL } from "$lib/constants";
 	import { upgrades } from "$lib/constants/upgrades";
 	import { Button } from "$lib/core/components/button";
 	import { createGame } from "$lib/engine/game";
@@ -44,13 +45,22 @@
 	});
 
 	$effect(() => {
-		game.running = !game.levelup;
+		game.running = !game.levelup && !game.upgrade;
 	});
 
 	$effect(() => {
 		const diff = untrack(() => player.maxHp - player.hp);
 		player.maxHp = upgrades.hp.amount(player.upgrades.hp);
 		player.hp = player.maxHp - diff;
+	});
+
+	$effect(() => {
+		if (player.experience >= player.toNextLevel && !game.levelup && !game.upgrade) {
+			player.level++;
+			player.experience -= player.toNextLevel;
+			player.toNextLevel = player.level * XP_PER_LEVEL;
+			game.levelup = true;
+		}
 	});
 
 	const startGame = () => {
@@ -72,12 +82,12 @@
 				</div>
 
 				<div class="bar experience" style="--width:{player.experience / player.toNextLevel}">
-					<div>{player.experience} / {player.toNextLevel}</div>
+					<div>{Math.floor(player.experience)} / {Math.ceil(player.toNextLevel)}</div>
 				</div>
 				<div class="level">{player.level}</div>
 			</div>
 
-			{#if !game.running && !game.levelup && !game.wasted}
+			{#if !game.running && !game.levelup && !game.wasted && !game.upgrade}
 				<div class="backdrop">
 					<div class="paused">Paused</div>
 				</div>
@@ -88,7 +98,7 @@
 			</div>
 		{/if}
 
-		{#if game.levelup}
+		{#if game.levelup || game.upgrade}
 			<LevelUp />
 		{/if}
 

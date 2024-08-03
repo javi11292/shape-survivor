@@ -8,7 +8,7 @@ import { player } from "$lib/state/player";
 import { isEntity } from "$lib/utils";
 import type { Scene } from "@babylonjs/core";
 import { isPlayer } from "../player";
-import { createUnit } from "../unit";
+import { createUnit, TYPE } from "../unit";
 import {
 	BASIC_SHAPE,
 	BOSS_SHAPE,
@@ -37,8 +37,8 @@ export const isEnemy = isEntity<ReturnType<typeof createUnit>>(enemyType);
 
 export const createEnemy = ({ scene, position, target, boss }: Params) => {
 	let attackEnabled = true;
-	const damage = (DAMAGE + DAMAGE * game.difficulty * 0.5) * (boss ? 2 : 1);
-	const hp = (HP + HP * game.difficulty * 0.2) * (boss ? 20 : 1);
+	const damage = (DAMAGE + DAMAGE * game.difficulty * 0.25) * (boss ? 2 : 1);
+	const hp = (HP + HP * game.difficulty * 0.5) * (boss ? 20 : 1);
 	const { state } = new State({ hp });
 
 	const unit = createUnit(
@@ -47,6 +47,7 @@ export const createEnemy = ({ scene, position, target, boss }: Params) => {
 			state,
 			shape: boss ? BOSS_SHAPE : BASIC_SHAPE,
 			getShape: boss ? getBossShape : getBasicShape,
+			type: boss ? TYPE.boss : TYPE.enemy,
 		},
 		{
 			name: "enemy",
@@ -64,7 +65,7 @@ export const createEnemy = ({ scene, position, target, boss }: Params) => {
 
 				attackEnabled = false;
 				timer.start();
-				metadata.hit(damage, true);
+				metadata.hit(damage);
 				player.damageTaken += damage;
 			},
 		},

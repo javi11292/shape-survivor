@@ -1,4 +1,3 @@
-import { ITEM_MASK, PLAYER_AURA_MASK, XP_PER_LEVEL } from "$lib/constants";
 import { PhysicsMotionType, Vector3 } from "$lib/engine";
 import { assets } from "$lib/engine/assets";
 import { createBody } from "$lib/engine/body";
@@ -7,7 +6,13 @@ import { game } from "$lib/state/game";
 import { player } from "$lib/state/player";
 import { isEntity } from "$lib/utils";
 import type { Scene } from "@babylonjs/core";
-import { getBodyMesh, getMesh, getShape } from "./utils";
+import {
+	getBodyMesh,
+	getExperienceMesh,
+	getExperienceShape,
+	getUpgradeMesh,
+	getUpgradeShape,
+} from "./utils";
 
 const SPEED = 0.03;
 
@@ -15,13 +20,14 @@ type Params = {
 	scene: Scene;
 	position: Vector3;
 	amount: number;
+	upgrade?: boolean;
 };
 
 const experienceType = Symbol("experience");
 
 export const isExperience = isEntity<ReturnType<typeof createExperience>>(experienceType);
 
-export const createExperience = ({ scene, position, amount }: Params) => {
+export const createExperience = ({ scene, position, amount, upgrade }: Params) => {
 	let target: Vector3 | undefined;
 
 	const experience = {
@@ -32,13 +38,15 @@ export const createExperience = ({ scene, position, amount }: Params) => {
 
 	const body = createBody({ name: "experience", type: PhysicsMotionType.ANIMATED, scene });
 
-	const mesh = getMesh().createInstance("experience");
+	const mesh = upgrade
+		? getUpgradeMesh().createInstance("upgrade")
+		: getExperienceMesh().createInstance("experience");
+
 	const node = body.transformNode;
 
-	body.shape = getShape(getBodyMesh(), scene);
-	body.shape.filterMembershipMask = ITEM_MASK;
-	body.shape.filterCollideMask = PLAYER_AURA_MASK;
-	body.shape.isTrigger = true;
+	body.shape = upgrade
+		? getUpgradeShape(getBodyMesh(), scene)
+		: getExperienceShape(getBodyMesh(), scene);
 
 	node.addChild(mesh);
 	node.position = position;
@@ -57,14 +65,12 @@ export const createExperience = ({ scene, position, amount }: Params) => {
 			if (Vector3.DistanceSquared(node.position, target) <= 1) {
 				assets.suck.play();
 				node.dispose();
-				player.experience += amount;
 
-				if (player.experience >= player.toNextLevel) {
-					player.level++;
-					player.experience -= player.toNextLevel;
-					player.toNextLevel = player.level * XP_PER_LEVEL;
-					game.levelup = true;
+				if (upgrade) {
+					game.upgrade = true;
 				}
+
+				player.experience += amount;
 
 				return;
 			}

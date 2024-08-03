@@ -5,6 +5,7 @@ const getInitialState = () => ({
 	difficulty: 0,
 	mounted: true,
 	running: true,
+	upgrade: false,
 	wasted: false,
 	levelup: false,
 	havok: undefined as unknown as HavokPlugin,
