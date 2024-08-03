@@ -102,14 +102,6 @@ const createScene = async (engine: Engine) => {
 	const player = createPlayer({ scene });
 	createMap({ scene });
 
-	engine.runRenderLoop(() => {
-		if (!game.running) {
-			return;
-		}
-
-		scene.render();
-	});
-
 	scene.onDisposeObservable.add(() => {
 		disposeTimeout();
 	});
@@ -152,12 +144,21 @@ export const createGame = async (canvas: HTMLCanvasElement) => {
 		const key = event.key.toUpperCase();
 
 		switch (key) {
+			case "ESCAPE":
 			case "P": {
 				game.running = !game.running;
 
 				break;
 			}
 		}
+	});
+
+	engine.runRenderLoop(() => {
+		if (!game.running) {
+			return;
+		}
+
+		scene.render();
 	});
 
 	window.addEventListener("resize", resize);
