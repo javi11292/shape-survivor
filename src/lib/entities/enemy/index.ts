@@ -8,7 +8,7 @@ import { player } from "$lib/state/player";
 import { isEntity } from "$lib/utils";
 import type { Scene } from "@babylonjs/core";
 import { isPlayer } from "../player";
-import { createUnit, TYPE } from "../unit";
+import { TYPE, createUnit } from "../unit";
 import {
 	BASIC_SHAPE,
 	BOSS_SHAPE,
@@ -102,14 +102,14 @@ export const createEnemy = ({ scene, position, target, boss, improved }: Params)
 
 	const render = createRender({
 		scene,
-		render: () => {
+		render: (delta) => {
 			node.lookAt(target);
 
 			unit.body.setLinearVelocity(
 				Vector3.Lerp(
 					unit.body.getLinearVelocity(),
 					node.getDirection(new Vector3(0, 0, speed)),
-					0.1,
+					(10 * delta) / 1000,
 				),
 			);
 		},
