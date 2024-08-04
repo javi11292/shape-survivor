@@ -15,7 +15,7 @@ const SPEED = 50;
 const LIFE_TIME = 750;
 const EVOLVED_LIFE_TIME = 1000;
 const IMPULSE_POSITION = Vector3.Zero();
-const IMPULSE_FORCE = new Vector3(0, 0, 100);
+const IMPULSE_FORCE = new Vector3(0, 0, 10);
 const WEAPON = weapons.projectile.stats;
 
 type Params = {
