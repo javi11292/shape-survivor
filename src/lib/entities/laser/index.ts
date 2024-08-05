@@ -130,7 +130,7 @@ export const createLaser = ({ scene, position }: Params) => {
 				scene,
 				keyframes: [
 					{ frame: LIFE_TIME, value: 0 },
-					{ frame: EVOLVED_LIFE_TIME, value: Math.PI / 2 },
+					{ frame: EVOLVED_LIFE_TIME, value: Math.PI },
 				],
 				onAnimationEnd: () => parent.dispose(),
 				callback: (value) => (parent.rotation.y = value),
