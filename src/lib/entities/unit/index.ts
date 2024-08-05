@@ -33,7 +33,7 @@ export const createUnit = (
 	const node = body.transformNode;
 
 	if (type === TYPE.boss) {
-		body.setMassProperties({ ...body.getMassProperties(), mass: 5 });
+		body.setMassProperties({ ...body.getMassProperties(), mass: 2.5 });
 	}
 
 	const unit = {
