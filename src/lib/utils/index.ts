@@ -1,7 +1,7 @@
-import { State } from "$lib/core/utils";
+import { memo, State } from "$lib/core/utils";
 import { Matrix, Vector3 } from "$lib/engine";
 import { player } from "$lib/state/player";
-import type { Scene } from "@babylonjs/core";
+import type { GlowLayer, Mesh, Scene } from "@babylonjs/core";
 import { mount, unmount, type Component } from "svelte";
 
 export const isEntity =
@@ -60,3 +60,7 @@ const getVectorProjection = ({ scene, point }: { scene: Scene; point: Vector3 })
 		scene.activeCamera!.viewport.toGlobal(window.innerWidth, window.innerHeight),
 	);
 };
+
+export const addGlow = memo((scene: Scene, mesh: Mesh) => {
+	(scene.effectLayers[0]! as GlowLayer).addIncludedOnlyMesh(mesh);
+});

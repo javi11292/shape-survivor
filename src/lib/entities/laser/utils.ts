@@ -1,5 +1,5 @@
 import { memo } from "$lib/core/utils";
-import { CreateCapsule, GlowLayer, PhysicsShapeConvexHull, Vector3 } from "$lib/engine";
+import { CreateCapsule, PhysicsShapeConvexHull, Vector3 } from "$lib/engine";
 import { createMeshSource } from "$lib/engine/mesh";
 import type { Mesh, Scene } from "@babylonjs/core";
 
@@ -46,8 +46,3 @@ export const getBodyMesh = createMeshSource(() =>
 );
 
 export const getShape = memo((mesh: Mesh, scene: Scene) => new PhysicsShapeConvexHull(mesh, scene));
-
-export const addGlow = memo((scene: Scene) => {
-	const gl = new GlowLayer("laser", scene);
-	gl.addIncludedOnlyMesh(getMesh());
-});

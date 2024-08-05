@@ -6,6 +6,7 @@ import { createBody } from "$lib/engine/body";
 import { createTimer } from "$lib/engine/timer";
 import { game } from "$lib/state/game";
 import { player } from "$lib/state/player";
+import { addGlow } from "$lib/utils";
 import type { PhysicsBody, Scene } from "@babylonjs/core";
 import { isEnemy } from "../enemy";
 import { isWall } from "../map";
@@ -15,7 +16,7 @@ const SPEED = 50;
 const LIFE_TIME = 750;
 const EVOLVED_LIFE_TIME = 1000;
 const IMPULSE_POSITION = Vector3.Zero();
-const IMPULSE_FORCE = new Vector3(0, 0, 10);
+const IMPULSE_FORCE = new Vector3(0, 0, 25);
 const WEAPON = weapons.projectile.stats;
 
 type Params = {
@@ -136,6 +137,8 @@ export const createProjectile = ({ scene, position, target, amount }: Params) =>
 	const floor = Math.floor(amount);
 	const randomAmount = floor + (Math.random() < amount - floor ? 1 : 0);
 	const center = (randomAmount - 1) / 2;
+
+	addGlow(scene, getMesh());
 
 	for (let i = 0; i < randomAmount; i++) {
 		const rotation = Quaternion.RotationAxis(Axis.Y, ((i - center) * Math.PI) / 50);

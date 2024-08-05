@@ -6,12 +6,14 @@ import { createMap } from "$lib/entities/map";
 import { createPlayer } from "$lib/entities/player";
 import { game, resetGame } from "$lib/state/game";
 import { resetPlayer } from "$lib/state/player";
+import type { Mesh } from "@babylonjs/core";
 import HavokPhysics from "@babylonjs/havok";
 import { untrack } from "svelte";
 import {
 	Color3,
 	Color4,
 	Engine,
+	GlowLayer,
 	HavokPlugin,
 	KeyboardEventTypes,
 	Scene,
@@ -31,6 +33,9 @@ const createScene = async (engine: Engine) => {
 	let improved = false;
 	game.havok = new HavokPlugin(true, await HavokPhysics());
 	const scene = new Scene(engine);
+	const glowLayer = new GlowLayer("glow", scene);
+
+	glowLayer.addIncludedOnlyMesh({} as Mesh);
 
 	createTimer({
 		scene,

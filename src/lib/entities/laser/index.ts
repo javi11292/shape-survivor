@@ -7,6 +7,7 @@ import { createBody } from "$lib/engine/body";
 import { createRender } from "$lib/engine/render";
 import { createTimer } from "$lib/engine/timer";
 import { player } from "$lib/state/player";
+import { addGlow } from "$lib/utils";
 import type { Scene } from "@babylonjs/core";
 import { isEnemy } from "../enemy";
 import {
@@ -14,7 +15,6 @@ import {
 	HEIGHT,
 	KEYFRAMES,
 	LIFE_TIME,
-	addGlow,
 	getBodyMesh,
 	getMesh,
 	getShape,
@@ -120,7 +120,6 @@ export const createLaser = ({ scene, position }: Params) => {
 	const evolved = player.evolved.has("laser");
 
 	const projectiles = WEAPON.projectiles.amount(player.weapons.laser);
-	addGlow(scene);
 
 	const parent = new TransformNode("laser");
 	parent.position = position;
@@ -136,6 +135,8 @@ export const createLaser = ({ scene, position }: Params) => {
 				onAnimationEnd: () => parent.dispose(),
 				callback: (value) => (parent.rotation.y = value),
 			});
+
+	addGlow(scene, getMesh());
 
 	for (let i = 0; i < projectiles; i++) {
 		addLaser({

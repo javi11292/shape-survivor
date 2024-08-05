@@ -1,5 +1,5 @@
 import { State } from "$lib/core/utils";
-import { HavokPlugin } from "@babylonjs/core";
+import type { HavokPlugin } from "@babylonjs/core";
 
 const getInitialState = () => ({
 	difficulty: 0,
