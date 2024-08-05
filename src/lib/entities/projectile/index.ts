@@ -17,6 +17,7 @@ const LIFE_TIME = 750;
 const EVOLVED_LIFE_TIME = 1000;
 const IMPULSE_POSITION = Vector3.Zero();
 const IMPULSE_FORCE = new Vector3(0, 0, 25);
+const MAX_REBOUNDS = 4;
 const WEAPON = weapons.projectile.stats;
 
 type Params = {
@@ -64,7 +65,7 @@ const targetClosestEnemy = (
 };
 
 const addProjectile = ({ scene, position, target }: Omit<Params, "amount">) => {
-	let rebound = false;
+	let rebounds = 0;
 	const evolved = player.evolved.has("projectile");
 
 	const body = createBody({
@@ -84,7 +85,7 @@ const addProjectile = ({ scene, position, target }: Omit<Params, "amount">) => {
 				return;
 			}
 
-			if (!rebound) {
+			if (!rebounds) {
 				metadata.body.applyImpulse(
 					node
 						.getDirection(IMPULSE_FORCE)
@@ -100,10 +101,10 @@ const addProjectile = ({ scene, position, target }: Omit<Params, "amount">) => {
 			metadata.hit(damage);
 			player.damageDone.projectile += damage;
 
-			if (!targetClosestEnemy(body, evolved, trigger)) {
+			if (rebounds > MAX_REBOUNDS || !targetClosestEnemy(body, evolved, trigger)) {
 				node.dispose();
 			} else {
-				rebound = true;
+				rebounds++;
 			}
 		},
 	});
