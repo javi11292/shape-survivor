@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="es">
+	<head>
+		<title>Shape Survivor</title>
+		<meta charset="utf-8" />
+		<meta name="description" content="Shape Survivor" />
+		<meta name="theme-color" content="#000000" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1"
+		/>
+		<link rel="icon" href="./favicon.ico" />
+		<link rel="manifest" href="./assets/manifest.json" />
+		
+		<link href="./_app/immutable/assets/0.ClJjV9qF.css" rel="stylesheet">
+		<link href="./_app/immutable/assets/2.C9ZRaUJZ.css" rel="stylesheet">
+		<link rel="modulepreload" href="./_app/immutable/entry/start.uWyAWQ0-.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/entry.BY58LGlb.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/index-client.DAhZcY6G.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/runtime.D9ObL4wL.js">
+		<link rel="modulepreload" href="./_app/immutable/entry/app.CsUSXz9z.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/render.Cqd-ePd3.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/disclose-version.JsW2mQ44.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/props.DY-wKNIM.js">
+		<link rel="modulepreload" href="./_app/immutable/nodes/0.CUtSJgHF.js">
+		<link rel="modulepreload" href="./_app/immutable/chunks/snippet.DVKxeWwj.js">
+		<link rel="modulepreload" href="./_app/immutable/nodes/2.4F9wLR5X.js">
+	</head>
+
+	<body data-sveltekit-preload-data="hover">
+		<div style="display: contents"><!--[--><!--[--><!----><!----> <!----><main class="svelte-16kxot4"><canvas tabindex="0" class="svelte-16kxot4"></canvas> <div class="ui svelte-16kxot4"><!--[!--><div class="start svelte-16kxot4"><!----><button  type="button" class="button svelte-w7p08c"><div class="element svelte-w7p08c scale"><div class="content svelte-w7p08c "><span class="svelte-w7p08c"><!--[!--><!--[--><!---->Empezar<!----><!--]--><!--]--></span></div> <!--[!--><!--]--></div><!----></button><!----><!----></div><!--]--> <!--[!--><!--]--> <!--[!--><!--]--></div></main><!----><!----><!----><!--]--> <!--[!--><!--]--><!--]-->
+			
+			<script>
+				{
+					__sveltekit_exux0y = {
+						base: new URL(".", location).pathname.slice(0, -1),
+						assets: "/shape-survivor"
+					};
+
+					const element = document.currentScript.parentElement;
+
+					const data = [{"type":"data","data":null,"uses":{}},null];
+
+					Promise.all([
+						import("./_app/immutable/entry/start.uWyAWQ0-.js"),
+						import("./_app/immutable/entry/app.CsUSXz9z.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element, {
+							node_ids: [0, 2],
+							data,
+							form: null,
+							error: null
+						});
+					});
+
+					if ('serviceWorker' in navigator) {
+						addEventListener('load', function () {
+							navigator.serviceWorker.register('./service-worker.js');
+						});
+					}
+				}
+			</script>
+		</div>
+	</body>
+</html>
