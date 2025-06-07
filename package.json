@@ -6,7 +6,8 @@
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"lint": "prettier . --check . && eslint .",
-		"migrate": "node src/lib/core/scripts/migrate.js"
+		"migrate": "node src/lib/core/scripts/migrate.js",
+		"deploy": "pnpm build && pnpx gh-pages -d build -t true"
 	},
 	"devDependencies": {
 		"@babylonjs/inspector": "^7.16.0",
@@ -21,6 +22,7 @@
 		"eslint": "^9.4.0",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-svelte": "^2.43.0",
+		"gh-pages": "^6.3.0",
 		"globals": "^15.4.0",
 		"prettier": "^3.3.2",
 		"prettier-plugin-svelte": "^3.2.4",
