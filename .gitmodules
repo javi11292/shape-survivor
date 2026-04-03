@@ -1,6 +1,0 @@
-[submodule "core"]
-	path = src/lib/core
-	url = https://github.com/javi11292/core.git
-[submodule "icons"]
-	path = static/assets/icons
-	url = https://github.com/javi11292/icons.git
